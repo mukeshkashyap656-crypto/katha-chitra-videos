@@ -43,7 +43,12 @@ class MCP:
         if "mcp-session-id" in r.headers:
             self.sid = r.headers["mcp-session-id"]
         r.raise_for_status()
-        return _parse(r.text) if expect else None
+        if not expect:
+            return None
+        out = _parse(r.text)
+        if out is None:
+            raise RuntimeError("EMPTY_PARSE status=%s ctype=%s body=%r" % (r.status_code, r.headers.get("content-type"), r.text[:600]))
+        return out
 
     def tools(self):
         r = self._post({"jsonrpc": "2.0", "id": self._id(), "method": "tools/list"})
