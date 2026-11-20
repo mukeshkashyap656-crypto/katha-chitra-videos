@@ -1,0 +1,12 @@
+◆  Linting proj/index.html
+
+  ⚠ duplicate_media_discovery_risk: Detected 2 matching img entries with the same source/start/duration.
+    Fix: Avoid duplicated media nodes that can be discovered twice during compilation.
+  ⚠ overlapping_gsap_tweens: A GSAP set on "#cam" for x, y, scale fires at 5.28s while a tween on it is still running (1.60s to 5.28s).
+    Fix: Let the tween finish before the set fires: move the set to 5.28s or later, or shorten the tween. Played in order the set wins; seeked (scrub, export) the tween can win, so an old state stays visible.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#cam" for x, y, scale between 5.28s and 5.28s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ gsap_repeated_fromto_without_baseline: 2 tl.fromTo() calls target "#shadow" with no stable baseline. The last-authored fromTo "from" values become the element's resting state for any seek before the first tween actually runs, because GSAP applies fromTo from-values at authoring time (immediateRender), not at tween position.
+    Fix: Add `immediateRender: false` to every fromTo except the earliest-positioned one (at 6.24s), so pre-first-tween seeks keep its "from" values. A hiding `tl.set(..., 0)` baseline trips gsap_timeline_set_initial_hide, and a `gsap.set` authored before the fromTo calls is overwritten by them.
+
+◇  0 error(s), 4 warning(s)
