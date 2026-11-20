@@ -10,6 +10,8 @@ on:
         description: "Episode folder, e.g. episodes/bhag5"
         required: true
 
+permissions:
+  contents: write
 jobs:
   render:
     runs-on: ubuntu-latest
@@ -42,3 +44,11 @@ jobs:
           name: video
           path: out/
           retention-days: 14
+      - name: Put the video on its own branch (render-<episode>), only the latest version is kept
+        if: always() && steps.ep.outputs.episode != ''
+        run: |
+          B=render-$(basename "${{ steps.ep.outputs.episode }}")
+          cd out && git init -q && git checkout -q -b "$B"
+          git config user.name "katha-chitra-bot"; git config user.email "bot@users.noreply.github.com"
+          git add -A && git commit -q -m "Render of ${{ steps.ep.outputs.episode }} from ${GITHUB_SHA::7}"
+          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" "$B"
