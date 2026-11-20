@@ -267,7 +267,9 @@ json.dump(lip, open(f"{B}/proj/lip.json", "w"), ensure_ascii=False)
 # ---------------- sounds ----------------
 for src, dst in (("shimmers/shimmer-short-sparkle", "sfx_spark"), ("shimmers/shimmer-medium-bright", "sfx_shimmer"),
                  ("cinematic-hits/cinematic-drum-big", "sfx_drum"), ("whooshes/whoosh-medium-medium", "sfx_whoosh"),
-                 ("appear-and-vanish/appear-materialise", "sfx_appear"), ("whooshes/whoosh-slow-soft", "sfx_whoosh_soft")):
+                 ("appear-and-vanish/appear-materialise", "sfx_appear"), ("whooshes/whoosh-slow-soft", "sfx_whoosh_soft"),
+                 ("whooshes/swish-hard", "sfx_swish"), ("impacts/impact-heavy-hard", "sfx_impact"),
+                 ("cinematic-hits/cinematic-thunder-big", "sfx_thunder"), ("whooshes/whoosh-slow-hard", "sfx_whoosh_big")):
     shutil.copy(os.path.join(REPO, "sfx", src + ".wav"), f"{OUT}/{dst}.wav")
 def save(name, x):
     x = np.clip(x, -1, 1); w = wave.open(f"{OUT}/{name}.wav", "w"); w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR)

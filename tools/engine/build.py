@@ -88,6 +88,7 @@ for si, sh in enumerate(SHOTS):
                 m = mouth(k, t); return base if m == "X" else f"{base}_{m}"
             return f"{base}_blink" if blink(t, off) and f"{base}_blink" in keys else base
         cid = f"s{si}c{ci}"; big = is_big(e["who"]); w_, h_, top = (BW, BH, BTOP) if big else (DW, DH, DTOP)
+        top -= e.get("lift", 0)
         first = state(t0)
         imgs = "".join(f'<img id="{cid}-{kk}" class="ci" src="assets/{kk}.png" style="width:{w_}px;height:{h_}px;opacity:{1 if kk == first else 0}">' for kk in keys)
         html_c.append(f'<div class="char" id="{cid}" style="left:{e["x"] - w_ / 2:.0f}px;top:{top}px;width:{w_}px;height:{h_}px">{imgs}</div>')
@@ -100,6 +101,49 @@ for si, sh in enumerate(SHOTS):
             moves.append(f'tl.fromTo("#{cid}",{{x:0}},{{x:{e["to_x"] - e["x"]},duration:{(t1 - t0) * 0.9:.3f},ease:"none",immediateRender:false}},{t0:.3f});')
     layers.append(f'<div class="lay shot" id="shot{si}" style="opacity:{1 if si == 0 else 0}"><img class="wfull" src="assets/bg_{sh["bg"]}.png">{"".join(html_c)}</div>')
 
+# ---------- fx: astra (glowing arrow) with result, rain ----------
+fx_html = {}; fx_js = []; fx_aud = []
+def chest(e):
+    lift = e.get("lift", 0)
+    return (e["x"], (950 if is_big(e["who"]) else 1090) - lift)
+for si, sh in enumerate(SHOTS):
+    t0, t1 = starts[si], ends[si]; k = sh["line"]; cast = sh.get("cast", []); parts = []
+    for fi, fx in enumerate(sh.get("fx", [])):
+        tf = (wt(k, fx["at_word"]) if fx.get("at_word") else None) or (t0 + 0.5)
+        tf = max(t0 + 0.2, min(tf, t1 - 1.0))
+        if fx["type"] == "rain":
+            col = fx.get("color", "#b0101a"); import random as _r; rr = _r.Random(si * 7 + fi)
+            for d in range(70):
+                x0 = rr.uniform(0, 1360); dl = rr.uniform(0, 0.7); ln = rr.uniform(30, 60)
+                did = f"rn{si}_{fi}_{d}"
+                parts.append(f'<div id="{did}" style="position:absolute;left:{x0:.0f}px;top:-80px;width:5px;height:{ln:.0f}px;border-radius:3px;background:{col};opacity:.85;transform:rotate(8deg)"></div>')
+                fx_js.append(f'tl.fromTo("#{did}",{{y:0}},{{y:1760,duration:0.75,ease:"none",repeat:{max(1, int((t1 - t0) / 0.75))},immediateRender:false}},{t0 + dl:.3f});')
+            continue
+        src = next(e for e in cast if e["who"] == fx["from"]); dst = next(e for e in cast if e["who"] == fx["to"])
+        (ax, ay), (bx, by) = chest(src), chest(dst)
+        d = 1 if bx > ax else -1; ax += d * 90; bx -= d * 60
+        import math as _m; ang = _m.degrees(_m.atan2(by - ay, bx - ax))
+        col = fx.get("color", "#9fe0ff"); aid = f"as{si}_{fi}"; fid = f"fl{si}_{fi}"; fly = 0.34; hit = tf + fly
+        parts.append(f'<div id="{aid}" style="position:absolute;left:{ax:.0f}px;top:{ay:.0f}px;width:0;height:0;opacity:0">'
+                     f'<div style="position:absolute;left:-230px;top:-9px;width:260px;height:18px;transform-origin:230px 9px;transform:rotate({ang:.1f}deg);'
+                     f'border-radius:9px;background:linear-gradient(90deg,rgba(255,255,255,0),{col} 55%,#fff);box-shadow:0 0 22px {col},0 0 48px {col}"></div></div>')
+        parts.append(f'<div id="{fid}" style="position:absolute;left:{bx - 160:.0f}px;top:{by - 160:.0f}px;width:320px;height:320px;border-radius:50%;'
+                     f'background:radial-gradient(circle,#fff 0%,{col} 35%,rgba(255,255,255,0) 70%);opacity:0"></div>')
+        fx_js.append(f'tl.set("#{aid}",{{opacity:1,x:0,y:0}},{tf:.3f});tl.to("#{aid}",{{x:{bx - ax:.0f},y:{by - ay:.0f},duration:{fly},ease:"power1.in"}},{tf:.3f});tl.set("#{aid}",{{opacity:0}},{hit:.3f});')
+        fx_js.append(f'tl.fromTo("#{fid}",{{opacity:1,scale:0.2}},{{opacity:0,scale:2.3,duration:0.55,ease:"power2.out",immediateRender:false}},{hit:.3f});')
+        fx_aud.append(f'<audio id="sw{si}_{fi}" src="assets/sfx_swish.wav" data-start="{tf:.3f}" data-duration="0.17" data-volume="0.9"></audio>')
+        fx_aud.append(f'<audio id="im{si}_{fi}" src="assets/sfx_impact.wav" data-start="{hit:.3f}" data-duration="1.0" data-volume="0.85"></audio>')
+        ci = cast.index(dst); cid = f"s{si}c{ci}"
+        if fx.get("result") == "thrown":       # flies far away (e.g. Maricha into the sea)
+            fx_js.append(f'tl.to("#{cid}",{{x:{d * 950},y:-760,rotation:{d * 40},scale:0.12,duration:1.15,ease:"power2.in"}},{hit + 0.08:.3f});tl.set("#{cid}",{{opacity:0}},{hit + 1.25:.3f});')
+            fx_aud.append(f'<audio id="wb{si}_{fi}" src="assets/sfx_whoosh_big.wav" data-start="{hit + 0.05:.3f}" data-duration="1.02" data-volume="0.7"></audio>')
+        elif fx.get("result") == "fall":       # falls down and fades (no blood)
+            fx_js.append(f'tl.to("#{cid}",{{rotation:{d * 82},transformOrigin:"50% 92%",duration:0.75,ease:"power2.in"}},{hit + 0.1:.3f});tl.to("#{cid}",{{opacity:0,duration:0.7}},{hit + 1.0:.3f});')
+            fx_aud.append(f'<audio id="th{si}_{fi}" src="assets/sfx_thunder.wav" data-start="{hit + 0.8:.3f}" data-duration="1.5" data-volume="0.5"></audio>')
+    if parts: fx_html[si] = "".join(parts)
+for si, extra in fx_html.items():
+    l = layers[si]; layers[si] = l[:-len("</div>")] + extra + "</div>"
+
 # ---------- camera: world 1360x1660 seen through a 1008x1228 window ----------
 WW, WH, VW, VH = 1360, 1660, 1008, 1228; S0 = VW / WW
 def cam(px, py, z):
@@ -109,9 +153,11 @@ def cam(px, py, z):
 def half_w(who): return 145 if is_big(who) else 118
 def wide(cast, z_max=1.25):
     if not cast: return (680, 830, 1.0)
-    lo = min(e["x"] - half_w(e["who"]) for e in cast) - 70; hi = max(e["x"] + half_w(e["who"]) for e in cast) + 70
+    # walkers: the whole path (start and end) stays in frame; lifted (flying) people: their raised top too
+    lo = min(min(e["x"], e.get("to_x", e["x"])) - half_w(e["who"]) for e in cast) - 70
+    hi = max(max(e["x"], e.get("to_x", e["x"])) + half_w(e["who"]) for e in cast) + 70
     z = max(1.0, min(z_max, WW / max(1, hi - lo)))
-    vh = VH / (S0 * z); top_need = min(BTOP if is_big(e["who"]) else DTOP + 180 for e in cast)   # whole body + crown inside
+    vh = VH / (S0 * z); top_need = min((BTOP if is_big(e["who"]) else DTOP + 180) - e.get("lift", 0) for e in cast)   # whole body + crown inside
     cy = min(1480 + 60 - vh / 2, max(top_need - 40 + vh / 2, 830))
     return ((lo + hi) / 2, cy, z)
 def closeup(e, cast, zs=(2.6, 2.8, 3.0, 3.3, 3.6, 3.9)):
@@ -122,7 +168,7 @@ def closeup(e, cast, zs=(2.6, 2.8, 3.0, 3.3, 3.6, 3.9)):
         lo, hi = sx + sb - hw, sx - sb + hw          # camera x range keeping the speaker inside
         for o in cast:
             if o is e: continue
-            ob = half_w(o["who"])
+            ob = half_w(o["who"]) + 60       # bow tips / raised arms stick out beyond the body
             if o["x"] > sx: hi = min(hi, o["x"] - ob - hw)   # neighbour on the right fully out
             else: lo = max(lo, o["x"] + ob + hw)             # neighbour on the left fully out
         if lo <= hi:
@@ -150,7 +196,9 @@ for si, sh in enumerate(SHOTS):
     if mode == "two" and spe: target = two(spe, cast)
     if target is None: target = wide(cast)
     alt = None             # second framing for long shots
-    if main is not None:
+    action = sh.get("fx") or any(e.get("pose") == "walk" for e in cast)
+    if action: target = wide(cast)   # astra / walking: everyone (and the whole path) stays in view
+    if main is not None and not action:
         alt = (medium(main, cast) or closeup(main, cast)) if target[2] < 1.6 else wide(cast)
     t0, t1 = starts[si], ends[si]; dur = t1 - t0
     n = 1 if dur <= 3.6 else max(2, round(dur / SEG))
@@ -159,7 +207,7 @@ for si, sh in enumerate(SHOTS):
         a = t0 + dur * g / n; b = t0 + dur * (g + 1) / n
         odd = ((n - 1 - g) if last else g) % 2 == 1          # last shot ends on its main (wide) framing, big '?' visible
         x, y, z = (alt if (odd and alt) else target)
-        if not alt and odd: z *= 1.18                       # nobody to cut to: gentle push-in instead
+        if not alt and odd and not action: z *= 1.18        # nobody to cut to: gentle push-in instead
         if last and g == n - 1 and z < 2:                     # last framing: feet above the subscribe widget
             y = WH - VH / (S0 * z) / 2
         cam_js.append(f'tl.set("#cam",{{{cam(x, y, z)}}},{a:.3f});tl.to("#cam",{{{cam(x, y - 6, z * 1.05)},duration:{max(0.1, b - a - 0.02):.3f},ease:"none"}},{a:.3f});')
@@ -225,6 +273,7 @@ for si, sh in enumerate(SHOTS):
         aud.append(f'<audio id="dr{si}" src="assets/sfx_drum.wav" data-start="{starts[si]:.3f}" data-duration="2.18" data-volume="0.75"></audio>')
     if md == "wonder" and prev != "wonder":
         aud.append(f'<audio id="sh{si}" src="assets/sfx_shimmer.wav" data-start="{starts[si] + 0.05:.3f}" data-duration="1.1" data-volume="0.5"></audio>')
+aud += fx_aud
 aud.append(f'<audio id="sp-q" src="assets/sfx_spark.wav" data-start="{T[LAST]:.3f}" data-duration="0.53" data-volume="0.6"></audio>')
 aud += [f'<audio id="v-{k}" src="assets/{k}.wav" data-start="{T[k]:.3f}" data-duration="{D[k]:.3f}"></audio>' for k in ORDER]
 aud.append(f'<audio id="a-click" src="assets/sfx_click.wav" data-start="{T_FING + 0.35:.3f}" data-duration="0.08"></audio>')
@@ -302,6 +351,7 @@ const tl = gsap.timeline({{paused:true}});
 {''.join(cam_js)}
 {''.join(shot_js)}
 {''.join(moves)}
+{''.join(fx_js)}
 // question over the last scene
 tl.fromTo("#qbox",{{opacity:0,scale:0.3}},{{opacity:1,scale:1,duration:0.5,ease:"back.out(1.8)",immediateRender:false}},{T[LAST]:.3f});
 tl.to("#qbox",{{scale:1.07,duration:0.5,yoyo:true,repeat:{max(1, int((END - T[LAST] - 0.5) / 0.5))},ease:"sine.inOut"}},{T[LAST] + 0.5:.3f});

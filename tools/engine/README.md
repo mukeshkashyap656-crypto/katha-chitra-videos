@@ -43,3 +43,10 @@ Poora udaharan: `episodes/bhag6/episode.json`.
 - `kind`: `m` / `f` (f ke liye `saree`, `blouse`, `border` rang). `name` Hindi mein zaroori.
 - Devta: `"big": true, "glow": "gold"`. Rakshas: `"big": true, "glow": "dark", "rakshas": true`. Insaan: big/glow nahi (sab insaan ek size, sir ke peechhe chamak nahi).
 - Aur cheezein: `crown, jewel, beard, mous, jatabun, tilak, mala, kamandalu, ajina` (mrigchhala rang), `tall, build, belly, age, fw, fh`.
+
+## Action (fx) aur udna (lift) — 20 Nov 2026
+- Shot mein `"fx": [...]`:
+  - `{"type": "astra", "from": "ram", "to": "maricha", "at_word": "चलाकर", "color": "#9fe0ff", "result": "thrown"}` — chamakta baan `from` se `to` tak, takkar par roshni + awaaz. `result`: `thrown` (door udkar gaayab, jaise Maricha samudra mein), `fall` (gir kar dheere gaayab, khoon nahi), `none`.
+  - `{"type": "rain", "color": "#b0101a"}` — barish (laal = rakt varsha).
+- Cast mein `"lift": 0-400` — character aasmaan mein (jaise rakshas upar se aate hain). Camera unhe poora dikhata hai.
+- Astra ya chalne wale shot mein camera wide rehta hai (action ya poora raasta frame se bahar nahi jaata).

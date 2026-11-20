@@ -14,6 +14,8 @@ POSES = {"stand": "khada", "namaste": "haath jode", "talk": "baat karte hue haat
 FACES = ["neutral", "smile", "joy", "sad", "worry", "angry", "firm", "stern", "shock"]
 CAMS = ["auto", "wide", "speaker", "two"]
 MOODS = ["none", "joy", "sorrow", "anger", "fear", "wonder", "night"]
+FX = {"astra": "chamakta baan/astra: from -> to, result: thrown (door ud jaana) | fall (gir jaana) | none",
+      "rain": "barish (color: laal = rakt varsha)"}
 NEWCHAR_META = {"name", "big", "glow", "rakshas"}
 
 # built-in cast: id -> (drawing-kit name, Hindi name, meta)
@@ -155,6 +157,13 @@ def check(epi):
         if len(str(sh.get("chip", ""))) > 22: P.append(f"shot {i}: chip 2-3 shabd ka ho")
         if "at_word" in sh and sh["at_word"] not in lines[ln][0]: P.append(f"shot {i}: at_word '{sh['at_word']}' us line mein nahi hai")
         cast = sh.get("cast", [])
+        whos = {e.get("who") for e in cast}
+        for fx in sh.get("fx", []):
+            if fx.get("type") not in FX: P.append(f"shot {i}: fx type inme se: {list(FX)}"); continue
+            if fx["type"] == "astra":
+                if fx.get("from") not in whos or fx.get("to") not in whos: P.append(f"shot {i}: astra ka from/to us shot ke cast mein ho")
+                if fx.get("result", "none") not in ("thrown", "fall", "none"): P.append(f"shot {i}: astra result: thrown | fall | none")
+            if "at_word" in fx and fx["at_word"] not in lines[ln][0]: P.append(f"shot {i}: fx at_word '{fx['at_word']}' us line mein nahi hai")
         if len(cast) > 4: P.append(f"shot {i}: ek shot mein 4 se zyada log nahi")
         for e in cast:
             w = e.get("who")
@@ -162,6 +171,7 @@ def check(epi):
             if not isinstance(e.get("x"), (int, float)) or not 150 <= e["x"] <= 1210: P.append(f"shot {i}: {w} ka x 150 se 1210 ke beech ho")
             if e.get("pose", "stand") not in POSES: P.append(f"shot {i}: {w} ka pose inme se: {list(POSES)}")
             if e.get("face", "neutral") not in FACES: P.append(f"shot {i}: {w} ka face inme se: {FACES}")
+            if not 0 <= e.get("lift", 0) <= 400: P.append(f"shot {i}: {w} ka lift 0-400 ho (aasmaan mein udna)")
             if e.get("pose") == "walk" and not isinstance(e.get("to_x"), (int, float)): P.append(f"shot {i}: {w} walk kar raha hai to to_x do")
         xs = sorted((e["x"], e["who"]) for e in cast if isinstance(e.get("x"), (int, float)) and e.get("who") in known)
         for (x1, w1), (x2, w2) in zip(xs, xs[1:]):
