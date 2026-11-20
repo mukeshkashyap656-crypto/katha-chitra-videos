@@ -13,8 +13,8 @@ User se Hinglish mein, aam bolchaal ke shabdon mein baat karo. Memory ke saare R
 ## Naya episode kaise
 1. Valmiki se scene tay karo, shot list user ko dikhao (pehle tay, phir banao).
 2. `episodes/bhagN/` banao: episode.json + dono script (template ke udaharan se copy). Scripts `template/lib` se import karti hain (PYTHONPATH apne aap lagta hai).
-3. Branch `auto-video` (ya koi bhi branch) par commit + push. `Make Ramayan video` workflow apne aap chalta hai (~10-20 min).
-4. `gh run watch` / `gh run download <id> -n video` se MP4, cover aur check sheet laao.
+3. Branch `auto-video` (ya koi bhi branch) par commit + push. `Make Ramayan video` workflow apne aap chalta hai (~5 min).
+4. `gh run watch <id>` se intezaar, phir `git fetch --depth 1 origin render-bhagN` + `git archive FETCH_HEAD | tar -x -C <dir>` se MP4, cover aur check sheet laao (Actions artifact ka download sandbox mein block hai). Sirf tools badle hon toh episode.json mein VERSION badha ke push karo, warna run nahi chalega.
 5. Director check (check_sheet + zoom), kami ho toh theek karke dobara push. Phir chat mein MP4 + cover ek saath bhejo.
 
 ## Awaazein laana
