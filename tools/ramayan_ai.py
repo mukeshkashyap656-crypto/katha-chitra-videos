@@ -32,7 +32,7 @@ REPO = os.environ["GITHUB_REPOSITORY"]
 MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite"]
 MAX_FIX_ROUNDS = 3
 STATE = "ai_state.json"
-CONTEXT = ["NIYAM.md", "tools/engine/README.md"]
+CONTEXT = ["NIYAM.md", "VIRAL.md", "SEEKH.md", "tools/engine/README.md"]
 
 
 USED = []    # which AI answered (shown under each comment)
@@ -375,7 +375,7 @@ def render_loop(issue, branch, st):
         run_id, ok = start_render(branch, ep)
         run_url = f"https://github.com/{REPO}/actions/runs/{run_id}"
         if ok:
-            deliver(issue, ep, run_url)
+            finish(issue, branch, st, ep, run_url)
             return
         if rnd == MAX_FIX_ROUNDS:
             break
@@ -396,7 +396,121 @@ def render_loop(issue, branch, st):
                    "Ye issue Claude chat mein bhejiye.")
 
 
-def deliver(issue, ep, run_url):
+
+# ---------------- kadi jaanch + apne aap sudhaar (VIRAL.md section 6) ----------------
+MAX_REVIEW_ROUNDS = 3
+PASS_SCORE = 56
+SCORE_KEYS = ["hook", "structure", "pace", "emotion", "mood", "ending", "camera"]
+
+
+def fetch_sheet(ep):
+    rb = "render-" + os.path.basename(ep)
+    run(["git", "fetch", "--depth", "1", "origin", f"{rb}:refs/remotes/origin/{rb}"])
+    return subprocess.run(["git", "show", f"origin/{rb}:check_sheet.jpg"], capture_output=True).stdout
+
+
+def review(sheet, ep_json):
+    """Kadi PASS/FAIL jaanch. Jawab samajh na aaye ya sheet na mile toh PASS nahi maana jaata (post nahi hota)."""
+    bad = lambda why: {"pass": False, "score": 0, "hard_fails": [why], "fix_text": why, "text": f"❌ {why}", "cannot_check": []}
+    if not sheet:
+        return bad("check sheet nahi mili")
+    try:
+        viral = open("VIRAL.md", encoding="utf-8").read()
+    except OSError:
+        return bad("VIRAL.md nahi mili")
+    prompt = (
+        "You are the STRICT film director and reviewer of the Katha Chitra channel. The image is a contact sheet of the "
+        "finished Ramayan Short (one frame every 0.25 s, left-to-right, top-to-bottom). Judge ONLY what you can really see. "
+        "Use section 6 of VIRAL.md below (the hard FAIL list 1-10 and the 7 scores) and the rules of NIYAM.md. "
+        "Things you cannot judge from pictures (voice loudness, voice-subtitle sync) must NOT be marked as failures; "
+        "put them in cannot_check. Never invent a problem; when unsure, do not list it.\n"
+        "Reply with ONLY valid JSON:\n"
+        '{"hard_fails":[{"rule":<1-10>,"what":"Hinglish: kya dikh raha hai aur kis frame/jagah","fix":"exact change to make in episode.json"}],'
+        '"scores":{"hook":0-10,"structure":0-10,"pace":0-10,"emotion":0-10,"mood":0-10,"ending":0-10,"camera":0-10},'
+        '"weak":[{"what":"...","fix":"..."}],"cannot_check":["..."],"summary":"Hinglish, 2 short lines"}\n\n'
+        "# VIRAL.md\n" + viral + "\n\n# NIYAM.md\n" + open("NIYAM.md", encoding="utf-8").read() + "\n\n# EPISODE\n" + ep_json)
+    d = None
+    for _ in range(3):
+        txt = ask(prompt, image=sheet, want_json=False)
+        mt = re.search(r"\{.*\}", txt, re.DOTALL)
+        try:
+            d = json.loads(mt.group(0) if mt else txt)
+            sc = d.get("scores") or {}
+            if not all(k in sc for k in SCORE_KEYS):
+                raise ValueError("scores adhoore")
+            break
+        except ValueError:
+            d = None
+    if d is None:
+        return bad("jaanch ka jawab samajh nahi aaya, isliye PASS nahi")
+    sc = {k: max(0, min(10, int(d["scores"][k]))) for k in SCORE_KEYS}
+    total = sum(sc.values())
+    hard = d.get("hard_fails") or []
+    ok = (not hard) and total >= PASS_SCORE
+    lines = [f"**Faisla: {'✅ PASS' if ok else '❌ FAIL'}** — number {total}/70 (chahiye {PASS_SCORE}+): " +
+             ", ".join(f"{k} {v}" for k, v in sc.items())]
+    for h in hard:
+        lines.append(f"- ❌ Niyam {h.get('rule')}: {h.get('what')}")
+    for w in d.get("weak") or []:
+        lines.append(f"- ⚠️ {w.get('what')}")
+    if d.get("cannot_check"):
+        lines.append("- ℹ️ Sirf tasveer se nahi dekh paya: " + "; ".join(map(str, d["cannot_check"])))
+    if d.get("summary"):
+        lines.append(str(d["summary"]))
+    fixes = [f"RULE {h.get('rule')}: {h.get('what')} -> {h.get('fix')}" for h in hard] + \
+            [f"WEAK: {w.get('what')} -> {w.get('fix')}" for w in (d.get("weak") or [])]
+    if not hard and total < PASS_SCORE:
+        fixes.append(f"Score {total}/70 is below {PASS_SCORE}; improve the weakest scores: " + str(sc))
+    return {"pass": ok, "score": total, "hard_fails": hard, "fix_text": "\n".join(fixes), "text": "\n".join(lines),
+            "cannot_check": d.get("cannot_check") or []}
+
+
+def autopost_on():
+    return "[AUTOPOST]" in os.environ.get("ISSUE_TITLE", "")
+
+
+def finish(issue, branch, st, ep, run_url):
+    """Video ban gaya: kadi jaanch -> galti ho toh khud theek karke dobara -> PASS par (AUTOPOST ho toh) post."""
+    ep_json = open(f"{ep}/episode.json", encoding="utf-8").read()
+    verdict = None
+    for rv in range(MAX_REVIEW_ROUNDS + 1):
+        verdict = review(fetch_sheet(ep), ep_json)
+        print(f"Jaanch round {rv}: pass={verdict['pass']} score={verdict['score']}")
+        if verdict["pass"] or rv == MAX_REVIEW_ROUNDS:
+            break
+        data = solve(f"The strict director review of the finished video of {ep} found problems. Fix them in {ep}/episode.json "
+                     f"(change as little as needed, bump VERSION, render true). Problems:\n{verdict['fix_text']}")
+        if data["action"] != "change":
+            break
+        write_files(data)
+        st["review_rounds"] = rv + 1
+        save_state(st)
+        commit_push(branch, f"AI Helper: director fix {rv + 1} for {ep}")
+        comment(issue, f"🔧 Jaanch mein galti mili, khud theek karke dobara bana raha hu (koshish {rv + 1}/{MAX_REVIEW_ROUNDS}).\n\n"
+                       f"{verdict['text']}\n\n{data['summary']}")
+        run_id, ok = start_render(branch, ep)
+        run_url = f"https://github.com/{REPO}/actions/runs/{run_id}"
+        if not ok:
+            verdict = {"pass": False, "score": 0, "hard_fails": [], "text": "❌ Sudhaar ke baad video nahi bana.", "fix_text": ""}
+            break
+        ep_json = open(f"{ep}/episode.json", encoding="utf-8").read()
+    deliver(issue, ep, run_url, verdict)
+    if not autopost_on():
+        return
+    if verdict["pass"]:
+        n = re.sub(r"\D", "", os.path.basename(ep))
+        run(["gh", "workflow", "run", "publish.yml", "--repo", REPO, "--ref", "main",
+             "-f", f"episode={ep}", "-f", f"bhag={n}", "-f", f"issue={issue}"])
+        comment(issue, "🚀 Jaanch PASS. Shaam 7 baje YouTube + Instagram par apne aap jaayega.")
+    else:
+        run(["gh", "label", "create", "dekhna-hai", "--repo", REPO, "--color", "d93f0b", "--force",
+             "--description", "Jaanch fail: post nahi hua"], check=False)
+        run(["gh", "issue", "edit", str(issue), "--repo", REPO, "--add-label", "dekhna-hai"], check=False)
+        comment(issue, "⛔ Jaanch 3 baar sudhaar ke baad bhi PASS nahi hui, isliye aaj **post nahi hoga**. "
+                       "Upar ki list dekhiye; theek karwana ho toh yahin `@ai ...` likhiye.")
+
+
+def deliver(issue, ep, run_url, verdict=None):
     rb = "render-" + os.path.basename(ep)
     run(["git", "fetch", "--depth", "1", "origin", f"{rb}:refs/remotes/origin/{rb}"])
     ref = f"origin/{rb}"
@@ -406,7 +520,7 @@ def deliver(issue, ep, run_url):
     sheet = subprocess.run(["git", "show", f"{ref}:check_sheet.jpg"], capture_output=True).stdout
     with open(f"{ep}/episode.json", encoding="utf-8") as f:
         ep_json = f.read()
-    report = director_check(sheet, ep_json) if sheet else "(check sheet nahi mili)"
+    report = verdict["text"] if verdict else (director_check(sheet, ep_json) if sheet else "(check sheet nahi mili)")
     link = lambda n: f"https://github.com/{REPO}/blob/{rb}/{n}"
     eng = subprocess.run(["git", "show", f"{ref}:voice_engine.txt"], capture_output=True, text=True).stdout.strip() or "madhur"
     msg = "✅ **Video ban gaya!** (cover video ke pehle frame par bhi laga hai)\n"
