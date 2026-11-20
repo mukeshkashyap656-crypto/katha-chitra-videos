@@ -1,0 +1,37 @@
+name: publish-day
+# Roz shaam 7 baje IST: aaj ke bhaag YouTube (public Short) aur Instagram Reel par. Dusri ghadi sirf dobara koshish ke liye.
+on:
+  schedule:
+    - cron: '30 13 * * *'
+    - cron: '30 14 * * *'
+  workflow_dispatch:
+    inputs:
+      date:
+        description: "YYYY-MM-DD (khaali = aaj)"
+        required: false
+      dry_run:
+        description: "true = sirf test, post nahi hoga"
+        required: true
+        default: "true"
+permissions:
+  contents: write
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Post
+        env:
+          COMPOSIO_CONSUMER_KEY: ${{ secrets.COMPOSIO_CONSUMER_KEY }}
+          DATE: ${{ inputs.date }}
+          DRY: ${{ inputs.dry_run }}
+        working-directory: scripts
+        run: |
+          pip install -q requests
+          git config user.name katha-chitra-bot
+          git config user.email bot@users.noreply.github.com
+          ARGS=""
+          [ -n "$DATE" ] && ARGS="$ARGS --date $DATE"
+          [ "$DRY" = "true" ] && ARGS="$ARGS --dry-run"
+          python publish_day.py $ARGS
