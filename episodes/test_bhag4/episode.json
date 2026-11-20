@@ -3,8 +3,16 @@
   "COVER_NAME": "Ramayan_Bhag4_Test_Cover",
   "NOTE": "Test of the auto system with the template's Bhag 4 example (Tataka ka van). Voices: Ram = Madhur thodi oonchi, Vishwamitra = Madhur dheemi-gehri.",
   "LINES": {
-    "ram": ["गुरुदेव... ये इतना डरावना जंगल किसका है?", "+2%", "+10Hz"],
-    "vm": ["ये ताड़का का वन है, राम। उसमें हज़ार हाथियों जितनी ताक़त है!", "-12%", "-16Hz"]
-  }
+    "ram": [
+      "गुरुदेव... ये इतना डरावना जंगल किसका है?",
+      "+2%",
+      "+10Hz"
+    ],
+    "vm": [
+      "ये ताड़का का वन है, राम। उसमें हज़ार हाथियों जितनी ताक़त है!",
+      "-12%",
+      "-16Hz"
+    ]
+  },
+  "VERSION": 2
 }
-
