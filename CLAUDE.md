@@ -8,6 +8,7 @@ User se Hinglish mein, aam bolchaal ke shabdon mein baat karo. Memory ke saare R
 - `sfx/openverse/` — Openverse se laayi CC0 asli awaazein (jungle, ullu, dhol...), `credits.json` ke saath.
 - `tools/make_voice.py` — Madhur awaaz + har shabd ka time. GitHub ka computer seedha Microsoft ki awaaz tak pahunch jaata hai, Composio/Drive ki zaroorat nahi.
 - `tools/make_episode.sh` — poora episode: awaaz → chitra → HyperFrames render → cover pehle 0.1 sec → `out/<NAME>.mp4`, `out/<COVER>.jpg`, `out/check_sheet.jpg`.
+- `plans/` — user se pakke hue episode plan (shot list + lines). Naya episode banane se pehle yahan dekho.
 - `episodes/<bhagN>/` — har episode ka folder: `episode.json` (NAME, COVER_NAME, LINES) + episode ke apne `draw_assets.py`, `build_episode.py` (template se copy karke badle hue).
 
 ## Naya episode kaise
