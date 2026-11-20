@@ -1,0 +1,28 @@
+name: Fetch free CC0 sounds (Openverse)
+on:
+  workflow_dispatch:
+    inputs:
+      queries:
+        description: 'Sounds to look for, e.g. "jungle night" owl dhol wind'
+        required: true
+        default: '"jungle night" owl dhol "strong wind" "temple bell" "fire crackling"'
+      n:
+        description: "How many of each"
+        default: "3"
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: python3 tools/openverse_fetch.py --from-env --n "$N"
+        env:
+          QUERIES: ${{ github.event.inputs.queries }}
+          N: ${{ github.event.inputs.n }}
+      - name: Save into the repo
+        run: |
+          git config user.name "katha-chitra-bot"; git config user.email "bot@users.noreply.github.com"
+          git add sfx/openverse && git commit -m "Add CC0 sounds from Openverse" && git push || echo "nothing new"

@@ -1,0 +1,44 @@
+name: Make Ramayan video
+# Runs on GitHub's free computer: voice (Madhur) -> drawings -> HyperFrames render -> MP4 + cover.
+# Starts by itself when an episode folder under episodes/ changes, or by hand from the Actions tab.
+on:
+  push:
+    paths: ["episodes/**"]
+  workflow_dispatch:
+    inputs:
+      episode:
+        description: "Episode folder, e.g. episodes/bhag5"
+        required: true
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 2 }
+      - uses: actions/setup-node@v4
+        with: { node-version: 22 }
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Tools
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq ffmpeg libcairo2-dev pkg-config fonts-noto-core >/dev/null
+          pip install -q pycairo numpy pillow edge-tts
+      - name: Which episode
+        id: ep
+        run: |
+          if [ -n "${{ github.event.inputs.episode }}" ]; then E="${{ github.event.inputs.episode }}"
+          else E=$(git diff --name-only HEAD~1 HEAD -- episodes | cut -d/ -f1-2 | sort -u | head -1); fi
+          echo "episode=$E" >> $GITHUB_OUTPUT; echo "Episode: $E"
+      - name: Make the episode
+        if: steps.ep.outputs.episode != ''
+        run: bash tools/make_episode.sh "${{ steps.ep.outputs.episode }}"
+      - name: Save the video
+        if: always() && steps.ep.outputs.episode != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: video
+          path: out/
+          retention-days: 14
