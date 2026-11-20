@@ -35,6 +35,7 @@ STATE = "ai_state.json"
 CONTEXT = ["NIYAM.md", "tools/engine/README.md"]
 
 
+USED = []    # which AI answered (shown under each comment)
 LEASE = {}   # branch -> remote commit we started from (safe overwrite of the issue branch)
 
 
@@ -51,6 +52,8 @@ def run(args, check=True):
 
 
 def comment(issue, text):
+    if USED:
+        text += f"\n\n<sub>AI: {USED[-1]} · OpenRouter sahara: {'hai' if os.environ.get('OPENROUTER_API_KEY', '').strip() else 'nahi'}</sub>"
     run(["gh", "issue", "comment", str(issue), "--repo", REPO, "--body", text], check=False)
     print(text)
 
@@ -107,7 +110,7 @@ def gemini(contents, want_json):
         try:
             txt = (c.models.generate_content(model=m, contents=contents, config=cfg).text or "").strip()
             if txt:
-                print("Jawab:", m)
+                print("Jawab:", m); USED.append(m)
                 return txt
             raise ValueError("khaali jawab")
         except Exception as e:
@@ -143,7 +146,7 @@ def openrouter(prompt_text, want_json):
                                     **({"response_format": {"type": "json_object"}} if want_json else {})})
             txt = r.json()["choices"][0]["message"]["content"].strip()
             if txt:
-                print("Jawab (OpenRouter):", m)
+                print("Jawab (OpenRouter):", m); USED.append("OpenRouter " + m)
                 return txt
         except Exception as e:
             last = e
