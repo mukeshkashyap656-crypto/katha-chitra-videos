@@ -101,11 +101,11 @@ def context_files():
 
 # ---------------- AI: pehle Gemini, busy ho to OpenRouter ke free model ----------------
 def gemini(contents, want_json):
-    c = genai.Client(api_key=os.environ["GEMINI_API_KEY"].strip(), http_options=types.HttpOptions(timeout=240000))
+    c = genai.Client(api_key=os.environ["GEMINI_API_KEY"].strip(), http_options=types.HttpOptions(timeout=120000))
     cfg = types.GenerateContentConfig(temperature=0.3, max_output_tokens=32768,
                                       response_mime_type="application/json" if want_json else None)
     last = None
-    for attempt in range(9):
+    for attempt in range(6):          # fail fast when busy; the job is queued for the quiet morning
         m = MODELS[attempt % len(MODELS)]
         try:
             txt = (c.models.generate_content(model=m, contents=contents, config=cfg).text or "").strip()
@@ -424,15 +424,48 @@ def deliver(issue, ep, run_url):
     comment(issue, msg)
 
 
+QUEUE = "baad-mein"   # issues waiting for a quiet time (free AI busy); done by the morning schedule
+
+
+def queue_issue(issue, why):
+    run(["gh", "label", "create", QUEUE, "--repo", REPO, "--color", "f2c230", "--force",
+         "--description", "Free AI busy tha; subah apne aap dobara"], check=False)
+    run(["gh", "issue", "edit", str(issue), "--repo", REPO, "--add-label", QUEUE], check=False)
+    comment(issue, "⏳ Free AI abhi busy hai (raat ko Google ke server par bheed hoti hai). Ye kaam **baad-mein** list mein "
+                   "daal diya hai: **subah 5:37 baje** (aur dopahar 3:07 baje) main apne aap dobara karunga. "
+                   "Aapko kuch likhne ki zaroorat nahi.\n\n" f"<sub>{why[:200]}</sub>")
+
+
+def mode_queue():
+    """Morning schedule: redo every queued issue with the owner's last @ai request."""
+    owner = REPO.split("/")[0]
+    base = run(["git", "rev-parse", "HEAD"]).strip()
+    nums = json.loads(run(["gh", "api", f"repos/{REPO}/issues?labels={QUEUE}&state=open", "-q", "[.[].number]"]) or "[]")
+    print("baad-mein list:", nums)
+    for n in nums:
+        iss = json.loads(run(["gh", "api", f"repos/{REPO}/issues/{n}"]))
+        cms = json.loads(run(["gh", "api", f"repos/{REPO}/issues/{n}/comments?per_page=100"]))
+        asks = [c["body"] for c in cms if c["user"]["login"] == owner and "@ai" in c["body"]]
+        os.environ.update(ISSUE_NUMBER=str(n), ISSUE_TITLE=iss["title"], REQUEST=(asks[-1] if asks else iss["body"] or ""))
+        run(["gh", "issue", "edit", str(n), "--repo", REPO, "--remove-label", QUEUE], check=False)
+        run(["git", "checkout", "-q", "-f", base])
+        run(["git", "branch", "-D", f"ai/issue-{n}"], check=False)
+        USED.clear(); LEASE.clear()
+        try:
+            mode_task()
+        except (Busy, ValueError) as e:
+            queue_issue(n, str(e)); return          # still busy: keep the rest for the next slot
+        except Exception as e:
+            comment(n, f"⚠️ Subah wali koshish mein galti hui. Yahin dobara `@ai ...` likhiye.\n\n<sub>{str(e)[:300]}</sub>")
+
+
 if __name__ == "__main__":
     try:
-        {"task": mode_task}[sys.argv[1]]()
-    except Busy as e:
-        comment(os.environ.get("ISSUE_NUMBER", ""),
-                "⏳ Free AI abhi busy hai (Google ka server bheed mein hai / aaj ki free limit khatam). "
-                "Thodi der baad (ya subah) yahin likhiye: `@ai dobara koshish karo`.\n\n"
-                f"<sub>{str(e)[:200]}</sub>")
-        sys.exit(1)
+        {"task": mode_task, "queue": mode_queue}[sys.argv[1]]()
+    except (Busy, ValueError) as e:      # free AI busy or kept sending broken answers: queue for the morning
+        if os.environ.get("ISSUE_NUMBER"):
+            queue_issue(os.environ["ISSUE_NUMBER"], str(e))
+        sys.exit(0)
     except Exception as e:
         comment(os.environ.get("ISSUE_NUMBER", ""),
                 "⚠️ Helper ke saath ek galti hui, kaam poora nahi hua. Yahin dobara `@ai ...` likhiye; "
