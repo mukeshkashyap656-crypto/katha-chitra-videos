@@ -1,0 +1,347 @@
+"""Katha Chitra scene engine, part 2: the HyperFrames video (Bhag 3 look) + cover, from episode.json SHOTS.
+Run (make_episode.sh does it): EP=/tmp/ep EPDIR=episodes/bhagN python3 tools/engine/build.py
+Camera follows the film rules in NIYAM.md: headroom over the crown, eyes near the upper third,
+speaker close-ups keep neighbours fully out of frame, wide shots keep everyone fully in.
+"""
+import json, html, os, re, sys
+HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
+import spec as SP
+
+P = os.environ.get("EP", "/tmp/ep") + "/proj"
+EPI = SP.load(os.path.join(os.environ["EPDIR"], "episode.json"))
+lip = json.load(open(f"{P}/lip.json"))
+FPS = 30
+SHOTS = EPI["SHOTS"]; ORDER = list(EPI["LINES"])
+
+# ---------- words with exact spoken times ----------
+def norm(s): return re.sub(r"[^ऀ-ॣ०-ॿ\w]", "", s)
+def align(k):
+    toks = lip[k]["text"].split(); bw = lip[k]["words"]
+    bstarts, acc = [], 0
+    for w in bw: bstarts.append(acc); acc += max(1, len(norm(w[0])))
+    Lb = acc; dstarts, acc = [], 0
+    for t in toks: dstarts.append(acc); acc += len(norm(t))
+    ratio = Lb / max(1, acc); out = []
+    for t, p in zip(toks, dstarts):
+        q = p * ratio; j = max(i for i, b in enumerate(bstarts) if b <= q + 1e-6)
+        ln = max(1, len(norm(bw[j][0]))); out.append((t, bw[j][1] + min(1, (q - bstarts[j]) / ln) * bw[j][2]))
+    return out
+
+# ---------- timing: lines one after another, a little longer pause when the place changes ----------
+D = {k: lip[k]["dur"] for k in ORDER}
+first_shot = {}
+for i, sh in enumerate(SHOTS): first_shot.setdefault(sh["line"], i)
+T = {}; t = 0.35
+for n, k in enumerate(ORDER):
+    if n:
+        i = first_shot[k]; changed = i > 0 and SHOTS[i]["bg"] != SHOTS[i - 1]["bg"]
+        t = T[ORDER[n - 1]] + D[ORDER[n - 1]] + (0.6 if changed else 0.35)
+    T[k] = t
+E = {k: T[k] + D[k] for k in ORDER}
+WT = {k: [(w, T[k] + o) for w, o in align(k)] for k in ORDER}
+def wt(k, sub):
+    for w, tt in WT[k]:
+        if sub in w or norm(sub) in norm(w): return tt
+    return None
+
+LAST = ORDER[-1]
+T_SUBIN = wt(LAST, "कमेंट") or (T[LAST] + D[LAST] * 0.45)
+T_FING = WT[LAST][-1][1] - 0.15
+T_BELL = T_FING + 0.8
+END = round(max(T_BELL + 0.35 + 1.4 + 0.4, E[LAST] + 0.3), 2)
+
+# shot start times (shots sharing a line without at_word share it equally)
+starts = []
+for i, sh in enumerate(SHOTS):
+    k = sh["line"]; same = [j for j, s in enumerate(SHOTS) if s["line"] == k]
+    if i == 0: st = 0.0
+    elif sh.get("at_word") and wt(k, sh["at_word"]) is not None: st = wt(k, sh["at_word"]) - 0.1
+    elif i == same[0]: st = T[k] - 0.15
+    else:
+        free = [j for j in same if not SHOTS[j].get("at_word")]
+        n = free.index(i) if i in free else 0
+        st = T[k] - 0.15 + (D[k] + 0.15) * n / max(1, len(free))
+    starts.append(max(st, (starts[-1] + 0.6) if starts else 0))
+ends = starts[1:] + [END]
+
+# ---------- characters ----------
+DW, DH, DTOP = 689, 935, 582          # human picture size + top (feet stand on y=1480)
+BW, BH, BTOP = 837, 1107, 409         # big (devta/rakshasa) picture
+U_H, HEAD_H = 128, 904                # human: head unit + head centre (world px)
+U_B, HEAD_B = 160, 760
+def is_big(who): return bool(SP.char_meta(who, EPI).get("big"))
+def blink(t, off): return (t + off) % 3.4 < 0.12
+def mouth(k, t):
+    sh = lip[k]["shapes"]; f = int((t - T[k]) * FPS)
+    return sh[f] if 0 <= f < len(sh) else "X"
+
+sets = []; layers = []; moves = []
+for si, sh in enumerate(SHOTS):
+    t0, t1 = starts[si], ends[si]; k = sh["line"]; sp = SP.speaker(k, EPI)
+    html_c = []
+    for ci, e in enumerate(sh.get("cast", [])):
+        base, p = SP.state_base(e, sh, EPI); keys = list(SP.shot_states(e, sh, EPI))
+        off = (ci * 1.3 + si * 0.7) % 3.4
+        def state(t, e=e, base=base, p=p, keys=keys, off=off):
+            if p["pose"] == "walk": return f"{base}_walk{int((t - t0) / 0.13) % 4}"
+            if sp == e["who"] and T[k] <= t < E[k] and not p["shadow"]:
+                m = mouth(k, t); return base if m == "X" else f"{base}_{m}"
+            return f"{base}_blink" if blink(t, off) and f"{base}_blink" in keys else base
+        cid = f"s{si}c{ci}"; big = is_big(e["who"]); w_, h_, top = (BW, BH, BTOP) if big else (DW, DH, DTOP)
+        first = state(t0)
+        imgs = "".join(f'<img id="{cid}-{kk}" class="ci" src="assets/{kk}.png" style="width:{w_}px;height:{h_}px;opacity:{1 if kk == first else 0}">' for kk in keys)
+        html_c.append(f'<div class="char" id="{cid}" style="left:{e["x"] - w_ / 2:.0f}px;top:{top}px;width:{w_}px;height:{h_}px">{imgs}</div>')
+        prev = first
+        for f in range(int(t0 * FPS) + 1, int(t1 * FPS) + 1):
+            s_ = state(f / FPS)
+            if s_ != prev:
+                sets.append(f'tl.set("#{cid}-{prev}",{{opacity:0}},{f / FPS:.3f});tl.set("#{cid}-{s_}",{{opacity:1}},{f / FPS:.3f});'); prev = s_
+        if p["pose"] == "walk":
+            moves.append(f'tl.fromTo("#{cid}",{{x:0}},{{x:{e["to_x"] - e["x"]},duration:{(t1 - t0) * 0.9:.3f},ease:"none",immediateRender:false}},{t0:.3f});')
+    layers.append(f'<div class="lay shot" id="shot{si}" style="opacity:{1 if si == 0 else 0}"><img class="wfull" src="assets/bg_{sh["bg"]}.png">{"".join(html_c)}</div>')
+
+# ---------- camera: world 1360x1660 seen through a 1008x1228 window ----------
+WW, WH, VW, VH = 1360, 1660, 1008, 1228; S0 = VW / WW
+def cam(px, py, z):
+    s = S0 * z; x = VW / 2 - s * px; y = VH / 2 - s * py
+    x = min(0, max(VW - WW * s, x)); y = min(0, max(VH - WH * s, y))
+    return f"x:{x:.1f},y:{y:.1f},scale:{s:.4f}"
+def half_w(who): return 145 if is_big(who) else 118
+def wide(cast, z_max=1.25):
+    if not cast: return (680, 830, 1.0)
+    lo = min(e["x"] - half_w(e["who"]) for e in cast) - 70; hi = max(e["x"] + half_w(e["who"]) for e in cast) + 70
+    z = max(1.0, min(z_max, WW / max(1, hi - lo)))
+    vh = VH / (S0 * z); top_need = min(BTOP if is_big(e["who"]) else DTOP + 180 for e in cast)   # whole body + crown inside
+    cy = min(1480 + 60 - vh / 2, max(top_need - 40 + vh / 2, 830))
+    return ((lo + hi) / 2, cy, z)
+def closeup(e, cast):
+    big = is_big(e["who"]); u, hy = (U_B, HEAD_B) if big else (U_H, HEAD_H)
+    sx, sb = e["x"], half_w(e["who"])
+    for z in (2.6, 2.8, 3.0, 3.3, 3.6, 3.9):
+        hw = VW / (S0 * z) / 2; vh = VH / (S0 * z)
+        lo, hi = sx + sb - hw, sx - sb + hw          # camera x range keeping the speaker inside
+        for o in cast:
+            if o is e: continue
+            ob = half_w(o["who"])
+            if o["x"] > sx: hi = min(hi, o["x"] - ob - hw)   # neighbour on the right fully out
+            else: lo = max(lo, o["x"] + ob + hw)             # neighbour on the left fully out
+        if lo <= hi:
+            cx = min(max(sx, lo), hi)
+            cy = hy + 0.17 * vh                        # eyes near the upper third
+            cy = max(cy, hy - 1.75 * u + vh / 2)       # headroom: a forehead of space above crown / jata
+            return (cx, cy, z)
+    return None
+def two(e, cast):
+    near = sorted((o for o in cast if o is not e), key=lambda o: abs(o["x"] - e["x"]))[:1]
+    return wide([e] + near, z_max=1.6)
+cam_js = []
+for si, sh in enumerate(SHOTS):
+    cast = sh.get("cast", []); sp = SP.speaker(sh["line"], EPI); mode = sh.get("cam", "auto")
+    spe = next((e for e in cast if e["who"] == sp), None)
+    if mode == "auto":
+        new_place = si == 0 or SHOTS[si - 1]["bg"] != sh["bg"]
+        mode = "speaker" if spe and not new_place and len(cast) > 1 else ("speaker" if spe and len(cast) == 1 else "wide")
+    target = None
+    if mode == "speaker" and spe: target = closeup(spe, cast)
+    if mode == "two" and spe: target = two(spe, cast)
+    if target is None: target = wide(cast)
+    x, y, z = target; t0, t1 = starts[si], ends[si]
+    if si == len(SHOTS) - 1 and z < 2:      # last shot: keep feet above the subscribe widget
+        y = WH - VH / (S0 * z) / 2
+    cam_js.append(f'tl.set("#cam",{{{cam(x, y, z)}}},{t0:.3f});tl.to("#cam",{{{cam(x, y - 6, z * 1.05)},duration:{max(0.1, t1 - t0 - 0.02):.3f},ease:"none"}},{t0:.3f});')
+
+# ---------- shots switch, mood colour, chips, birds ----------
+TINT = {"none": "rgba(0,0,0,0)", "joy": "rgba(255,190,80,.12)", "sorrow": "rgba(60,80,130,.32)", "anger": "rgba(200,25,10,.26)",
+        "fear": "rgba(70,0,0,.42)", "wonder": "rgba(255,210,90,.18)", "night": "rgba(10,20,60,.45)"}
+shot_js = []; chip_html = []
+for si, sh in enumerate(SHOTS):
+    t0, t1 = starts[si], ends[si]
+    if si: shot_js.append(f'tl.set("#shot{si - 1}",{{opacity:0}},{t0:.3f});tl.set("#shot{si}",{{opacity:1}},{t0:.3f});')
+    shot_js.append(f'tl.set("#tint",{{background:"{TINT[sh.get("mood", "none")]}"}},{t0:.3f});')
+    if sh.get("chip"):
+        chip_html.append(f'<div class="chip" id="chip{si}">{html.escape(sh["chip"])}</div>')
+        shot_js.append(f'tl.fromTo("#chip{si}",{{opacity:0,x:-40}},{{opacity:1,x:0,duration:0.25,immediateRender:false}},{t0 + 0.1:.3f});tl.set("#chip{si}",{{opacity:0}},{t1:.3f});')
+    if sh["bg"] in ("morning", "cloudvan", "ashram", "river") and (si == 0 or SHOTS[si - 1]["bg"] != sh["bg"]):
+        shot_js.append(f'tl.fromTo("#birds",{{x:0,y:0,opacity:1}},{{x:1750,y:-120,opacity:1,duration:5,ease:"none",immediateRender:false}},{t0:.3f});')
+
+# ---------- subtitles: speaker name + karaoke words ----------
+NAMES = {k: SP.hindi_name(SP.speaker(k, EPI), EPI) for k in ORDER if SP.speaker(k, EPI)}
+LINEKEYS = {k: set(EPI["KEYWORDS"].get(k, [])) for k in ORDER}
+LINEKEYS[LAST] |= {"जय", "श्री", "राम"}
+def is_key(k, w):
+    n = norm(w); return any(n == norm(x) or n.rstrip("ा") == norm(x) or n.startswith(norm(x)) for x in LINEKEYS[k] if norm(x))
+def chunks(k):
+    out, cur, ln = [], [], 0
+    for i, (w, _) in enumerate(WT[k]):
+        cur.append(i); ln += len(w) + 1
+        if ln > 30 or w.endswith(("।", "!", "?", "...", ",")) and ln > 12:
+            out.append(cur); cur, ln = [], 0
+    if cur:
+        if out and sum(len(WT[k][i][0]) + 1 for i in cur) < 9: out[-1] += cur
+        else: out.append(cur)
+    return out
+LINE_OFF = {k: (min(E[k] + 0.25, T[ORDER[i + 1]] - 0.36) if i + 1 < len(ORDER) else E[k] + 0.25) for i, k in enumerate(ORDER)}
+sub_html = []; sub_js = []
+for k in ORDER:
+    cs = chunks(k); body = []
+    for ci, idx in enumerate(cs):
+        spans = "".join(f'<span id="w{k}{i}" class="w{" key" if is_key(k, WT[k][i][0]) else ""}">{html.escape(WT[k][i][0])}</span> ' for i in idx)
+        body.append(f'<div class="chunk" id="c{k}{ci}">{spans}</div>')
+        t_on = T[k] - 0.18 if ci == 0 else WT[k][idx[0]][1] - 0.08
+        t_off = (WT[k][cs[ci + 1][0]][1] - 0.16) if ci + 1 < len(cs) else LINE_OFF[k]
+        sub_js.append(f'tl.to("#c{k}{ci}",{{opacity:1,duration:0.08}},{t_on:.3f});tl.to("#c{k}{ci}",{{opacity:0,duration:0.07}},{t_off:.3f});')
+    nm = f'<div class="name">{html.escape(NAMES[k])}</div>' if k in NAMES else ""
+    sub_html.append(f'<div class="sline" id="L{k}">{nm}{"".join(body)}</div>')
+    sub_js.append(f'tl.set("#L{k}",{{opacity:1}},{T[k] - 0.2:.3f});tl.set("#L{k}",{{opacity:0}},{LINE_OFF[k] + 0.08:.3f});')
+    for i, (w, tt) in enumerate(WT[k]): sub_js.append(f'tl.to("#w{k}{i}",{{opacity:1,duration:0.08}},{tt:.3f});')
+
+# ---------- sounds ----------
+AMB = {"morning": ("sfx_morning", 0.6), "cloudvan": ("sfx_morning", 0.6), "ashram": ("sfx_morning", 0.55), "river": ("sfx_morning", 0.55),
+       "ghorvan": ("sfx_dark", 0.75), "divine": ("sfx_pad", 0.6), "palace": ("sfx_pad", 0.4)}
+aud = []; seg0 = 0
+for si in range(1, len(SHOTS) + 1):
+    if si == len(SHOTS) or SHOTS[si]["bg"] != SHOTS[seg0]["bg"]:
+        f, v = AMB[SHOTS[seg0]["bg"]]; a, b = starts[seg0], (starts[si] if si < len(SHOTS) else END)
+        aud.append(f'<audio id="amb{seg0}" src="assets/{f}.wav" data-start="{a:.3f}" data-duration="{b - a:.3f}" data-volume="{v}" data-fade-out="0.4"></audio>')
+        if si < len(SHOTS): aud.append(f'<audio id="wh{si}" src="assets/sfx_whoosh_soft.wav" data-start="{max(0, starts[si] - 0.45):.3f}" data-duration="1.05" data-volume="0.5"></audio>')
+        seg0 = si
+for si, sh in enumerate(SHOTS):
+    md = sh.get("mood", "none"); prev = SHOTS[si - 1].get("mood", "none") if si else "none"
+    if md in ("anger", "fear") and prev not in ("anger", "fear"):
+        aud.append(f'<audio id="dr{si}" src="assets/sfx_drum.wav" data-start="{starts[si]:.3f}" data-duration="2.18" data-volume="0.75"></audio>')
+    if md == "wonder" and prev != "wonder":
+        aud.append(f'<audio id="sh{si}" src="assets/sfx_shimmer.wav" data-start="{starts[si] + 0.05:.3f}" data-duration="1.1" data-volume="0.5"></audio>')
+aud.append(f'<audio id="sp-q" src="assets/sfx_spark.wav" data-start="{T[LAST]:.3f}" data-duration="0.53" data-volume="0.6"></audio>')
+aud += [f'<audio id="v-{k}" src="assets/{k}.wav" data-start="{T[k]:.3f}" data-duration="{D[k]:.3f}"></audio>' for k in ORDER]
+aud.append(f'<audio id="a-click" src="assets/sfx_click.wav" data-start="{T_FING + 0.35:.3f}" data-duration="0.08"></audio>')
+aud.append(f'<audio id="a-ting" src="assets/sfx_ting.wav" data-start="{T_BELL + 0.35:.3f}" data-duration="1.4"></audio>')
+
+# ---------- page ----------
+Q = EPI["QUESTION"].rstrip("?？ ")
+QFS = min(62, int(960 / (0.56 * max(1, len(Q) + 1))))
+nm = "node_modules"
+CSS = """
+@font-face{font-family:Mukta;font-weight:800;src:url(%(nm)s/@fontsource/mukta/files/mukta-devanagari-800-normal.woff2)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:#000}
+#root{position:relative;width:1080px;height:1920px;overflow:hidden;font-family:Mukta,sans-serif}
+#win{position:absolute;left:36px;top:226px;width:1008px;height:1228px;overflow:hidden;background:#2a1a10}
+#cam{position:absolute;left:0;top:0;width:1360px;height:1660px;transform-origin:0 0}
+.wfull{position:absolute;left:0;top:0;width:1360px;height:1660px}
+.lay{position:absolute;left:0;top:0;width:1360px;height:1660px}
+.char{position:absolute}
+.char .ci{position:absolute;left:0;top:0}
+#frame{position:absolute;left:0;top:0;width:1080px;height:1920px}
+#t1{position:absolute;top:58px;left:0;right:0;text-align:center;color:#ffd65a;font-size:40px;font-weight:800;line-height:1}
+#t2{position:absolute;top:110px;left:0;right:0;text-align:center;color:#fff;font-size:%(qfs)spx;font-weight:800;line-height:1;white-space:nowrap}
+#t2 b{display:inline-block;color:#ffcf3a;text-shadow:0 0 24px #ff9a00,0 0 50px #ff6a00}
+#logo{position:absolute;right:56px;top:246px;width:104px;height:104px;border-radius:50%%}
+"""
+doc = f"""<!DOCTYPE html>
+<html><head><meta charset="utf-8">
+<style>{CSS % {"nm": nm, "qfs": QFS}}
+#birds{{position:absolute;left:-320px;top:250px;width:300px;height:120px;opacity:0}}
+#tint{{position:absolute;left:0;top:0;width:1008px;height:1228px;pointer-events:none}}
+.chip{{position:absolute;left:70px;top:262px;background:#1a0a06;border:5px solid #ffcf3a;border-radius:30px;color:#fff;font-size:46px;font-weight:800;padding:4px 30px;box-shadow:0 0 30px #ff7a00;opacity:0}}
+#qbox{{position:absolute;left:{680 - 200}px;top:{555 - 240}px;width:400px;height:480px;opacity:0}}
+#qbox img{{position:absolute;left:0;top:0;width:400px;height:480px}}
+#qbox div{{position:absolute;left:0;right:0;top:40px;text-align:center;color:#ffcf3a;font-size:350px;font-weight:800;line-height:1;text-shadow:0 0 40px #ff9a00,0 0 90px #ff5a00,0 6px 0 #6a2a00}}
+.sline{{position:absolute;left:0;top:0;width:1080px;height:1920px;opacity:0}}
+.name{{position:absolute;top:1500px;left:0;right:0;text-align:center;color:#f0be3c;font-size:44px;font-weight:800;line-height:1}}
+.chunk{{position:absolute;left:70px;right:70px;top:1566px;text-align:center;color:#fff;font-size:64px;font-weight:800;line-height:1.28;opacity:0}}
+.w{{display:inline-block;opacity:.32}}
+.w.key{{color:#ffd23a;text-shadow:0 0 14px #ff9a00}}
+#sub{{position:absolute;left:150px;top:1462px;width:780px;height:100px;background:rgba(18,18,22,.93);border:2px solid rgba(255,255,255,.2);border-radius:52px;box-shadow:0 8px 24px rgba(0,0,0,.6);opacity:0}}
+#sub img.l{{position:absolute;left:12px;top:12px;width:76px;height:76px;border-radius:50%}}
+#sub .ch{{position:absolute;left:102px;top:16px;color:#fff;font-size:34px;font-weight:800;line-height:1}}
+#sub .hd{{position:absolute;left:102px;top:58px;color:#aaa;font-size:24px;font-weight:800;line-height:1}}
+#btn,#btn2{{position:absolute;left:432px;top:18px;width:236px;height:64px;border-radius:34px;font-weight:800;line-height:64px;text-align:center}}
+#btn{{background:#e62117;color:#fff;font-size:30px}}
+#btn2{{background:#3a3a40;color:#ddd;font-size:26px;opacity:0}}
+#bell{{position:absolute;left:684px;top:18px;width:64px;height:64px;border-radius:50%;background:#3a3a40}}
+#bell svg{{position:absolute;left:13px;top:12px;width:38px;height:40px}}
+#finger{{position:absolute;left:669px;top:1511px;width:70px;height:100px;opacity:0}}
+</style></head>
+<body>
+<div id="root" data-composition-id="root" data-width="1080" data-height="1920" data-start="0" data-duration="{END}">
+ <div id="win"><div id="cam">
+  {''.join(layers)}
+  <img id="birds" src="assets/birds.png">
+  <div class="lay" id="qbox"><img src="assets/q_glow.png"><div>?</div></div>
+ </div><div id="tint"></div></div>
+ <img id="frame" src="assets/frame_b3.png">
+ <div id="t1">रामायण · भाग {EPI["BHAG"]}</div>
+ <div id="t2">{html.escape(Q)}<b>?</b></div>
+ <img id="logo" src="assets/katha_chitra_logo.png">
+ {''.join(chip_html)}
+ {''.join(sub_html)}
+ <div id="sub"><img class="l" src="assets/katha_chitra_logo.png"><div class="ch">Katha Chitra</div><div class="hd">@kathachitra_123</div>
+  <div id="btn">SUBSCRIBE</div><div id="btn2">✓ SUBSCRIBED</div>
+  <div id="bell"><svg viewBox="0 0 24 24"><path id="bellp" fill="#fff" d="M12 22a2.5 2.5 0 0 0 2.4-2h-4.8A2.5 2.5 0 0 0 12 22zm7-6V11a7 7 0 0 0-5.5-6.8V3.5a1.5 1.5 0 0 0-3 0v.7A7 7 0 0 0 5 11v5l-2 2v1h18v-1z"/></svg></div>
+ </div>
+ <img id="finger" src="assets/finger.png">
+ {''.join(aud)}
+</div>
+<script src="{nm}/gsap/dist/gsap.min.js"></script>
+<script>
+const tl = gsap.timeline({{paused:true}});
+{''.join(cam_js)}
+{''.join(shot_js)}
+{''.join(moves)}
+// question over the last scene
+tl.fromTo("#qbox",{{opacity:0,scale:0.3}},{{opacity:1,scale:1,duration:0.5,ease:"back.out(1.8)",immediateRender:false}},{T[LAST]:.3f});
+tl.to("#qbox",{{scale:1.07,duration:0.5,yoyo:true,repeat:{max(1, int((END - T[LAST] - 0.5) / 0.5))},ease:"sine.inOut"}},{T[LAST] + 0.5:.3f});
+tl.fromTo("#t2 b",{{scale:1}},{{scale:1.15,duration:0.5,yoyo:true,repeat:{int(END / 0.5) - 1},ease:"sine.inOut"}},0);
+{''.join(sub_js)}
+// subscribe widget slides in during the last line
+tl.fromTo("#sub",{{opacity:0,y:50}},{{opacity:1,y:0,duration:0.4,ease:"power2.out",immediateRender:false}},{T_SUBIN:.3f});
+tl.fromTo("#finger",{{opacity:0,x:120,y:70}},{{opacity:1,x:0,y:0,duration:0.35,ease:"power2.out",immediateRender:false}},{T_FING:.3f});
+tl.to("#finger",{{scale:0.88,duration:0.08,yoyo:true,repeat:1}},{T_FING + 0.35:.3f});
+tl.to("#btn",{{scale:0.92,duration:0.08,yoyo:true,repeat:1}},{T_FING + 0.35:.3f});
+tl.to("#btn2",{{opacity:1,duration:0.12}},{T_FING + 0.45:.3f});
+tl.to("#finger",{{x:166,duration:0.35,ease:"power2.inOut"}},{T_BELL:.3f});
+tl.to("#finger",{{scale:0.88,duration:0.08,yoyo:true,repeat:1}},{T_BELL + 0.35:.3f});
+tl.to("#bellp",{{fill:"#ffd23a",duration:0.1}},{T_BELL + 0.4:.3f});
+tl.to("#bell",{{boxShadow:"0 0 30px #ffb000",duration:0.15}},{T_BELL + 0.4:.3f});
+tl.fromTo("#bell",{{rotation:0}},{{rotation:16,duration:0.08,yoyo:true,repeat:9,ease:"sine.inOut",immediateRender:false}},{T_BELL + 0.4:.3f});
+tl.to("#finger",{{opacity:0,y:-60,duration:0.3}},{T_BELL + 0.9:.3f});
+{''.join(sets)}
+tl.set({{}},{{}},{END});
+window.__timelines = window.__timelines || {{}};
+window.__timelines["root"] = tl;
+</script>
+</body></html>"""
+open(f"{P}/index.html", "w").write(doc)
+
+# ---------- cover (own small composition) ----------
+cv = EPI["COVER"]; cimgs = []
+ccast = cv["cast"][:2]
+for i, e in enumerate(ccast):
+    base, _ = SP.state_base(e, {"line": "_cover", "cast": ccast}, EPI)
+    left = [-170, 420][i] if len(ccast) == 2 else 124
+    cimgs.append(f'<img src="assets/{base}.png" style="position:absolute;left:{left}px;top:330px;width:760px;height:1031px">')
+cov = f"""<!DOCTYPE html>
+<html><head><meta charset="utf-8"><style>{CSS % {"nm": "fonts", "qfs": QFS}}
+#q{{position:absolute;left:0;right:0;top:300px;margin:auto;width:max-content;color:#fff8e0;font-size:360px;font-weight:800;line-height:1;-webkit-text-stroke:12px #4a1200;paint-order:stroke fill;text-shadow:0 0 40px #ff9a00,0 0 90px #ff5a00,0 10px 0 #3a0e00}}
+#tag{{position:absolute;top:1490px;left:0;right:0;text-align:center;color:#ffd23a;font-size:84px;font-weight:800;line-height:1.1;text-shadow:0 4px 0 #4a1a00}}
+#tag2{{position:absolute;top:1610px;left:0;right:0;text-align:center;color:#fff;font-size:52px;font-weight:800}}
+</style></head><body>
+<div id="root" data-composition-id="cover" data-width="1080" data-height="1920" data-start="0" data-duration="1">
+ <div id="win">
+  <img src="assets/bg_{cv["bg"]}.png" style="position:absolute;left:-200px;top:-200px;width:1360px;height:1660px">
+  {''.join(cimgs)}
+ </div>
+ <img id="frame" src="assets/frame_b3.png">
+ <div id="t1">रामायण · भाग {EPI["BHAG"]}</div>
+ <div id="t2">{html.escape(Q)}<b>?</b></div>
+ <div id="q">?</div>
+ <img id="logo" src="assets/katha_chitra_logo.png">
+ <div id="tag">{html.escape(cv.get("tag", ""))}</div>
+ <div id="tag2">वाल्मीकि रामायण</div>
+</div>
+<script src="fonts/gsap/dist/gsap.min.js"></script>
+<script>const tl=gsap.timeline({{paused:true}});tl.set({{}},{{}},1);window.__timelines={{cover:tl}};</script>
+</body></html>"""
+os.makedirs(f"{P}/cover", exist_ok=True)
+open(f"{P}/cover/index.html", "w").write(cov)
+print("END", END, "shots", [round(s, 2) for s in starts])

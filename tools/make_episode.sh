@@ -10,8 +10,15 @@ COVER=$(python3 -c "import json;print(json.load(open('$E/episode.json')).get('CO
 mkdir -p "$OUT"
 bash "$R/template/setup.sh" "$EP"
 python3 "$R/tools/make_voice.py" "$E/episode.json" "$EP/voice.zip"
-DRAW=$E/draw_assets.py; [ -f "$DRAW" ] || DRAW=$R/template/draw_assets.py
-BUILD=$E/build_episode.py; [ -f "$BUILD" ] || BUILD=$R/template/build_episode.py
+DRAW=$E/draw_assets.py; BUILD=$E/build_episode.py
+if [ ! -f "$DRAW" ] && grep -q '"SHOTS"' "$E/episode.json"; then
+  # data-only episode (scene list): the scene engine draws and builds it, no episode code needed
+  python3 "$R/tools/engine/spec.py" "$E/episode.json"
+  DRAW=$R/tools/engine/draw.py; BUILD=$R/tools/engine/build.py
+fi
+[ -f "$DRAW" ] || DRAW=$R/template/draw_assets.py
+[ -f "$BUILD" ] || BUILD=$R/template/build_episode.py
+export EPDIR=$E
 # episode scripts import from template/lib
 export PYTHONPATH=$R/template/lib:$PYTHONPATH
 EP=$EP VOICE_ZIP=$EP/voice.zip python3 "$DRAW"

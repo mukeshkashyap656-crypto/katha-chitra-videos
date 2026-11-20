@@ -1,37 +1,42 @@
 """
-Katha Chitra AI Helper - free (Gemini key se). Sirf Katha Chitra (Ramayan) ke liye.
+Katha Chitra AI Helper - free (Gemini key se; Gemini busy ho to OpenRouter ke free AI se). Sirf Katha Chitra (Ramayan).
 
 Issue ya comment mein "@ai <kaam>" likho, jaise:
-  "@ai Bhag 7 ka plan banao"            -> plans/ mein shot list + lines (pehle tay, phir banao)
-  "@ai plans/bhag6 wala episode banao"   -> episodes/bhag6 banta hai, GitHub video render karta hai
-  "@ai Ram ka chehra chhota hai, theek karo" -> usi issue ki branch par sudhaar + naya render
+  "@ai Bhag 7 ka plan banao"                 -> plans/ mein shot list + lines (pehle tay, phir banao)
+  "@ai plan theek hai, Bhag 7 banao"         -> episodes/bhag7/episode.json (sirf scene ki list), phir video
+  "@ai Ram ka chehra chhota hai, theek karo" -> usi issue ki branch par sudhaar + naya video
+  "@ai dobara koshish karo"                  -> bina badlaav ke video dobara
 
-Har issue ki apni branch hoti hai: ai/issue-<number>. Video ban jaane par helper
-check sheet dekh ke director check karta hai aur issue mein video ka link deta hai.
-Render fail ho to khud 3 baar tak theek karke dobara chalata hai.
+AI sirf ek chhoti list (episode.json) likhta hai; video tools/engine/ ka pakka sancha banata hai.
+Har issue ki apni branch: ai/issue-<number>. Video ban jaane par link + AI director check issue mein.
 """
 import json
 import os
-import py_compile
 import re
 import subprocess
 import sys
 import tempfile
 import time
 
+import requests
 from google import genai
 from google.genai import types
+
+sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "engine"))
+import spec as SP  # noqa: E402
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(line_buffering=True)
 
 REPO = os.environ["GITHUB_REPOSITORY"]
-BASE = "auto-video"
-MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-2.5-flash"]
-TEXT_EXT = (".py", ".json", ".md", ".sh", ".txt")
-MAX_FILE_CHARS = 80000
+MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite"]
 MAX_FIX_ROUNDS = 3
 STATE = "ai_state.json"
+CONTEXT = ["NIYAM.md", "tools/engine/README.md"]
+
+
+class Busy(Exception):
+    """Saare free AI abhi busy / limit khatam."""
 
 
 # ---------------- chhote kaam ----------------
@@ -45,10 +50,6 @@ def run(args, check=True):
 def comment(issue, text):
     run(["gh", "issue", "comment", str(issue), "--repo", REPO, "--body", text], check=False)
     print(text)
-
-
-def branch_for(issue):
-    return f"ai/issue-{issue}"
 
 
 def checkout_branch(branch):
@@ -75,136 +76,163 @@ def save_state(st):
         json.dump(st, f, ensure_ascii=False, indent=1)
 
 
-def repo_files():
+def context_files():
+    """Sirf niyam, sanche ka guide, plans aur episodes ki list (code nahi) -> chhota, tez prompt."""
     files = {}
-    for path in run(["git", "ls-files"]).splitlines():
-        if not path.endswith(TEXT_EXT) or path.startswith("sfx/openverse/") or path == STATE:
-            continue
-        try:
-            with open(path, encoding="utf-8") as f:
-                c = f.read()
-        except (UnicodeDecodeError, OSError):
-            continue
-        if len(c) <= MAX_FILE_CHARS:
-            files[path] = c
+    paths = CONTEXT + sorted(p for p in run(["git", "ls-files", "plans", "episodes"]).splitlines()
+                             if p.endswith((".json", ".md")))
+    for p in paths:
+        if os.path.exists(p):
+            with open(p, encoding="utf-8") as f:
+                files[p] = f.read()
     return files
 
 
-# ---------------- Gemini ----------------
-def client():
-    return genai.Client(api_key=os.environ["GEMINI_API_KEY"].strip(),
-                        http_options=types.HttpOptions(timeout=300000))
-
-
-def ask(contents, want_json=True):
-    c = client()
+# ---------------- AI: pehle Gemini, busy ho to OpenRouter ke free model ----------------
+def gemini(contents, want_json):
+    c = genai.Client(api_key=os.environ["GEMINI_API_KEY"].strip(), http_options=types.HttpOptions(timeout=240000))
+    cfg = types.GenerateContentConfig(temperature=0.3, max_output_tokens=32768,
+                                      response_mime_type="application/json" if want_json else None)
     last = None
-    for attempt in range(8):
+    for attempt in range(9):
         m = MODELS[attempt % len(MODELS)]
         try:
-            cfg = types.GenerateContentConfig(temperature=0.3, max_output_tokens=65536,
-                                              response_mime_type="application/json" if want_json else None)
-            res = c.models.generate_content(model=m, contents=contents, config=cfg)
-            txt = (res.text or "").strip()
-            if not want_json:
-                if txt:
-                    return txt
-                raise ValueError("khaali jawab")
-            mt = re.search(r"\{.*\}", txt, re.DOTALL)
-            data = json.loads(mt.group(0) if mt else txt)
-            if data.get("action") in ("change", "none"):
-                data.setdefault("files", [])
-                data.setdefault("summary", "")
+            txt = (c.models.generate_content(model=m, contents=contents, config=cfg).text or "").strip()
+            if txt:
                 print("Jawab:", m)
-                return data
-            raise ValueError("action galat")
+                return txt
+            raise ValueError("khaali jawab")
         except Exception as e:
             last = e
-            w = min(60, 10 * (attempt + 1))
-            print(f"Koshish {attempt + 1} ({m}) nahi chali: {e}. {w}s baad phir...")
+            busy = any(x in str(e) for x in ("503", "UNAVAILABLE", "429", "RESOURCE_EXHAUSTED", "overloaded"))
+            w = min(90, (20 if busy else 8) * (attempt + 1))
+            print(f"Gemini koshish {attempt + 1} ({m}) nahi chali: {str(e)[:160]}. {w}s baad phir...")
             time.sleep(w)
-    raise last or RuntimeError("Gemini se jawab nahi mila")
+    raise Busy(f"Gemini: {str(last)[:200]}")
 
 
-RULES = """You are the film director + Python engineer of the "Katha Chitra" YouTube channel
-(Valmiki Ramayan Shorts in Hindi, 2D Indian folk-art storybook style). The repo renders each
-episode on GitHub: episodes/<name>/episode.json (+ that episode's draw_assets.py and build_episode.py,
-which import from template/lib) -> tools/make_episode.sh -> MP4. NIYAM.md holds every rule of the
-owner: follow ALL of them strictly. Valmiki Ramayan only, nothing added or changed in the story.
+def openrouter_models():
+    try:
+        data = requests.get("https://openrouter.ai/api/v1/models", timeout=30).json()["data"]
+    except Exception:
+        return []
+    free = [m for m in data if m["id"].endswith(":free") and (m.get("context_length") or 0) >= 60000]
+    pref = ("deepseek", "qwen", "gemini", "llama", "mistral")
+    free.sort(key=lambda m: next((i for i, p in enumerate(pref) if p in m["id"]), 9))
+    return [m["id"] for m in free[:5]]
+
+
+def openrouter(prompt_text, want_json):
+    key = os.environ.get("OPENROUTER_API_KEY", "").strip()
+    if not key:
+        raise Busy("Gemini busy hai aur OpenRouter key nahi hai")
+    last = None
+    for m in openrouter_models():
+        try:
+            r = requests.post("https://openrouter.ai/api/v1/chat/completions", timeout=300,
+                              headers={"Authorization": f"Bearer {key}"},
+                              json={"model": m, "temperature": 0.3, "messages": [{"role": "user", "content": prompt_text}],
+                                    **({"response_format": {"type": "json_object"}} if want_json else {})})
+            txt = r.json()["choices"][0]["message"]["content"].strip()
+            if txt:
+                print("Jawab (OpenRouter):", m)
+                return txt
+        except Exception as e:
+            last = e
+            print(f"OpenRouter {m} nahi chala: {str(e)[:160]}")
+    raise Busy(f"OpenRouter: {str(last)[:200]}")
+
+
+def ask(prompt_text, image=None, want_json=True):
+    contents = [types.Part.from_bytes(data=image, mime_type="image/jpeg"), prompt_text] if image else prompt_text
+    try:
+        txt = gemini(contents, want_json)
+    except Busy:
+        if image:   # tasveer dekhna sirf Gemini se
+            raise
+        txt = openrouter(prompt_text, want_json)
+    if not want_json:
+        return txt
+    mt = re.search(r"\{.*\}", txt, re.DOTALL)
+    data = json.loads(mt.group(0) if mt else txt)
+    if data.get("action") not in ("change", "none"):
+        raise ValueError("action galat")
+    data.setdefault("files", []); data.setdefault("summary", ""); data.setdefault("render", False)
+    return data
+
+
+RULES = """You are the film director of the "Katha Chitra" YouTube channel (Valmiki Ramayan Shorts in Hindi,
+2D Indian folk-art storybook style). NIYAM.md holds EVERY rule of the owner: follow all of them strictly.
+Valmiki Ramayan only; nothing added, nothing changed in the story. Hindi lines in today's simple spoken Hindi.
+
+An episode is ONLY data: episodes/<bhagN>/episode.json in the scene-list format of tools/engine/README.md
+(example: episodes/bhag6/episode.json). A fixed engine turns it into the video. You never write code.
 
 Reply with ONLY valid JSON:
 {"action": "change" | "none",
+ "render": true | false,
  "summary": "Hinglish, simple everyday words, short: kya kiya / kya jawab hai / owner ko kya karna hai",
  "files": [{"path": "...", "content": "THE COMPLETE FILE CONTENT"}]}
 
 How to work:
-- A NEW episode is planned first: write plans/<bhagN>_PLAN.md (shot list, every shot 2-3 s, who stands
-  where, new character looks from Valmiki) and plans/<bhagN>_episode.json. Do NOT build the episode until
-  the owner says the plan is OK / asks to build it ("pehle tay, phir banao").
-- To BUILD an episode: create episodes/<bhagN>/episode.json (same keys as episodes/bhag5/episode.json:
-  NAME, COVER_NAME, QUESTION, LINES id -> [hindi text, rate, pitch], VERSION) and that episode's
-  draw_assets.py + build_episode.py, by copying the newest finished episode's scripts and changing them
-  for the new shots, characters and background. Reuse template/lib functions that really exist; never
-  call a function or file that does not exist in the repo.
-- To FIX a render error or a look problem: change as little as possible, and bump VERSION in that
-  episode.json by 1.
-- Only these paths may be written: plans/... and episodes/... . Never anything else.
-- Always return the FULL file, never a part, never "..." placeholders.
+- NEW episode: first a plan only: plans/<bhagN>_PLAN.md (shot list in Hinglish, every shot 2-3 s, who stands where,
+  new character looks from Valmiki) + plans/<bhagN>_episode.json (the scene list). Show it in summary and ask
+  for OK. Do NOT create episodes/ until the owner says the plan is OK / asks to build ("pehle tay, phir banao").
+- BUILD: write episodes/<bhagN>/episode.json (copy the plan's scene list). "render": true.
+- FIX a look/render problem: change as little as possible in that episode.json, bump VERSION, "render": true.
+- Owner only wants the video made again without changes: "action": "none", "render": true.
+- Question only: "action": "none", "render": false, answer in summary.
+- Only plans/... and episodes/<name>/episode.json may be written. Always the FULL file.
+- Use only backgrounds, poses, faces, moods and characters listed in tools/engine/README.md; a new character goes in
+  NEW_CHARS with its look decided from Valmiki. Keep people at least 260 apart (330 with a big devta/rakshas).
 """
 
 
-def check_changes(changes, old):
+def check_changes(changes):
     problems = []
     for it in changes:
         p, c = it.get("path", ""), it.get("content", "")
-        if not p.startswith(("plans/", "episodes/")) or ".." in p:
-            problems.append(f"{p}: sirf plans/ aur episodes/ mein likhne ki ijazat hai")
+        ok_path = p.startswith("plans/") or re.match(r"^episodes/[a-z0-9_]+/episode\.json$", p)
+        if not ok_path or ".." in p:
+            problems.append(f"{p}: sirf plans/ aur episodes/<naam>/episode.json likhne ki ijazat hai (code nahi)")
             continue
-        o = old.get(p)
-        if o is not None and len(c) < 0.6 * len(o):
-            problems.append(f"{p}: nayi file purani se bahut chhoti hai (kati hui lagti hai) - poori file do")
-        if p.endswith(".py"):
-            with tempfile.NamedTemporaryFile("w", suffix=".py", delete=False) as t:
-                t.write(c)
-            try:
-                py_compile.compile(t.name, doraise=True)
-            except py_compile.PyCompileError as e:
-                problems.append(f"{p}: Python syntax galti: {str(e)[-300:]}")
-            finally:
-                os.unlink(t.name)
         if p.endswith(".json"):
             try:
                 j = json.loads(c)
-                if p.endswith("episode.json"):
-                    if not j.get("NAME") or not isinstance(j.get("LINES"), dict) or not j["LINES"]:
-                        problems.append(f"{p}: NAME aur LINES zaroori hain")
-                    for k, v in (j.get("LINES") or {}).items():
-                        if not (isinstance(v, list) and len(v) == 3):
-                            problems.append(f"{p}: LINES[{k}] = [text, rate, pitch] hona chahiye")
             except ValueError as e:
-                problems.append(f"{p}: JSON galat hai: {e}")
+                problems.append(f"{p}: JSON galat hai: {e}"); continue
+            if p.endswith("episode.json") and (p.startswith("episodes/") or "SHOTS" in j):
+                with tempfile.NamedTemporaryFile("w", suffix=".json", delete=False, encoding="utf-8") as t:
+                    t.write(c)
+                try:
+                    problems += [f"{p}: {x}" for x in SP.check(SP.load(t.name))]
+                except Exception as e:
+                    problems.append(f"{p}: list padh nahi paaye: {e}")
+                finally:
+                    os.unlink(t.name)
     return problems
 
 
 def solve(task):
-    old = repo_files()
-    block = "\n\n".join(f"===== FILE: {p} =====\n{c}" for p, c in old.items())
-    prompt = f"{RULES}\n\n# REPO FILES (branch as it is now)\n{block}\n\n# TASK\n{task}"
+    files = context_files()
+    block = "\n\n".join(f"===== FILE: {p} =====\n{c}" for p, c in files.items())
+    prompt = f"{RULES}\n\n# FILES\n{block}\n\n# TASK\n{task}"
     for _ in range(3):
         data = ask(prompt)
         if data["action"] != "change" or not data["files"]:
-            data["action"] = "none"
+            data["action"] = "none"; data["files"] = []
             return data
-        problems = check_changes(data["files"], old)
+        problems = check_changes(data["files"])
         if not problems:
             return data
         print("Jaanch mein galti, dobara:", problems)
-        prompt += "\n\n# YOUR ANSWER WAS REJECTED, fix and answer again:\n- " + "\n- ".join(problems)
-    return {"action": "none", "files": [],
-            "summary": "3 baar koshish ki par har baar jaanch mein galti mili, isliye kuch nahi badla. Ye issue Claude chat mein bhejiye."}
+        prompt += "\n\n# YOUR ANSWER WAS REJECTED, fix these and answer again:\n- " + "\n- ".join(problems[:30])
+    return {"action": "none", "render": False, "files": [],
+            "summary": "3 baar koshish ki par har baar list ki jaanch mein galti mili, isliye kuch nahi badla. "
+                       "Thoda saaf likh kar dobara `@ai` boliye, ya ye issue Claude chat mein bhejiye."}
 
 
-def write_and_push(data, branch, msg):
+def write_files(data):
     eps = set()
     for it in data["files"]:
         d = os.path.dirname(it["path"])
@@ -220,14 +248,14 @@ def write_and_push(data, branch, msg):
 
 def start_render(branch, ep):
     """Video ka run shuru karo aur khatam hone tak ruko. (run_id, safal?) lautata hai."""
-    before = run(["gh", "run", "list", "--repo", REPO, "--workflow", "make-video.yml", "--branch", branch,
-                  "-L", "1", "--json", "databaseId", "-q", ".[0].databaseId"], check=False).strip()
+    q = ["gh", "run", "list", "--repo", REPO, "--workflow", "make-video.yml", "--branch", branch,
+         "-L", "1", "--json", "databaseId", "-q", ".[0].databaseId"]
+    before = run(q, check=False).strip()
     run(["gh", "workflow", "run", "make-video.yml", "--repo", REPO, "--ref", branch, "-f", f"episode={ep}"])
     run_id = ""
     for _ in range(30):
         time.sleep(10)
-        run_id = run(["gh", "run", "list", "--repo", REPO, "--workflow", "make-video.yml", "--branch", branch,
-                      "-L", "1", "--json", "databaseId", "-q", ".[0].databaseId"], check=False).strip()
+        run_id = run(q, check=False).strip()
         if run_id and run_id != before:
             break
     if not run_id or run_id == before:
@@ -237,10 +265,17 @@ def start_render(branch, ep):
     return run_id, ok
 
 
-# ---------------- mode 1: @ai kaam ----------------
+def commit_push(branch, msg):
+    run(["git", "add", STATE])
+    if subprocess.run(["git", "diff", "--cached", "--quiet"]).returncode != 0:
+        run(["git", "commit", "-m", msg])
+        run(["git", "push", "origin", branch])
+
+
+# ---------------- mode: @ai kaam ----------------
 def mode_task():
     issue = os.environ["ISSUE_NUMBER"]
-    branch = branch_for(issue)
+    branch = f"ai/issue-{issue}"
     checkout_branch(branch)
     st = load_state()
     task = (f"Issue title: {os.environ.get('ISSUE_TITLE', '')}\n"
@@ -248,42 +283,41 @@ def mode_task():
             f"Earlier work on this issue's branch: {json.dumps(st, ensure_ascii=False)}")
     data = solve(task)
     msg = data["summary"] or "Ho gaya."
+    st["issue"] = int(issue)
     if data["action"] == "change":
-        eps = write_and_push(data, branch, "")
-        st.update({"issue": int(issue), "fix_rounds": 0})
+        eps = write_files(data)
         if eps:
             st["episode"] = sorted(eps)[0]
+        st["fix_rounds"] = 0
         save_state(st)
-        run(["git", "add", STATE])
-        run(["git", "commit", "-m", f"AI Helper (issue {issue}): {os.environ.get('ISSUE_TITLE', '')[:60]}"])
-        run(["git", "push", "origin", branch])
+        commit_push(branch, f"AI Helper (issue {issue}): {os.environ.get('ISSUE_TITLE', '')[:60]}")
         msg += f"\n\n📁 Badlaav branch `{branch}` par rakhe hain."
-        if eps:
-            msg += "\n🎬 Video banna shuru ho gaya (~5-10 min). Banne par yahin link aur director check milega."
-            comment(issue, msg)
-            render_loop(issue, branch, st)
-            return
+    if data.get("render") and st.get("episode"):
+        save_state(st); commit_push(branch, f"AI Helper (issue {issue}): state")
+        msg += "\n🎬 Video banna shuru ho gaya (~5-10 min). Banne par yahin link aur director check milega."
+        comment(issue, msg)
+        render_loop(issue, branch, st)
+        return
     comment(issue, msg)
 
 
-# ---------------- mode 2: render khatam hua ----------------
 def director_check(img_bytes, ep_json):
     prompt = ("You are the strict film director of Katha Chitra. This image is a contact sheet of the finished "
               "Ramayan Short (one frame every 0.25 s, left-to-right, top-to-bottom). Check it against the rules "
-              "below and the episode lines. List only REAL problems you can see (cut-off people at edges, "
-              "characters overlapping, changing looks, halo on humans, empty/black frames, subtitle covering "
-              "faces, missing logo, missing subscribe widget at the end, wrong mood colour). Answer in Hinglish, "
-              "short numbered list; if all is fine say so in one line.\n\n# RULES\n"
-              + open("NIYAM.md", encoding="utf-8").read() + "\n\n# EPISODE\n" + ep_json)
-    parts = [types.Part.from_bytes(data=img_bytes, mime_type="image/jpeg"), prompt]
+              "below and the episode. List only REAL problems you can see (cut-off people at edges, characters "
+              "overlapping, changing looks, halo on humans, empty/black frames, subtitle covering faces, missing logo, "
+              "missing subscribe widget at the end, wrong mood colour). For each problem also write the exact '@ai ...' "
+              "line the owner can paste to fix it. Answer in Hinglish, short numbered list; if all is fine say so in one line."
+              "\n\n# RULES\n" + open("NIYAM.md", encoding="utf-8").read() + "\n\n# EPISODE\n" + ep_json)
     try:
-        return ask(parts, want_json=False)
+        return ask(prompt, image=img_bytes, want_json=False)
     except Exception as e:
-        return f"(Director check nahi ho paya: {e})"
+        return f"(AI director check abhi nahi ho paya: {str(e)[:120]}. Check sheet khud dekh lijiye.)"
 
 
 def render_loop(issue, branch, st):
     ep = st["episode"]
+    run_url = ""
     for rnd in range(MAX_FIX_ROUNDS + 1):
         run_id, ok = start_render(branch, ep)
         run_url = f"https://github.com/{REPO}/actions/runs/{run_id}"
@@ -293,17 +327,16 @@ def render_loop(issue, branch, st):
         if rnd == MAX_FIX_ROUNDS:
             break
         log = run(["gh", "run", "view", run_id, "--repo", REPO, "--log-failed"], check=False)
-        tail = "\n".join(re.sub(r"^[^\t]*\t[^\t]*\t\S+Z ", "", l) for l in log.splitlines()[-200:])
-        data = solve(f"The render of {ep} FAILED. Fix the episode files so it renders. Bump VERSION.\n\n# FAILED LOG\n{tail}")
+        tail = "\n".join(re.sub(r"^[^\t]*\t[^\t]*\t\S+Z ", "", l) for l in log.splitlines()[-120:])
+        data = solve(f"The video of {ep} FAILED while rendering. Fix {ep}/episode.json so it renders "
+                     f"(change as little as possible, bump VERSION, render true).\n\n# FAILED LOG\n{tail}")
         if data["action"] != "change":
             comment(issue, f"❌ Video nahi bana aur main fix nahi dhoondh paya. [Run]({run_url})\n\n{data['summary']}")
             return
-        write_and_push(data, branch, "")
+        write_files(data)
         st["fix_rounds"] = rnd + 1
         save_state(st)
-        run(["git", "add", STATE])
-        run(["git", "commit", "-m", f"AI Helper: render fix {rnd + 1} for {ep}"])
-        run(["git", "push", "origin", branch])
+        commit_push(branch, f"AI Helper: render fix {rnd + 1} for {ep}")
         comment(issue, f"🔧 Video banate waqt galti aayi, maine theek karke dobara chalaya hai "
                        f"(koshish {rnd + 1}/{MAX_FIX_ROUNDS}).\n\n{data['summary']}")
     comment(issue, f"❌ Video {MAX_FIX_ROUNDS} baar theek karne ke baad bhi nahi bana. [Run dekhiye]({run_url}). "
@@ -322,17 +355,30 @@ def deliver(issue, ep, run_url):
         ep_json = f.read()
     report = director_check(sheet, ep_json) if sheet else "(check sheet nahi mili)"
     link = lambda n: f"https://github.com/{REPO}/blob/{rb}/{n}"
-    msg = "✅ **Video ban gaya!**\n"
+    msg = "✅ **Video ban gaya!** (cover video ke pehle frame par bhi laga hai)\n"
     k = 1
     if mp4:
         msg += f"\n{k}. Video: [{mp4}]({link(mp4)})"; k += 1
     for j in jpg:
         msg += f"\n{k}. Cover: [{j}]({link(j)})"; k += 1
     msg += f"\n{k}. Director check sheet: [check_sheet.jpg]({link('check_sheet.jpg')})"
-    msg += f"\n\n(Link kholke **⋯ → Download** dabaiye. Ya [run]({run_url}) ke neeche **video** zip.)"
+    msg += (f"\n\n**Download:** link kholiye → upar right **⤓ (Download raw file)**, ya **⋯ → Download**. "
+            f"Ya [run]({run_url}) ke neeche **video** zip (video + cover dono).")
     msg += f"\n\n🎬 **Director check (AI):**\n{report}\n\nKuch theek karwana ho to yahin `@ai` likhkar bataiye."
     comment(issue, msg)
 
 
 if __name__ == "__main__":
-    {"task": mode_task}[sys.argv[1]]()
+    try:
+        {"task": mode_task}[sys.argv[1]]()
+    except Busy as e:
+        comment(os.environ.get("ISSUE_NUMBER", ""),
+                "⏳ Free AI abhi busy hai (Google ka server bheed mein hai / aaj ki free limit khatam). "
+                "Thodi der baad (ya subah) yahin likhiye: `@ai dobara koshish karo`.\n\n"
+                f"<sub>{str(e)[:200]}</sub>")
+        sys.exit(1)
+    except Exception as e:
+        comment(os.environ.get("ISSUE_NUMBER", ""),
+                "⚠️ Helper ke saath ek galti hui, kaam poora nahi hua. Yahin dobara `@ai ...` likhiye; "
+                f"phir bhi na chale to ye issue Claude chat mein bhejiye.\n\n<sub>{str(e)[:300]}</sub>")
+        raise

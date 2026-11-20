@@ -1,0 +1,416 @@
+{
+ "NAME": "Ramayan_Bhag6_Siddhashram_aur_Vaman",
+ "COVER_NAME": "Ramayan_Bhag6_Cover",
+ "BHAG": 6,
+ "QUESTION": "भगवान ने कहाँ तप किया था?",
+ "LINES": {
+  "n1": [
+   "इस आश्रम में खुद भगवान विष्णु ने तप किया था... और यहीं से उन्होंने तीन कदम में तीनों लोक नाप लिए!",
+   "+0%",
+   "+0Hz"
+  ],
+  "vm1": [
+   "राम, ये सिद्धाश्रम है। यहाँ भगवान विष्णु ने बहुत समय तक तप किया था।",
+   "-12%",
+   "-16Hz"
+  ],
+  "vm2": [
+   "उस समय असुरों का राजा बलि यज्ञ कर रहा था, और तीनों लोकों पर उसका राज था।",
+   "-12%",
+   "-16Hz"
+  ],
+  "n2": [
+   "देवता डर गए। तब विष्णु ने अदिति के बेटे बनकर छोटे-से वामन का रूप लिया।",
+   "+0%",
+   "+0Hz"
+  ],
+  "n3": [
+   "वामन ने बलि से सिर्फ़ तीन कदम ज़मीन माँगी... और तीन कदम में धरती, आकाश और स्वर्ग नाप लिया!",
+   "+0%",
+   "+0Hz"
+  ],
+  "vm3": [
+   "वही आश्रम अब मेरा है, राम। यहीं मेरा यज्ञ होगा।",
+   "-12%",
+   "-16Hz"
+  ],
+  "n4": [
+   "आश्रम के ऋषियों ने विश्वामित्र का स्वागत किया।",
+   "+0%",
+   "+0Hz"
+  ],
+  "ram": [
+   "गुरुदेव, आज ही यज्ञ शुरू कीजिए।",
+   "+2%",
+   "+10Hz"
+  ],
+  "n5": [
+   "पर यज्ञ के छठे दिन... आसमान से कौन आया? अगले भाग में! कमेंट में लिखिए: जय श्री राम",
+   "+0%",
+   "+0Hz"
+  ]
+ },
+ "SPEAKER": {
+  "vm1": "vishwamitra",
+  "vm2": "vishwamitra",
+  "vm3": "vishwamitra",
+  "ram": "ram"
+ },
+ "KEYWORDS": {
+  "n1": [
+   "विष्णु",
+   "तीन"
+  ],
+  "vm1": [
+   "सिद्धाश्रम"
+  ],
+  "vm2": [
+   "बलि"
+  ],
+  "n2": [
+   "वामन"
+  ],
+  "n3": [
+   "तीन",
+   "कदम"
+  ],
+  "vm3": [
+   "यज्ञ"
+  ],
+  "n4": [
+   "स्वागत"
+  ],
+  "ram": [
+   "यज्ञ"
+  ],
+  "n5": [
+   "छठे"
+  ]
+ },
+ "NEW_CHARS": {
+  "vaman": {
+   "name": "वामन",
+   "kind": "m",
+   "child": true,
+   "skin": "#3a5aa0",
+   "hair": "#140c08",
+   "tunic": "#f2c230",
+   "sash": "#f6f0e2",
+   "upper": "#f2c230",
+   "lower": "#f2c230",
+   "hem": "#e8902a",
+   "bare": true,
+   "skirt": 1.3,
+   "mous": null,
+   "kamandalu": true,
+   "tilak": true,
+   "glow": "gold"
+  },
+  "bali": {
+   "name": "असुर राजा बलि",
+   "kind": "m",
+   "big": true,
+   "glow": "dark",
+   "fw": 1.1,
+   "build": 1.25,
+   "skin": "#4a3a6a",
+   "hair": "#0c0b10",
+   "tunic": "#8e1b1b",
+   "sash": "#1a1a1e",
+   "upper": "#1a1a1e",
+   "lower": "#8e1b1b",
+   "hem": "#1a1a1e",
+   "crown": true,
+   "jewel": true,
+   "bare": true,
+   "skirt": 1.5,
+   "mous": "#0c0b10",
+   "browt": 1.5
+  },
+  "devta1": {
+   "name": "देवता",
+   "kind": "m",
+   "big": true,
+   "glow": "gold",
+   "skin": "#f0c890",
+   "hair": "#1a0f0a",
+   "tunic": "#d9342b",
+   "sash": "#fff0a0",
+   "upper": "#f6f0e2",
+   "lower": "#d9342b",
+   "hem": "#fff0a0",
+   "crown": true,
+   "jewel": true,
+   "bare": true,
+   "skirt": 1.5,
+   "mous": null
+  },
+  "devta2": {
+   "name": "देवता",
+   "kind": "m",
+   "big": true,
+   "glow": "gold",
+   "fw": 0.95,
+   "skin": "#e0a878",
+   "hair": "#1a0f0a",
+   "tunic": "#2f6b9a",
+   "sash": "#f2c230",
+   "upper": "#f6f0e2",
+   "lower": "#2f6b9a",
+   "hem": "#f2c230",
+   "crown": true,
+   "jewel": true,
+   "bare": true,
+   "skirt": 1.5,
+   "mous": "#1a0f0a"
+  }
+ },
+ "SHOTS": [
+  {
+   "line": "n1",
+   "bg": "divine",
+   "mood": "wonder",
+   "chip": "तीन कदम",
+   "cast": [
+    {
+     "who": "vaman",
+     "x": 680,
+     "pose": "raise",
+     "face": "smile",
+     "look": "front"
+    }
+   ]
+  },
+  {
+   "line": "vm1",
+   "bg": "cloudvan",
+   "cast": [
+    {
+     "who": "lakshman",
+     "x": 300,
+     "pose": "stand"
+    },
+    {
+     "who": "ram",
+     "x": 620,
+     "pose": "stand"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 1020,
+     "pose": "talk",
+     "face": "smile"
+    }
+   ]
+  },
+  {
+   "line": "vm1",
+   "at_word": "विष्णु",
+   "bg": "cloudvan",
+   "cam": "speaker",
+   "cast": [
+    {
+     "who": "lakshman",
+     "x": 300,
+     "pose": "stand"
+    },
+    {
+     "who": "ram",
+     "x": 620,
+     "pose": "stand"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 1020,
+     "pose": "talk",
+     "face": "smile"
+    }
+   ]
+  },
+  {
+   "line": "vm2",
+   "bg": "ashram",
+   "mood": "fear",
+   "cast": [
+    {
+     "who": "bali",
+     "x": 680,
+     "pose": "stand",
+     "shadow": true
+    }
+   ]
+  },
+  {
+   "line": "vm2",
+   "at_word": "यज्ञ",
+   "bg": "ashram",
+   "chip": "असुर राजा बलि",
+   "cast": [
+    {
+     "who": "bali",
+     "x": 680,
+     "pose": "raise",
+     "face": "stern",
+     "look": "front"
+    }
+   ]
+  },
+  {
+   "line": "n2",
+   "bg": "divine",
+   "mood": "sorrow",
+   "cast": [
+    {
+     "who": "devta1",
+     "x": 420,
+     "pose": "namaste",
+     "face": "worry"
+    },
+    {
+     "who": "devta2",
+     "x": 940,
+     "pose": "namaste",
+     "face": "worry"
+    }
+   ]
+  },
+  {
+   "line": "n2",
+   "at_word": "वामन",
+   "bg": "divine",
+   "mood": "wonder",
+   "chip": "वामन अवतार",
+   "cast": [
+    {
+     "who": "vaman",
+     "x": 680,
+     "pose": "stand",
+     "face": "smile",
+     "look": "front"
+    }
+   ]
+  },
+  {
+   "line": "n3",
+   "bg": "ashram",
+   "cast": [
+    {
+     "who": "vaman",
+     "x": 420,
+     "pose": "talk",
+     "face": "smile"
+    },
+    {
+     "who": "bali",
+     "x": 920,
+     "pose": "stand",
+     "face": "neutral"
+    }
+   ]
+  },
+  {
+   "line": "n3",
+   "at_word": "धरती",
+   "bg": "divine",
+   "mood": "wonder",
+   "cast": [
+    {
+     "who": "vaman",
+     "x": 680,
+     "pose": "raise",
+     "face": "joy",
+     "look": "front"
+    }
+   ]
+  },
+  {
+   "line": "vm3",
+   "bg": "cloudvan",
+   "cam": "speaker",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 420,
+     "pose": "stand"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 930,
+     "pose": "point",
+     "face": "smile"
+    }
+   ]
+  },
+  {
+   "line": "n4",
+   "bg": "ashram",
+   "chip": "सिद्धाश्रम",
+   "cast": [
+    {
+     "who": "rishi1",
+     "x": 260,
+     "pose": "bow",
+     "face": "smile"
+    },
+    {
+     "who": "rishi2",
+     "x": 560,
+     "pose": "namaste",
+     "face": "smile"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 960,
+     "pose": "bless",
+     "face": "smile"
+    }
+   ]
+  },
+  {
+   "line": "ram",
+   "bg": "ashram",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 460,
+     "pose": "namaste",
+     "face": "firm"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 960,
+     "pose": "stand",
+     "face": "smile"
+    }
+   ]
+  },
+  {
+   "line": "n5",
+   "bg": "ashram",
+   "mood": "fear",
+   "cast": [
+    {
+     "who": "vishwamitra",
+     "x": 680,
+     "pose": "sit",
+     "face": "firm",
+     "look": "front"
+    }
+   ]
+  }
+ ],
+ "COVER": {
+  "bg": "divine",
+  "tag": "वामन अवतार का रहस्य!",
+  "cast": [
+   {
+    "who": "vaman",
+    "x": 680,
+    "pose": "raise",
+    "face": "smile",
+    "look": "front"
+   }
+  ]
+ },
+ "VERSION": 1
+}
