@@ -1,0 +1,374 @@
+{
+ "NAME": "Ramayan_Bhag7_Yagya_ki_Raksha_Maricha_Subahu",
+ "COVER_NAME": "Ramayan_Bhag7_Cover",
+ "BHAG": 7,
+ "QUESTION": "यज्ञ की रक्षा कैसे हुई?",
+ "LINES": {
+  "n1": [
+   "सिद्धाश्रम में विश्वामित्र का यज्ञ शुरू हुआ... और राम-लक्ष्मण छह दिन तक पहरा देते रहे!",
+   "+0%",
+   "+0Hz"
+  ],
+  "n2": [
+   "पर छठे दिन अचानक... आसमान काला पड़ गया और रक्त की वर्षा होने लगी!",
+   "+0%",
+   "+0Hz"
+  ],
+  "m1": [
+   "इस यज्ञ को नष्ट कर दो!",
+   "-10%",
+   "-30Hz"
+  ],
+  "ram1": [
+   "लक्ष्मण, ध्यान से देखो! राक्षस यज्ञ नष्ट करने आए हैं।",
+   "+2%",
+   "+10Hz"
+  ],
+  "n3": [
+   "राम ने मानवास्त्र चलाकर मारीच को सौ योजन दूर समुद्र में फेंक दिया!",
+   "+0%",
+   "+0Hz"
+  ],
+  "n4": [
+   "और आग्नेयास्त्र से सुबाहु का वध कर दिया!",
+   "+0%",
+   "+0Hz"
+  ],
+  "vm1": [
+   "राम, तुमने मेरा यज्ञ सफलतापूर्वक पूरा कराया।",
+   "-12%",
+   "-16Hz"
+  ],
+  "n5": [
+   "अब विश्वामित्र राम को कहाँ ले जाने वाले हैं? अगले भाग में! कमेंट में लिखिए: जय श्री राम",
+   "+0%",
+   "+0Hz"
+  ]
+ },
+ "SPEAKER": {
+  "m1": "maricha",
+  "ram1": "ram",
+  "vm1": "vishwamitra"
+ },
+ "KEYWORDS": {
+  "n1": [
+   "यज्ञ",
+   "पहरा"
+  ],
+  "n2": [
+   "रक्त",
+   "वर्षा"
+  ],
+  "m1": [
+   "नष्ट"
+  ],
+  "ram1": [
+   "राक्षस"
+  ],
+  "n3": [
+   "मानवास्त्र",
+   "समुद्र"
+  ],
+  "n4": [
+   "आग्नेयास्त्र",
+   "वध"
+  ],
+  "vm1": [
+   "यज्ञ"
+  ],
+  "n5": [
+   "अगले"
+  ]
+ },
+ "NEW_CHARS": {},
+ "SHOTS": [
+  {
+   "line": "n1",
+   "bg": "ashram",
+   "chip": "छह दिन का यज्ञ",
+   "cast": [
+    {
+     "who": "rishi1",
+     "x": 330,
+     "pose": "sit",
+     "face": "neutral",
+     "look": "right"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 1030,
+     "pose": "sit",
+     "face": "firm",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "n1",
+   "at_word": "पहरा",
+   "bg": "ashram",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 360,
+     "pose": "stand",
+     "face": "stern",
+     "look": "right"
+    },
+    {
+     "who": "lakshman",
+     "x": 1000,
+     "pose": "stand",
+     "face": "stern",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "n2",
+   "bg": "ashram",
+   "mood": "fear",
+   "chip": "रक्त की वर्षा",
+   "fx": [
+    {
+     "type": "rain",
+     "color": "#b0101a"
+    }
+   ],
+   "cast": [
+    {
+     "who": "ram",
+     "x": 360,
+     "pose": "raise",
+     "face": "firm",
+     "look": "front"
+    },
+    {
+     "who": "lakshman",
+     "x": 1000,
+     "pose": "raise",
+     "face": "worry",
+     "look": "front"
+    }
+   ]
+  },
+  {
+   "line": "m1",
+   "bg": "ashram",
+   "mood": "anger",
+   "chip": "मारीच और सुबाहु",
+   "cast": [
+    {
+     "who": "maricha",
+     "x": 440,
+     "pose": "angry",
+     "face": "angry",
+     "look": "front",
+     "shadow": true,
+     "lift": 260
+    },
+    {
+     "who": "subahu",
+     "x": 920,
+     "pose": "angry",
+     "face": "angry",
+     "look": "front",
+     "shadow": true,
+     "lift": 260
+    }
+   ]
+  },
+  {
+   "line": "ram1",
+   "bg": "ashram",
+   "cam": "two",
+   "chip": "राम का संकल्प",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 450,
+     "pose": "point",
+     "face": "firm",
+     "look": "right"
+    },
+    {
+     "who": "lakshman",
+     "x": 850,
+     "pose": "stand",
+     "face": "firm",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "n3",
+   "bg": "ashram",
+   "mood": "wonder",
+   "chip": "मानवास्त्र",
+   "fx": [
+    {
+     "type": "astra",
+     "from": "ram",
+     "to": "maricha",
+     "at_word": "चलाकर",
+     "color": "#9fe0ff",
+     "result": "thrown"
+    }
+   ],
+   "cast": [
+    {
+     "who": "ram",
+     "x": 330,
+     "pose": "raise",
+     "face": "firm",
+     "look": "right"
+    },
+    {
+     "who": "maricha",
+     "x": 960,
+     "pose": "angry",
+     "face": "angry",
+     "look": "left",
+     "lift": 200
+    }
+   ]
+  },
+  {
+   "line": "n4",
+   "bg": "ashram",
+   "mood": "anger",
+   "chip": "आग्नेयास्त्र",
+   "fx": [
+    {
+     "type": "astra",
+     "from": "ram",
+     "to": "subahu",
+     "at_word": "सुबाहु",
+     "color": "#ff8a1a",
+     "result": "fall"
+    }
+   ],
+   "cast": [
+    {
+     "who": "ram",
+     "x": 330,
+     "pose": "raise",
+     "face": "firm",
+     "look": "right"
+    },
+    {
+     "who": "subahu",
+     "x": 960,
+     "pose": "angry",
+     "face": "angry",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "vm1",
+   "bg": "ashram",
+   "chip": "यज्ञ की सफलता",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 300,
+     "pose": "namaste",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "lakshman",
+     "x": 600,
+     "pose": "namaste",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 1020,
+     "pose": "bless",
+     "face": "smile",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "vm1",
+   "at_word": "पूरा",
+   "bg": "ashram",
+   "cam": "speaker",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 300,
+     "pose": "namaste",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "lakshman",
+     "x": 600,
+     "pose": "namaste",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 1020,
+     "pose": "bless",
+     "face": "smile",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "n5",
+   "bg": "cloudvan",
+   "cast": [
+    {
+     "who": "vishwamitra",
+     "x": 260,
+     "to_x": 520,
+     "pose": "walk",
+     "face": "smile"
+    },
+    {
+     "who": "ram",
+     "x": 560,
+     "to_x": 820,
+     "pose": "walk",
+     "face": "smile"
+    },
+    {
+     "who": "lakshman",
+     "x": 860,
+     "to_x": 1120,
+     "pose": "walk",
+     "face": "smile"
+    }
+   ]
+  }
+ ],
+ "COVER": {
+  "bg": "ashram",
+  "tag": "मारीच और सुबाहु का अंत!",
+  "cast": [
+   {
+    "who": "ram",
+    "x": 420,
+    "pose": "raise",
+    "face": "firm",
+    "look": "right"
+   },
+   {
+    "who": "subahu",
+    "x": 920,
+    "pose": "angry",
+    "face": "angry",
+    "look": "left"
+   }
+  ]
+ },
+ "VERSION": 3
+}
