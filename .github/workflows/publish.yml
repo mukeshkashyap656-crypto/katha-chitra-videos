@@ -1,0 +1,42 @@
+name: publish-stage
+# Jaanch PASS hone par AI Helper ise chalata hai: video + cover main mein rakhta hai aur episodes.json mein post ki tithi likhta hai.
+on:
+  workflow_dispatch:
+    inputs:
+      episode:
+        description: "episodes/bhagN"
+        required: true
+      bhag:
+        required: true
+      issue:
+        required: true
+permissions:
+  contents: write
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Stage
+        env:
+          EPISODE: ${{ inputs.episode }}
+          BHAG: ${{ inputs.bhag }}
+          ISSUE: ${{ inputs.issue }}
+        run: |
+          set -e
+          RB="render-$(basename "$EPISODE")"
+          git fetch --depth 1 origin "$RB:refs/remotes/origin/$RB" "ai/issue-$ISSUE:refs/remotes/origin/ai/issue-$ISSUE" "auto-video:refs/remotes/origin/auto-video"
+          mkdir -p videos stage
+          git archive "origin/$RB" | tar -x -C stage
+          git show "origin/ai/issue-$ISSUE:$EPISODE/episode.json" > stage/episode.json
+          git show origin/auto-video:plans/STORY_QUEUE.json > stage/queue.json
+          python3 scripts/stage_episode.py
+          rm -rf stage
+          git config user.name katha-chitra-bot
+          git config user.email bot@users.noreply.github.com
+          git add videos episodes.json
+          git commit -m "Stage Bhag $BHAG for auto-post" || echo "kuch badla nahi"
+          for i in 1 2 3; do git push && break; git pull --rebase; done
