@@ -8,7 +8,7 @@ def _parse(text):
     if text.startswith("{"):
         return json.loads(text)
     out = None
-    for line in text.splitlines():
+    for line in text.split("\n"):
         if line.startswith("data:"):
             payload = line[5:].strip()
             if payload.startswith("{"):
@@ -42,6 +42,7 @@ class MCP:
         r = requests.post(URL, headers=h, data=json.dumps(body), timeout=600)
         if "mcp-session-id" in r.headers:
             self.sid = r.headers["mcp-session-id"]
+        r.encoding = "utf-8"
         r.raise_for_status()
         if not expect:
             return None
