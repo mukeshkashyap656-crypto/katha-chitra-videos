@@ -5,11 +5,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Check Composio MCP key (read-only)
+      - uses: actions/checkout@v4
+      - name: Probe Composio MCP (read-only)
         env:
-          K: ${{ secrets.COMPOSIO_CONSUMER_KEY }}
+          COMPOSIO_CONSUMER_KEY: ${{ secrets.COMPOSIO_CONSUMER_KEY }}
+        working-directory: scripts
         run: |
-          code=$(curl -s -o resp.txt -w "%{http_code}" -X POST "https://connect.composio.dev/mcp" -H "x-consumer-api-key: $K" -H "Content-Type: application/json" -H "Accept: application/json, text/event-stream" -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"gh-test","version":"1.0"}}}')
-          echo "MCP_HTTP_STATUS=$code"
-          head -c 300 resp.txt | tr -d '\n' | sed 's/ck_[A-Za-z0-9]*/ck_HIDDEN/g'; echo
-          test "$code" = "200"
+          pip install -q requests
+          python probe.py
