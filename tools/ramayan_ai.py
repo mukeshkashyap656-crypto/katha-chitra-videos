@@ -192,10 +192,23 @@ def ask(prompt_text, image=None, want_json=True):
             txt = github_models(prompt_text, want_json)   # teesra sahara
     if not want_json:
         return txt
-    mt = re.search(r"\{.*\}", txt, re.DOTALL)
-    data = json.loads(mt.group(0) if mt else txt)
-    if data.get("action") not in ("change", "none"):
-        raise ValueError("action galat")
+    for fix_try in range(3):                      # broken JSON from the AI: ask again instead of stopping
+        mt = re.search(r"\{.*\}", txt, re.DOTALL)
+        try:
+            data = json.loads(mt.group(0) if mt else txt)
+            if data.get("action") not in ("change", "none"):
+                raise ValueError("action galat")
+            break
+        except ValueError as e:
+            if fix_try == 2:
+                raise
+            print("Jawab ki JSON tooti thi, dobara maang rahe hain:", e)
+            again = (prompt_text + "\n\n# YOUR LAST ANSWER WAS NOT VALID JSON (" + str(e)[:120] +
+                     "). Answer again with ONLY valid JSON; escape every double quote inside strings.")
+            try:
+                txt = gemini(again, True)
+            except Busy:
+                txt = openrouter(again, True)
     data.setdefault("files", []); data.setdefault("summary", ""); data.setdefault("render", False)
     return data
 
