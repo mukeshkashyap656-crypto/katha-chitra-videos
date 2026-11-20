@@ -1,0 +1,26 @@
+name: post-instagram
+on:
+  workflow_dispatch:
+    inputs:
+      bhag:
+        description: "Bhag number (3 se 7)"
+        required: true
+      dry_run:
+        description: "true = sirf test, post nahi hoga"
+        required: true
+        default: "true"
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Post Reel
+        env:
+          COMPOSIO_CONSUMER_KEY: ${{ secrets.COMPOSIO_CONSUMER_KEY }}
+          BHAG: ${{ inputs.bhag }}
+          DRY: ${{ inputs.dry_run }}
+        working-directory: scripts
+        run: |
+          pip install -q requests
+          if [ "$DRY" = "true" ]; then python post_instagram.py --bhag "$BHAG" --dry-run; else python post_instagram.py --bhag "$BHAG"; fi
