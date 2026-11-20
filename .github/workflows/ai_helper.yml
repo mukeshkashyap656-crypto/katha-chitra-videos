@@ -9,6 +9,10 @@ on:
     types: [opened]
   issue_comment:
     types: [created]
+  schedule:
+    - cron: '7 0 * * *'    # subah 5:37 IST: free AI khaali, 'baad-mein' wale kaam
+    - cron: '37 9 * * *'   # dopahar 3:07 IST: doosri koshish
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -17,7 +21,7 @@ permissions:
   models: read
 
 concurrency:
-  group: ai-helper-${{ github.event.issue.number }}
+  group: ai-helper-${{ github.event.issue.number || 'queue' }}
   cancel-in-progress: false
 
 jobs:
@@ -56,3 +60,24 @@ jobs:
             exit 1
           fi
           python -u tools/ramayan_ai.py task
+
+  queued:
+    # 'baad-mein' label wale issues (jab free AI busy tha) shant samay par khud dobara
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: auto-video
+          fetch-depth: 1
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: pip install -q --upgrade google-genai requests
+      - name: Do queued tasks
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+        run: python -u tools/ramayan_ai.py queue
