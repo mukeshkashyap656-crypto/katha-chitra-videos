@@ -309,6 +309,7 @@ def commit_push(branch, msg):
     if subprocess.run(["git", "diff", "--cached", "--quiet"]).returncode != 0:
         run(["git", "commit", "-m", msg])
         run(["git", "push", f"--force-with-lease={branch}:{LEASE.get(branch, '')}", "origin", f"HEAD:refs/heads/{branch}"])
+        LEASE[branch] = run(["git", "rev-parse", "HEAD"]).strip()   # next push in the same run starts from here
 
 
 # ---------------- mode: @ai kaam ----------------
