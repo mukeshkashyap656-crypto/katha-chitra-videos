@@ -131,7 +131,7 @@ for si, sh in enumerate(SHOTS):
                      f'background:radial-gradient(circle,#fff 0%,{col} 35%,rgba(255,255,255,0) 70%);opacity:0"></div>')
         fx_js.append(f'tl.set("#{aid}",{{opacity:1,x:0,y:0}},{tf:.3f});tl.to("#{aid}",{{x:{bx - ax:.0f},y:{by - ay:.0f},duration:{fly},ease:"power1.in"}},{tf:.3f});tl.set("#{aid}",{{opacity:0}},{hit:.3f});')
         fx_js.append(f'tl.fromTo("#{fid}",{{opacity:1,scale:0.2}},{{opacity:0,scale:2.3,duration:0.55,ease:"power2.out",immediateRender:false}},{hit:.3f});')
-        fx_aud.append(f'<audio id="sw{si}_{fi}" src="assets/sfx_swish.wav" data-start="{tf:.3f}" data-duration="0.17" data-volume="0.9"></audio>')
+        fx_aud.append(f'<audio id="sw{si}_{fi}" src="assets/sfx_swish.wav" data-start="{tf:.3f}" data-duration="0.25" data-volume="0.9"></audio>')
         fx_aud.append(f'<audio id="im{si}_{fi}" src="assets/sfx_impact.wav" data-start="{hit:.3f}" data-duration="1.0" data-volume="0.85"></audio>')
         ci = cast.index(dst); cid = f"s{si}c{ci}"
         if fx.get("result") == "thrown":       # flies far away (e.g. Maricha into the sea)
