@@ -20,9 +20,9 @@ cd "$EP/proj"
 npx hyperframes lint . | tee "$OUT/lint.txt"
 grep -q -E '\b[1-9][0-9]* error' "$OUT/lint.txt" && { echo "lint errors"; exit 1; } || true
 npx hyperframes render . -q delivery -o raw.mp4
-npx hyperframes snapshot cover --at 0.5 --no-end -o snapc
-CJ=$(ls snapc/*.png snapc/*.jpg 2>/dev/null | head -1)
-ffmpeg -v error -y -i "$CJ" -q:v 2 "$OUT/$COVER.jpg"
+# cover: render the cover composition itself (snapshot adds labels/guide lines), take the frame at 0.5 s
+(cd cover && npx hyperframes render . -q delivery -o ../cover.mp4)
+ffmpeg -v error -y -ss 0.5 -i cover.mp4 -frames:v 1 -vf "scale=1080:1920" -q:v 2 "$OUT/$COVER.jpg"
 # cover as the very first 0.1 s (phone gallery thumbnail / YouTube thumbnail pick)
 ffmpeg -v error -y -loop 1 -t 0.1 -i "$OUT/$COVER.jpg" -f lavfi -t 0.1 -i anullsrc=r=48000:cl=stereo \
   -vf "scale=1080:1920,fps=30,format=yuv420p" -c:v libx264 -c:a aac -shortest /tmp/c.mp4
