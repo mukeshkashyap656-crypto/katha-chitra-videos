@@ -44,5 +44,16 @@ ffmpeg -v error -y -f concat -safe 0 -i /tmp/l.txt -c copy -movflags +faststart 
 ffmpeg -nostats -i "$OUT/$NAME.mp4" -af ebur128 -f null - 2>&1 | grep -E "^\s+I:" | tail -1 | tee "$OUT/sound_check.txt"
 LUFS=$(grep -oE -- "-?[0-9]+\.[0-9]+" "$OUT/sound_check.txt" | head -1)
 python3 -c "import sys; l=float('${LUFS:--99}'); print('awaaz level', l, 'LUFS'); sys.exit(0 if l > -40 else 'AWAAZ NAHI HAI / bahut dheemi: video mein awaaz check karo')"
-ffmpeg -v error -y -i "$OUT/$NAME.mp4" -vf "fps=4,scale=180:-1,tile=10x8" -frames:v 1 "$OUT/check_sheet.jpg"
+DUR=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$OUT/$NAME.mp4")
+# poori video ki sheet: 100 frame poore video par failte hue (chhota video ho toh har 0.25 s)
+FPS=$(python3 -c "print(round(min(4.0, 100.0/float('$DUR')), 4))")
+ffmpeg -v error -y -i "$OUT/$NAME.mp4" -vf "fps=$FPS,scale=180:-1,tile=10x10" -frames:v 1 "$OUT/check_sheet.jpg"
+# aakhri 5 second (subscribe widget yahin dikhta hai): har 0.25 s
+ffmpeg -v error -y -ss "$(python3 -c "print(max(0.0, float('$DUR')-5.0))")" -i "$OUT/$NAME.mp4" -vf "fps=4,scale=180:-1,tile=10x2" -frames:v 1 "$OUT/ending_sheet.jpg"
+# machine jaanch: cover sach mein pehla frame hai? (AI se nahi, ginti se)
+ffmpeg -v error -y -i "$OUT/$NAME.mp4" -frames:v 1 -vf "scale=540:960" /tmp/first.png
+ffmpeg -v error -y -i "$OUT/$COVER.jpg" -vf "scale=540:960" /tmp/cov.png
+PSNR=$(ffmpeg -i /tmp/first.png -i /tmp/cov.png -lavfi psnr -f null - 2>&1 | grep -oE "average:[0-9.]+|average:inf" | head -1 | cut -d: -f2)
+python3 -c "p='${PSNR:-0}'; v=99.0 if p=='inf' else float(p); open('$OUT/first_frame_check.txt','w').write(('ok ' if v>25 else 'FAIL ')+str(v))"
+cat "$OUT/first_frame_check.txt"
 ls -la "$OUT"
