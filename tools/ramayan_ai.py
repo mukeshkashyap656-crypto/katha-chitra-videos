@@ -35,6 +35,9 @@ STATE = "ai_state.json"
 CONTEXT = ["NIYAM.md", "tools/engine/README.md"]
 
 
+LEASE = {}   # branch -> remote commit we started from (safe overwrite of the issue branch)
+
+
 class Busy(Exception):
     """Saare free AI abhi busy / limit khatam."""
 
@@ -56,11 +59,16 @@ def checkout_branch(branch):
     """Issue ki branch ho to uspe jao, warna auto-video se nayi banao."""
     run(["git", "config", "user.name", "github-actions[bot]"])
     run(["git", "config", "user.email", "github-actions[bot]@users.noreply.github.com"])
+    run(["git", "checkout", "-b", branch])          # always start from the newest auto-video (newest engine + rules)
     if run(["git", "ls-remote", "--heads", "origin", branch]).strip():
-        run(["git", "fetch", "--depth", "1", "origin", f"{branch}:{branch}"])
-        run(["git", "checkout", branch])
-    else:
-        run(["git", "checkout", "-b", branch])
+        # bring over only this issue's own work: its state, plans and scene-list episodes (never old code)
+        run(["git", "fetch", "--depth", "1", "origin", branch])
+        LEASE[branch] = run(["git", "rev-parse", "FETCH_HEAD"]).strip()
+        old = run(["git", "ls-tree", "-r", "--name-only", "FETCH_HEAD"]).split()
+        keep = [f for f in old if f == STATE or f.startswith("plans/") or
+                (re.match(r"^episodes/[a-z0-9_]+/episode\.json$", f) and '"SHOTS"' in run(["git", "show", f"FETCH_HEAD:{f}"]))]
+        if keep:
+            run(["git", "checkout", "FETCH_HEAD", "--"] + keep)
 
 
 def load_state():
@@ -269,7 +277,7 @@ def commit_push(branch, msg):
     run(["git", "add", STATE])
     if subprocess.run(["git", "diff", "--cached", "--quiet"]).returncode != 0:
         run(["git", "commit", "-m", msg])
-        run(["git", "push", "origin", branch])
+        run(["git", "push", f"--force-with-lease={branch}:{LEASE.get(branch, '')}", "origin", f"HEAD:refs/heads/{branch}"])
 
 
 # ---------------- mode: @ai kaam ----------------
