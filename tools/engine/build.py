@@ -114,10 +114,10 @@ def wide(cast, z_max=1.25):
     vh = VH / (S0 * z); top_need = min(BTOP if is_big(e["who"]) else DTOP + 180 for e in cast)   # whole body + crown inside
     cy = min(1480 + 60 - vh / 2, max(top_need - 40 + vh / 2, 830))
     return ((lo + hi) / 2, cy, z)
-def closeup(e, cast):
+def closeup(e, cast, zs=(2.6, 2.8, 3.0, 3.3, 3.6, 3.9)):
     big = is_big(e["who"]); u, hy = (U_B, HEAD_B) if big else (U_H, HEAD_H)
     sx, sb = e["x"], half_w(e["who"])
-    for z in (2.6, 2.8, 3.0, 3.3, 3.6, 3.9):
+    for z in zs:
         hw = VW / (S0 * z) / 2; vh = VH / (S0 * z)
         lo, hi = sx + sb - hw, sx - sb + hw          # camera x range keeping the speaker inside
         for o in cast:
@@ -134,10 +134,14 @@ def closeup(e, cast):
 def two(e, cast):
     near = sorted((o for o in cast if o is not e), key=lambda o: abs(o["x"] - e["x"]))[:1]
     return wide([e] + near, z_max=1.6)
+def medium(e, cast):      # knee-up shot of one person (neighbours fully out)
+    return closeup(e, cast, zs=(1.7, 1.85, 2.0, 2.2, 2.4))
 cam_js = []
+SEG = 2.8                # a cut / new framing about every 2-3 s (NIYAM: cut or camera move every 2-3 s)
 for si, sh in enumerate(SHOTS):
     cast = sh.get("cast", []); sp = SP.speaker(sh["line"], EPI); mode = sh.get("cam", "auto")
     spe = next((e for e in cast if e["who"] == sp), None)
+    main = spe or (min(cast, key=lambda e: abs(e["x"] - 680)) if cast else None)
     if mode == "auto":
         new_place = si == 0 or SHOTS[si - 1]["bg"] != sh["bg"]
         mode = "speaker" if spe and not new_place and len(cast) > 1 else ("speaker" if spe and len(cast) == 1 else "wide")
@@ -145,10 +149,20 @@ for si, sh in enumerate(SHOTS):
     if mode == "speaker" and spe: target = closeup(spe, cast)
     if mode == "two" and spe: target = two(spe, cast)
     if target is None: target = wide(cast)
-    x, y, z = target; t0, t1 = starts[si], ends[si]
-    if si == len(SHOTS) - 1 and z < 2:      # last shot: keep feet above the subscribe widget
-        y = WH - VH / (S0 * z) / 2
-    cam_js.append(f'tl.set("#cam",{{{cam(x, y, z)}}},{t0:.3f});tl.to("#cam",{{{cam(x, y - 6, z * 1.05)},duration:{max(0.1, t1 - t0 - 0.02):.3f},ease:"none"}},{t0:.3f});')
+    alt = None             # second framing for long shots
+    if main is not None:
+        alt = (medium(main, cast) or closeup(main, cast)) if target[2] < 1.6 else wide(cast)
+    t0, t1 = starts[si], ends[si]; dur = t1 - t0
+    n = 1 if dur <= 3.6 else max(2, round(dur / SEG))
+    last = si == len(SHOTS) - 1
+    for g in range(n):
+        a = t0 + dur * g / n; b = t0 + dur * (g + 1) / n
+        odd = ((n - 1 - g) if last else g) % 2 == 1          # last shot ends on its main (wide) framing, big '?' visible
+        x, y, z = (alt if (odd and alt) else target)
+        if not alt and odd: z *= 1.18                       # nobody to cut to: gentle push-in instead
+        if last and g == n - 1 and z < 2:                     # last framing: feet above the subscribe widget
+            y = WH - VH / (S0 * z) / 2
+        cam_js.append(f'tl.set("#cam",{{{cam(x, y, z)}}},{a:.3f});tl.to("#cam",{{{cam(x, y - 6, z * 1.05)},duration:{max(0.1, b - a - 0.02):.3f},ease:"none"}},{a:.3f});')
 
 # ---------- shots switch, mood colour, chips, birds ----------
 TINT = {"none": "rgba(0,0,0,0)", "joy": "rgba(255,190,80,.12)", "sorrow": "rgba(60,80,130,.32)", "anger": "rgba(200,25,10,.26)",

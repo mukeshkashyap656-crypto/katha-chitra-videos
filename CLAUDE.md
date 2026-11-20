@@ -11,7 +11,12 @@ User se Hinglish mein, aam bolchaal ke shabdon mein baat karo. Memory ke saare R
 - `plans/` — user se pakke hue episode plan (shot list + lines). Naya episode banane se pehle yahan dekho.
 - `episodes/<bhagN>/` — har episode ka folder: `episode.json` (NAME, COVER_NAME, LINES) + episode ke apne `draw_assets.py`, `build_episode.py` (template se copy karke badle hue).
 
-## Naya episode kaise
+## Scene engine (naya tareeka, code nahi)
+- Naya episode = sirf `episodes/bhagN/episode.json` mein `SHOTS` wali list (format: `tools/engine/README.md`, udaharan `episodes/bhag6/episode.json`).
+- `tools/make_episode.sh` list dekhte hi `tools/engine/draw.py` + `build.py` chalata hai: characters, background, camera (film ke niyam: sir ke upar jagah, close-up mein padosi bahar, lamba shot 2-3 sec ke tukdon mein), mood rang, chip, karaoke subtitle, logo, subscribe widget (subtitle box ke upar), cover.
+- Jaanch: `python3 tools/engine/spec.py episodes/bhagN/episode.json`. Naya background/pose/character sancha mein jodna ho to `tools/engine/` badlo (tab VERSION badha ke render).
+
+## Naya episode kaise (purana tareeka, episode ki apni scripts)
 1. Valmiki se scene tay karo, shot list user ko dikhao (pehle tay, phir banao).
 2. `episodes/bhagN/` banao: episode.json + dono script (template ke udaharan se copy). Scripts `template/lib` se import karti hain (PYTHONPATH apne aap lagta hai).
 3. Branch `auto-video` (ya koi bhi branch) par commit + push. `Make Ramayan video` workflow apne aap chalta hai (~5 min).
