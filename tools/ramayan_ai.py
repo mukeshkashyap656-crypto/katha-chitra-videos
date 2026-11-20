@@ -180,7 +180,8 @@ def github_models(prompt_text, want_json):
 
 
 def ask(prompt_text, image=None, want_json=True):
-    contents = [types.Part.from_bytes(data=image, mime_type="image/jpeg"), prompt_text] if image else prompt_text
+    imgs = image if isinstance(image, (list, tuple)) else ([image] if image else [])
+    contents = [types.Part.from_bytes(data=i, mime_type="image/jpeg") for i in imgs] + [prompt_text] if imgs else prompt_text
     try:
         txt = gemini(contents, want_json)
     except Busy:
@@ -524,65 +525,90 @@ SCORE_KEYS = ["hook", "structure", "pace", "emotion", "mood", "ending", "camera"
 
 
 def fetch_sheet(ep):
+    """(poori video ki sheet, antim sheet, cover-pehla-frame jaanch ka natija)"""
     rb = "render-" + os.path.basename(ep)
     run(["git", "fetch", "--depth", "1", "origin", f"+{rb}:refs/remotes/origin/{rb}"])
-    return subprocess.run(["git", "show", f"origin/{rb}:check_sheet.jpg"], capture_output=True).stdout
+    show = lambda n: subprocess.run(["git", "show", f"origin/{rb}:{n}"], capture_output=True).stdout
+    return show("check_sheet.jpg"), show("ending_sheet.jpg"), show("first_frame_check.txt").decode("utf-8", "ignore").strip()
 
 
-def review(sheet, ep_json):
-    """Kadi PASS/FAIL jaanch. Jawab samajh na aaye ya sheet na mile toh PASS nahi maana jaata (post nahi hota)."""
-    bad = lambda why: {"pass": False, "score": 0, "hard_fails": [why], "fix_text": why, "text": f"❌ {why}", "cannot_check": []}
-    if not sheet:
-        return bad("check sheet nahi mili")
-    try:
-        viral = open("VIRAL.md", encoding="utf-8").read()
-    except OSError:
-        return bad("VIRAL.md nahi mili")
+def review_once(sheets, ep_json):
+    viral = open("VIRAL.md", encoding="utf-8").read()
     prompt = (
-        "You are the STRICT film director and reviewer of the Katha Chitra channel. The image is a contact sheet of the "
-        "finished Ramayan Short (one frame every 0.25 s, left-to-right, top-to-bottom). Judge ONLY what you can really see. "
-        "Use section 6 of VIRAL.md below (the hard FAIL list 1-10 and the 7 scores) and the rules of NIYAM.md. "
-        "Things you cannot judge from pictures (voice loudness, voice-subtitle sync) must NOT be marked as failures; "
-        "put them in cannot_check. Never invent a problem; when unsure, do not list it.\n"
+        "You are the STRICT film director and reviewer of the Katha Chitra channel. Image 1 is a contact sheet of the finished "
+        "Ramayan Short spread over the WHOLE video (about 100 frames, left-to-right, top-to-bottom). Image 2 (if given) is the LAST "
+        "5 seconds at 4 frames per second. Judge ONLY what you can really see. "
+        "Use section 6 of VIRAL.md below and the rules of NIYAM.md and SEEKH.md. "
+        "IMPORTANT facts about our machine: it ALWAYS adds the small Katha Chitra logo at the top-right corner of every frame, the "
+        "title box at the top and the subtitle box at the bottom; the cover as first frame and the sound level are checked by "
+        "separate machine tests, so do NOT judge hard-fail rules 8 and 10 and do not judge the logo. Judge the subscribe widget "
+        "(finger, SUBSCRIBE button, bell) ONLY from image 2. Things you cannot judge from pictures (voice loudness, voice-subtitle "
+        "sync) must NOT be failures; put them in cannot_check. Never invent a problem; when unsure, do not list it. "
+        "Identical consecutive frames while someone speaks are a weakness for 'pace' and 'emotion' only, not a hard fail.\n"
         "Reply with ONLY valid JSON:\n"
-        '{"hard_fails":[{"rule":<1-10>,"what":"Hinglish: kya dikh raha hai aur kis frame/jagah","fix":"exact change to make in episode.json"}],'
+        '{"hard_fails":[{"rule":<1-10>,"what":"Hinglish: kya dikh raha hai aur kis frame/jagah","fix":"exact change in episode.json"}],'
         '"scores":{"hook":0-10,"structure":0-10,"pace":0-10,"emotion":0-10,"mood":0-10,"ending":0-10,"camera":0-10},'
         '"weak":[{"what":"...","fix":"..."}],"cannot_check":["..."],"summary":"Hinglish, 2 short lines"}\n\n'
-        "# VIRAL.md\n" + viral + "\n\n# NIYAM.md\n" + open("NIYAM.md", encoding="utf-8").read() + "\n\n# SEEKH.md\n" + open("SEEKH.md", encoding="utf-8").read() + "\n\n# EPISODE\n" + ep_json)
-    d = None
+        "# VIRAL.md\n" + viral + "\n\n# NIYAM.md\n" + open("NIYAM.md", encoding="utf-8").read() + "\n\n# SEEKH.md\n"
+        + open("SEEKH.md", encoding="utf-8").read() + "\n\n# EPISODE\n" + ep_json)
     for _ in range(3):
-        txt = ask(prompt, image=sheet, want_json=False)
+        txt = ask(prompt, image=sheets, want_json=False)
         mt = re.search(r"\{.*\}", txt, re.DOTALL)
         try:
             d = json.loads(mt.group(0) if mt else txt)
             sc = d.get("scores") or {}
             if not all(k in sc for k in SCORE_KEYS):
                 raise ValueError("scores adhoore")
-            break
-        except ValueError:
-            d = None
-    if d is None:
+            d["scores"] = {k: max(0, min(10, int(sc[k]))) for k in SCORE_KEYS}
+            return d
+        except (ValueError, TypeError):
+            continue
+    return None
+
+
+def review(sheet, ep_json):
+    """Kadi PASS/FAIL jaanch. Do baar jaanchta hai: seedha FAIL tabhi jab DONO baar wahi galti (niyam number) mile;
+    number dono ka ausat. Jawab samajh na aaye, sheet na mile ya cover pehla frame na ho toh PASS nahi."""
+    bad = lambda why: {"pass": False, "score": 0, "hard_fails": [why], "fix_text": why, "text": f"❌ {why}", "cannot_check": []}
+    main_sheet, end_sheet, first_check = sheet if isinstance(sheet, tuple) else (sheet, b"", "")
+    if not main_sheet:
+        return bad("check sheet nahi mili")
+    sheets = [main_sheet] + ([end_sheet] if end_sheet else [])
+    runs = [review_once(sheets, ep_json) for _ in range(2)]
+    runs = [r for r in runs if r]
+    if not runs:
         return bad("jaanch ka jawab samajh nahi aaya, isliye PASS nahi")
-    sc = {k: max(0, min(10, int(d["scores"][k]))) for k in SCORE_KEYS}
+    keys = {}
+    for r in runs:
+        for h in r.get("hard_fails") or []:
+            keys.setdefault(str(h.get("rule")), []).append(h)
+    hard = [v[0] for k, v in keys.items() if len(v) >= len(runs) and k not in ("8", "10")]
+    if first_check.startswith("FAIL"):
+        hard.append({"rule": 10, "what": "cover video ka pehla frame nahi hai (machine jaanch)", "fix": "cover ko pehle 0.1 sec par lagao"})
+    sc = {k: round(sum(r["scores"][k] for r in runs) / len(runs)) for k in SCORE_KEYS}
     total = sum(sc.values())
-    hard = d.get("hard_fails") or []
     ok = (not hard) and total >= PASS_SCORE
-    lines = [f"**Faisla: {'✅ PASS' if ok else '❌ FAIL'}** — number {total}/70 (chahiye {PASS_SCORE}+): " +
+    weak = [w for r in runs for w in (r.get("weak") or [])][:6]
+    cant = sorted({str(c) for r in runs for c in (r.get("cannot_check") or [])})
+    lines = [f"**Faisla: {'✅ PASS' if ok else '❌ FAIL'}** — number {total}/70 (chahiye {PASS_SCORE}+, {len(runs)} jaanch ka ausat): " +
              ", ".join(f"{k} {v}" for k, v in sc.items())]
     for h in hard:
         lines.append(f"- ❌ Niyam {h.get('rule')}: {h.get('what')}")
-    for w in d.get("weak") or []:
+    single = [h for k, v in keys.items() if len(v) < len(runs) for h in v[:1]]
+    for h in single:
+        lines.append(f"- ⚠️ (sirf ek jaanch ne kaha, isliye FAIL nahi) Niyam {h.get('rule')}: {h.get('what')}")
+    for w in weak:
         lines.append(f"- ⚠️ {w.get('what')}")
-    if d.get("cannot_check"):
-        lines.append("- ℹ️ Sirf tasveer se nahi dekh paya: " + "; ".join(map(str, d["cannot_check"])))
-    if d.get("summary"):
-        lines.append(str(d["summary"]))
+    if cant:
+        lines.append("- ℹ️ Sirf tasveer se nahi dekh paya: " + "; ".join(cant))
+    if runs[0].get("summary"):
+        lines.append(str(runs[0]["summary"]))
     fixes = [f"RULE {h.get('rule')}: {h.get('what')} -> {h.get('fix')}" for h in hard] + \
-            [f"WEAK: {w.get('what')} -> {w.get('fix')}" for w in (d.get("weak") or [])]
+            [f"WEAK: {w.get('what')} -> {w.get('fix')}" for w in weak]
     if not hard and total < PASS_SCORE:
         fixes.append(f"Score {total}/70 is below {PASS_SCORE}; improve the weakest scores: " + str(sc))
     return {"pass": ok, "score": total, "hard_fails": hard, "fix_text": "\n".join(fixes), "text": "\n".join(lines),
-            "cannot_check": d.get("cannot_check") or []}
+            "cannot_check": cant}
 
 
 def autopost_on():
