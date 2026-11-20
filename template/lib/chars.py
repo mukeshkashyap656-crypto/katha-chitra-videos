@@ -45,7 +45,7 @@ CHARS = {
     "damodar": dict(kind="m", skin="#d9a070", hair="#1a0f0a", tunic="#e9902a", sash="#2f6b3a",
                     pagdi="#c0392b", pagdi2="#e8b730", beard=False, mous=None, lower="#f6f0e2", child=True),
     "dasharatha": dict(fw=1.08, fh=1.0, build=1.12, belly=1.2, age=3, eye=1.08, nose=1.1, jowl=True, kind="m", skin="#c98c62", hair="#f4f1ea", tunic="#e9b22e", sash="#2f8a4a", upper="#c0392b",
-                       beard="#f8f6f0", mous="#f8f6f0", lower="#f6f0e2", crown=True, halo=True, jewel=True, bare=True,
+                       beard="#f8f6f0", mous="#f8f6f0", lower="#f6f0e2", crown=True, jewel=True, bare=True,
                        skirt=1.55, hem="#c0392b"),
     "rishi": dict(kind="m", skin="#c98c62", hair="#f4f1ea", tunic="#f6f0e2", sash="#8a5a2a", upper="#e8902a",
                   beard="#f8f6f0", mous="#f8f6f0", lower="#f6f0e2", jata="#f8f6f0", halo=True, jewel=True, bare=True,

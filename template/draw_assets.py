@@ -13,10 +13,10 @@ HS = 520; CW, CH = 560, 760; KS = 2.4615   # drawn at 2.46x pixels, same proport
 
 C.CHARS["ram"] = dict(fw=0.95, fh=1.0, build=0.98, eye=1.15, nose=0.9, kind="m", skin="#4a68a8", hair="#140c08",
                       tunic="#f2c230", sash="#c0392b", upper="#2f8a4a", lower="#f2c230", hem="#c0392b",
-                      crown=True, halo=True, jewel=True, bare=True, skirt=1.4, mous=None)
+                      crown=True, jewel=True, bare=True, skirt=1.4, mous=None)
 C.CHARS["lakshman"] = dict(fw=0.93, fh=1.02, build=0.96, eye=1.08, nose=0.95, browt=1.2, kind="m", skin="#e0a878", hair="#140c08",
                            tunic="#e0552a", sash="#f2c230", upper="#f6f0e2", lower="#e0552a", hem="#f2c230",
-                           crown=True, halo=True, jewel=True, bare=True, skirt=1.4, mous=None)
+                           crown=True, jewel=True, bare=True, skirt=1.4, mous=None)
 
 def quiver(c, x, top, u):   # quiver on the back: top and feathers rise above the right shoulder
     c.save(); c.translate(x + 0.62 * u, top + 1.55 * u); c.rotate(0.32)
