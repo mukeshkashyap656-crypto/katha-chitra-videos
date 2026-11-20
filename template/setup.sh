@@ -5,7 +5,8 @@ EP=${1:-/home/claude/ep}; T=$(cd "$(dirname "$0")" && pwd)
 mkdir -p "$EP/proj/assets" "$EP/proj/cover/assets" "$EP/proj/cover/fonts/@fontsource/mukta/files" "$EP/proj/cover/fonts/@fontsource/rozha-one/files" "$EP/proj/cover/fonts/gsap/dist"
 pip install --break-system-packages -q pycairo numpy pillow 2>/dev/null || true
 cd "$EP/proj" && [ -f package.json ] || npm init -y >/dev/null
-npm i -s hyperframes gsap @fontsource/mukta @fontsource/rozha-one >/dev/null 2>&1
+# pakke version: koi naya update system na tode (badalna ho to yahan soch-samajh kar badlo)
+npm i -s hyperframes@0.9.72 gsap@3.15.1 @fontsource/mukta@5.3.0 @fontsource/rozha-one@5.3.0 >/dev/null 2>&1
 npx hyperframes telemetry disable >/dev/null 2>&1 || true
 cp "$T"/assets/* "$EP/proj/assets/"
 cp node_modules/@fontsource/mukta/files/mukta-devanagari-800-normal.woff2 cover/fonts/@fontsource/mukta/files/

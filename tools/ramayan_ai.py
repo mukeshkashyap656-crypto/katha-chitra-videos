@@ -1,5 +1,5 @@
 """
-Katha Chitra AI Helper - free (Gemini key se; Gemini busy ho to OpenRouter ke free AI se). Sirf Katha Chitra (Ramayan).
+Katha Chitra AI Helper - free. Pehle Gemini, busy ho to OpenRouter ke free AI, phir GitHub Models (koi alag key nahi). Sirf Katha Chitra (Ramayan).
 
 Issue ya comment mein "@ai <kaam>" likho, jaise:
   "@ai Bhag 7 ka plan banao"                 -> plans/ mein shot list + lines (pehle tay, phir banao)
@@ -154,6 +154,31 @@ def openrouter(prompt_text, want_json):
     raise Busy(f"OpenRouter: {str(last)[:200]}")
 
 
+GH_MODELS = ["openai/gpt-4.1-mini", "openai/gpt-4o-mini", "deepseek/DeepSeek-V3-0324", "meta/Llama-3.3-70B-Instruct"]
+
+
+def github_models(prompt_text, want_json):
+    """Teesra free sahara: GitHub Models (GitHub ka apna token, koi alag key nahi; workflow mein models: read)."""
+    tok = os.environ.get("GH_TOKEN", "").strip()
+    if not tok:
+        raise Busy("GitHub token nahi")
+    last = None
+    for m in GH_MODELS:
+        try:
+            r = requests.post("https://models.github.ai/inference/chat/completions", timeout=300,
+                              headers={"Authorization": f"Bearer {tok}", "Content-Type": "application/json"},
+                              json={"model": m, "temperature": 0.3, "messages": [{"role": "user", "content": prompt_text}],
+                                    **({"response_format": {"type": "json_object"}} if want_json else {})})
+            txt = r.json()["choices"][0]["message"]["content"].strip()
+            if txt:
+                print("Jawab (GitHub Models):", m); USED.append("GitHub " + m)
+                return txt
+        except Exception as e:
+            last = e
+            print(f"GitHub Models {m} nahi chala: {str(e)[:160]}")
+    raise Busy(f"GitHub Models: {str(last)[:200]}")
+
+
 def ask(prompt_text, image=None, want_json=True):
     contents = [types.Part.from_bytes(data=image, mime_type="image/jpeg"), prompt_text] if image else prompt_text
     try:
@@ -161,7 +186,10 @@ def ask(prompt_text, image=None, want_json=True):
     except Busy:
         if image:   # tasveer dekhna sirf Gemini se
             raise
-        txt = openrouter(prompt_text, want_json)
+        try:
+            txt = openrouter(prompt_text, want_json)
+        except Busy:
+            txt = github_models(prompt_text, want_json)   # teesra sahara
     if not want_json:
         return txt
     mt = re.search(r"\{.*\}", txt, re.DOTALL)
@@ -366,7 +394,10 @@ def deliver(issue, ep, run_url):
         ep_json = f.read()
     report = director_check(sheet, ep_json) if sheet else "(check sheet nahi mili)"
     link = lambda n: f"https://github.com/{REPO}/blob/{rb}/{n}"
+    eng = subprocess.run(["git", "show", f"{ref}:voice_engine.txt"], capture_output=True, text=True).stdout.strip() or "madhur"
     msg = "✅ **Video ban gaya!** (cover video ke pehle frame par bhi laga hai)\n"
+    if eng == "piper":
+        msg += "\n⚠️ Is baar Madhur awaaz nahi chali, isliye **sahara wali Piper awaaz** lagi hai. Madhur chahiye to baad mein yahin `@ai dobara koshish karo` likhiye.\n"
     k = 1
     if mp4:
         msg += f"\n{k}. Video: [{mp4}]({link(mp4)})"; k += 1

@@ -9,6 +9,10 @@ on:
       episode:
         description: "Episode folder, e.g. episodes/bhag5"
         required: true
+      voice:
+        description: "madhur (default) ya piper (sahara wali awaaz test karne ke liye)"
+        required: false
+        default: "madhur"
 
 permissions:
   contents: write
@@ -37,6 +41,8 @@ jobs:
       - name: Make the episode
         if: steps.ep.outputs.episode != ''
         run: bash tools/make_episode.sh "${{ steps.ep.outputs.episode }}"
+        env:
+          VOICE_ENGINE: ${{ github.event.inputs.voice || 'madhur' }}
       - name: Save the video
         if: always() && steps.ep.outputs.episode != ''
         uses: actions/upload-artifact@v4
@@ -47,7 +53,7 @@ jobs:
       - name: Put the video on its own branch (render-<episode>), only the latest version is kept
         if: always() && steps.ep.outputs.episode != ''
         run: |
-          B=render-$(basename "${{ steps.ep.outputs.episode }}")
+          B=render-$(basename "${{ steps.ep.outputs.episode }}")$([ "${{ github.event.inputs.voice }}" = "piper" ] && echo -piper-test)
           cd out && git init -q && git checkout -q -b "$B"
           git config user.name "katha-chitra-bot"; git config user.email "bot@users.noreply.github.com"
           git add -A && git commit -q -m "Render of ${{ steps.ep.outputs.episode }} from ${GITHUB_SHA::7}"

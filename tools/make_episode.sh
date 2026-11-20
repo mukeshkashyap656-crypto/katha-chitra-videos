@@ -10,6 +10,7 @@ COVER=$(python3 -c "import json;print(json.load(open('$E/episode.json')).get('CO
 mkdir -p "$OUT"
 bash "$R/template/setup.sh" "$EP"
 python3 "$R/tools/make_voice.py" "$E/episode.json" "$EP/voice.zip"
+unzip -p "$EP/voice.zip" engine.txt > "$OUT/voice_engine.txt" 2>/dev/null || echo madhur > "$OUT/voice_engine.txt"
 DRAW=$E/draw_assets.py; BUILD=$E/build_episode.py
 if [ ! -f "$DRAW" ] && grep -q '"SHOTS"' "$E/episode.json"; then
   # data-only episode (scene list): the scene engine draws and builds it, no episode code needed
@@ -39,5 +40,9 @@ ffmpeg -v error -y -i raw.mp4 -vf "fps=30,format=yuv420p" -c:v libx264 -crf 18 -
 printf "file /tmp/c.mp4\nfile /tmp/r.mp4\n" > /tmp/l.txt
 ffmpeg -v error -y -f concat -safe 0 -i /tmp/l.txt -c copy -movflags +faststart "$OUT/$NAME.mp4"
 # director-check sheet: a frame every 0.25 s
+# sound check (like "earshot"): the video must really have voice at a normal level, never silent
+ffmpeg -nostats -i "$OUT/$NAME.mp4" -af ebur128 -f null - 2>&1 | grep -E "^\s+I:" | tail -1 | tee "$OUT/sound_check.txt"
+LUFS=$(grep -oE -- "-?[0-9]+\.[0-9]+" "$OUT/sound_check.txt" | head -1)
+python3 -c "import sys; l=float('${LUFS:--99}'); print('awaaz level', l, 'LUFS'); sys.exit(0 if l > -40 else 'AWAAZ NAHI HAI / bahut dheemi: video mein awaaz check karo')"
 ffmpeg -v error -y -i "$OUT/$NAME.mp4" -vf "fps=4,scale=180:-1,tile=10x8" -frames:v 1 "$OUT/check_sheet.jpg"
 ls -la "$OUT"
