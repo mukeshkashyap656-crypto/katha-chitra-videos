@@ -428,7 +428,7 @@ def review(sheet, ep_json):
         '{"hard_fails":[{"rule":<1-10>,"what":"Hinglish: kya dikh raha hai aur kis frame/jagah","fix":"exact change to make in episode.json"}],'
         '"scores":{"hook":0-10,"structure":0-10,"pace":0-10,"emotion":0-10,"mood":0-10,"ending":0-10,"camera":0-10},'
         '"weak":[{"what":"...","fix":"..."}],"cannot_check":["..."],"summary":"Hinglish, 2 short lines"}\n\n'
-        "# VIRAL.md\n" + viral + "\n\n# NIYAM.md\n" + open("NIYAM.md", encoding="utf-8").read() + "\n\n# EPISODE\n" + ep_json)
+        "# VIRAL.md\n" + viral + "\n\n# NIYAM.md\n" + open("NIYAM.md", encoding="utf-8").read() + "\n\n# SEEKH.md\n" + open("SEEKH.md", encoding="utf-8").read() + "\n\n# EPISODE\n" + ep_json)
     d = None
     for _ in range(3):
         txt = ask(prompt, image=sheet, want_json=False)
