@@ -340,7 +340,7 @@ tl.fromTo("#birds2",{{x:0,y:0}},{{x:1750,y:-60,duration:6,ease:"none"}},{S8:.3f}
 tl.set(".char",{{x:-150}},{S8:.3f}); tl.to(".char",{{x:0,duration:{WALK_D},ease:"none"}},{S8:.3f});
 // astras
 tl.fromTo("#counter",{{opacity:0,scale:0.5}},{{opacity:1,scale:1,duration:0.3,ease:"back.out(2)",immediateRender:false}},{ICON_T[0] - 0.1:.3f});
-tl.to("#counter",{{opacity:0,duration:0.2}},{S5:.3f});
+tl.set("#counter",{{opacity:0}},{S5:.3f});
 {''.join(icon_js)}
 // devtas merge into Ram
 {''.join(orb_js)}
