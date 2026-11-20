@@ -78,6 +78,9 @@ async def main(cfg_path, out_zip):
                 print(k, len(res[k]), "words (Madhur)")
                 await asyncio.sleep(1.5)   # lines ke beech thoda ruk ke, server pe zor kam
         except Exception as e:
+            if os.environ.get("MADHUR_ONLY") == "1":
+                # pehle poora kaam dobara try hoga (workflow), Piper sirf aakhri sahara
+                raise SystemExit(f"Madhur abhi nahi chali ({e}); thodi der baad poora episode dobara banega")
             print("Madhur nahi chali, Piper sahara use kar rahe hain:", e); engine = "piper"
     else:
         engine = "piper"

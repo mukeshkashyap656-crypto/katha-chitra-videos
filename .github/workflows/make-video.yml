@@ -40,7 +40,17 @@ jobs:
           echo "episode=$E" >> $GITHUB_OUTPUT; echo "Episode: $E"
       - name: Make the episode
         if: steps.ep.outputs.episode != ''
-        run: bash tools/make_episode.sh "${{ steps.ep.outputs.episode }}"
+        # Backup 1: kuch bhi atke toh poora episode 3 baar tak dobara banta hai (beech mein ruk ke).
+        # Pehli 2 koshish sirf Madhur awaaz; teesri mein hi Piper sahara chal sakta hai.
+        run: |
+          for TRY in 1 2 3; do
+            echo "=== Koshish $TRY ==="
+            rm -rf out /tmp/ep
+            if [ $TRY -lt 3 ]; then export MADHUR_ONLY=1; else export MADHUR_ONLY=0; fi
+            if bash tools/make_episode.sh "${{ steps.ep.outputs.episode }}"; then exit 0; fi
+            echo "Koshish $TRY fail hui"; [ $TRY -lt 3 ] && sleep $((90 * TRY))
+          done
+          exit 1
         env:
           VOICE_ENGINE: ${{ github.event.inputs.voice || 'madhur' }}
       - name: Save the video
@@ -57,4 +67,9 @@ jobs:
           cd out && git init -q && git checkout -q -b "$B"
           git config user.name "katha-chitra-bot"; git config user.email "bot@users.noreply.github.com"
           git add -A && git commit -q -m "Render of ${{ steps.ep.outputs.episode }} from ${GITHUB_SHA::7}"
-          git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" "$B"
+          # Backup 2: video branch pe daalna atke toh 4 baar tak dobara
+          for TRY in 1 2 3 4; do
+            git push -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" "$B" && exit 0
+            echo "push koshish $TRY fail"; sleep $((15 * TRY))
+          done
+          exit 1
