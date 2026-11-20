@@ -5,11 +5,11 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - name: Check Composio key (read-only)
+      - name: Check Composio MCP key (read-only)
         env:
-          K: ${{ secrets.COMPOSIO_API_KEY }}
+          K: ${{ secrets.COMPOSIO_CONSUMER_KEY }}
         run: |
-          code=$(curl -s -o resp.json -w "%{http_code}" -H "x-api-key: $K" "https://backend.composio.dev/api/v3/connected_accounts?limit=20")
-          echo "HTTP_STATUS=$code"
-          python3 -c "import json;d=json.load(open('resp.json'));print('ACCOUNTS=',sorted((i.get('toolkit',{}).get('slug'),i.get('status')) for i in d.get('items',[])))" || true
+          code=$(curl -s -o resp.txt -w "%{http_code}" -X POST "https://connect.composio.dev/mcp" -H "x-consumer-api-key: $K" -H "Content-Type: application/json" -H "Accept: application/json, text/event-stream" -d '{"jsonrpc":"2.0","id":1,"method":"initialize","params":{"protocolVersion":"2025-03-26","capabilities":{},"clientInfo":{"name":"gh-test","version":"1.0"}}}')
+          echo "MCP_HTTP_STATUS=$code"
+          head -c 300 resp.txt | tr -d '\n' | sed 's/ck_[A-Za-z0-9]*/ck_HIDDEN/g'; echo
           test "$code" = "200"
