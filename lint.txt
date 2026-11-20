@@ -1,0 +1,12 @@
+◆  Linting proj/index.html
+
+  ⚠ duplicate_media_discovery_risk: Detected 4 matching img entries with the same source/start/duration.
+    Fix: Avoid duplicated media nodes that can be discovered twice during compilation.
+  ⚠ duplicate_media_discovery_risk: Detected 3 matching img entries with the same source/start/duration.
+    Fix: Avoid duplicated media nodes that can be discovered twice during compilation.
+  ⚠ duplicate_media_discovery_risk: Detected 2 matching img entries with the same source/start/duration.
+    Fix: Avoid duplicated media nodes that can be discovered twice during compilation.
+  ⚠ duplicate_media_discovery_risk: Detected 6 matching img entries with the same source/start/duration.
+    Fix: Avoid duplicated media nodes that can be discovered twice during compilation.
+
+◇  0 error(s), 4 warning(s)
