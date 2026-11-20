@@ -326,6 +326,120 @@ def commit_push(branch, msg):
 
 
 # ---------------- mode: @ai kaam ----------------
+
+# ---------------- roz ki kataar, Valmiki jaanch, apne aap shuru (AUTOPOST) ----------------
+def queue_item(bhag):
+    try:
+        q = json.load(open("plans/STORY_QUEUE.json", encoding="utf-8"))
+    except OSError:
+        return None
+    return next((x for x in q.get("episodes", []) if str(x["bhag"]) == str(bhag)), None)
+
+
+def title_bhag():
+    m = re.match(r"\s*Bhag\s+(\d+)", os.environ.get("ISSUE_TITLE", ""))
+    return m.group(1) if m else None
+
+
+def fetch_valmiki(sargas):
+    """Valmiki ke sarga ka paath laane ki koshish (GitHub ka computer internet se jud sakta hai). Na mile toh ''."""
+    m = re.match(r"1\.(\d+)(?:-1\.(\d+))?", sargas or "")
+    if not m:
+        return ""
+    lo, hi = int(m.group(1)), int(m.group(2) or m.group(1))
+    out = []
+    for n in range(lo, min(hi, lo + 6) + 1):
+        for u in (f"https://www.valmikiramayan.net/utf8/baala/sarga{n}/bala_{n}_prose.htm",
+                  f"https://www.valmikiramayan.net/utf8/baala/sarga{n}/baala_{n}_frame.htm"):
+            try:
+                t = requests.get(u, timeout=25, headers={"User-Agent": "Mozilla/5.0"})
+                if t.status_code == 200 and len(t.text) > 800:
+                    body = re.sub(r"(?is)<(script|style).*?</\1>", "", t.text)
+                    body = re.sub(r"(?s)<[^>]+>", " ", body)
+                    out.append(f"--- Sarga 1.{n} ---\n" + re.sub(r"\s+", " ", body)[:6000])
+                    break
+            except requests.RequestException:
+                continue
+    return "\n".join(out)
+
+
+def autopost_brief():
+    b = title_bhag()
+    if not (autopost_on() and b):
+        return ""
+    it = queue_item(b) or {}
+    text = fetch_valmiki(it.get("sargas", ""))
+    st_txt = ("The Valmiki text below is the ONLY source; use nothing else:\n" + text) if text else \
+             ("Valmiki's full text could not be fetched. Use only what you are SURE is in Valmiki Ramayan Bala Kanda; "
+              "if unsure, leave it out. Do not add anything.")
+    return ("\n\nAUTOPOST: the owner already approved everything; the strict director review and the Valmiki check will "
+            "judge the result, so do NOT ask for an OK. In ONE answer write plans/bhag{b}_PLAN.md, plans/bhag{b}_episode.json AND "
+            "episodes/bhag{b}/episode.json (action change, render true). Episode: Bhag {b}; topic: {t}; Valmiki Bala Kanda "
+            "sargas (approx.): {s}. Follow VIRAL.md (hook in the first line, QUESTION banner, scene-wise pace, ending with the "
+            "next part's question + comment call) and SEEKH.md. About 35-45 seconds. Story exactly as in Valmiki, nothing added.\n"
+            ).format(b=b, t=it.get("topic", "?"), s=it.get("sargas", "?")) + st_txt
+
+
+def story_check(ep_json, bhag):
+    """Valmiki se mel: kuch jodha/badla ho toh list. Jawab samajh na aaye toh bhi 'galti' maani jaati hai."""
+    it = queue_item(bhag) or {}
+    try:
+        lines = json.loads(ep_json).get("LINES", {})
+    except ValueError:
+        return [{"line": "?", "what": "episode.json padhi nahi gayi", "fix": "episode.json theek karo"}]
+    txt = "\n".join(f"{k}: {v[0] if isinstance(v, list) else v}" for k, v in lines.items())
+    prompt = ("You are a strict scholar of Valmiki Ramayan (Bala Kanda only, NOT Tulsidas, NOT TV serials). Below are the "
+              "narration lines of a Hindi Short. Topic: {t}; sargas (approx.): {s}. List every statement that is NOT in "
+              "Valmiki Ramayan, or contradicts it, or is an invented detail. If everything matches Valmiki, return an empty list. "
+              "Never list things you are unsure about. Reply with ONLY valid JSON: "
+              '{{"problems":[{{"line":"<line id>","what":"Hinglish: kya galat/jodha hua","fix":"exact change"}}]}}\n\nLINES:\n{l}'
+              ).format(t=it.get("topic", "?"), s=it.get("sargas", "?"), l=txt)
+    for _ in range(3):
+        raw = ask(prompt, want_json=False)
+        mt = re.search(r"\{.*\}", raw, re.DOTALL)
+        try:
+            return list(json.loads(mt.group(0) if mt else raw).get("problems") or [])
+        except ValueError:
+            continue
+    return [{"line": "?", "what": "Valmiki jaanch ka jawab samajh nahi aaya", "fix": "line dobara jaancho"}]
+
+
+def mode_daily():
+    """Roz subah: aane wale dino ke bhaag ke issue khud banao aur banwao (title mein [AUTOPOST])."""
+    import datetime
+    q = json.load(open("plans/STORY_QUEUE.json", encoding="utf-8"))
+    today = (datetime.datetime.utcnow() + datetime.timedelta(hours=5, minutes=30)).date()
+    ahead = int(os.environ.get("DAILY_AHEAD", "2") or 2)
+    forced = os.environ.get("FORCE_BHAG", "").strip()
+    base = run(["git", "rev-parse", "HEAD"]).strip()
+    for it in q["episodes"]:
+        d = datetime.date.fromisoformat(it["date"])
+        if forced:
+            if str(it["bhag"]) != forced:
+                continue
+        elif not (today <= d <= today + datetime.timedelta(days=ahead)):
+            continue
+        n = it["bhag"]
+        found = json.loads(run(["gh", "issue", "list", "--repo", REPO, "--state", "all", "--limit", "100",
+                                "--json", "number,title"]) or "[]")
+        if any(re.match(rf"\s*Bhag\s+{n}\b", x["title"]) for x in found):
+            print(f"Bhag {n}: issue pehle se hai, chhod diya")
+            continue
+        title = f"Bhag {n} [AUTOPOST]"
+        url = run(["gh", "issue", "create", "--repo", REPO, "--title", title,
+                   "--body", f"@ai Bhag {n} apne aap: {it['topic']} (Valmiki {it['sargas']}). Post: {it['date']} shaam 7 baje."]).strip()
+        num = re.search(r"/issues/(\d+)", url).group(1)
+        os.environ.update(ISSUE_NUMBER=num, ISSUE_TITLE=title, REQUEST=f"Bhag {n} banao")
+        run(["git", "checkout", "-q", "-f", base])
+        USED.clear(); LEASE.clear()
+        try:
+            mode_task()
+        except (Busy, ValueError) as e:
+            queue_issue(num, str(e))
+        except Exception as e:
+            comment(num, f"⚠️ Roz wali koshish mein galti hui, kal dobara ya yahin `@ai ...` likhiye.\n\n<sub>{str(e)[:300]}</sub>")
+
+
 def mode_task():
     issue = os.environ["ISSUE_NUMBER"]
     branch = f"ai/issue-{issue}"
@@ -333,7 +447,7 @@ def mode_task():
     st = load_state()
     task = (f"Issue title: {os.environ.get('ISSUE_TITLE', '')}\n"
             f"Owner's message (Hinglish): {os.environ.get('REQUEST', '')}\n"
-            f"Earlier work on this issue's branch: {json.dumps(st, ensure_ascii=False)}")
+            f"Earlier work on this issue's branch: {json.dumps(st, ensure_ascii=False)}" + autopost_brief())
     data = solve(task)
     msg = data["summary"] or "Ho gaya."
     st["issue"] = int(issue)
@@ -475,6 +589,14 @@ def finish(issue, branch, st, ep, run_url):
     verdict = None
     for rv in range(MAX_REVIEW_ROUNDS + 1):
         verdict = review(fetch_sheet(ep), ep_json)
+        bh = title_bhag() or re.sub(r"\D", "", os.path.basename(ep))
+        sc_problems = story_check(ep_json, bh)
+        if sc_problems:
+            verdict["pass"] = False
+            verdict["hard_fails"] = list(verdict.get("hard_fails") or []) + [{"rule": 9, **p} for p in sc_problems]
+            verdict["text"] += "\n" + "\n".join(f"- ❌ Niyam 9 (Valmiki): {p.get('line')}: {p.get('what')}" for p in sc_problems)
+            verdict["fix_text"] = (verdict.get("fix_text", "") + "\n" + "\n".join(
+                f"RULE 9: line {p.get('line')}: {p.get('what')} -> {p.get('fix')}" for p in sc_problems)).strip()
         print(f"Jaanch round {rv}: pass={verdict['pass']} score={verdict['score']}")
         if verdict["pass"] or rv == MAX_REVIEW_ROUNDS:
             break
@@ -575,7 +697,7 @@ def mode_queue():
 
 if __name__ == "__main__":
     try:
-        {"task": mode_task, "queue": mode_queue}[sys.argv[1]]()
+        {"task": mode_task, "queue": mode_queue, "daily": mode_daily}[sys.argv[1]]()
     except (Busy, ValueError) as e:      # free AI busy or kept sending broken answers: queue for the morning
         if os.environ.get("ISSUE_NUMBER"):
             queue_issue(os.environ["ISSUE_NUMBER"], str(e))
