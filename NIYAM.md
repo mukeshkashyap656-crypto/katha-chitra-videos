@@ -64,7 +64,7 @@ Ye file kisi bhi AI (Gemini, DeepSeek, ChatGPT, Claude...) ko do aur bolo:
 ## 6. Camera aur movement (film director ki tarah)
 - Har insaan frame mein **ya poora andar ya poora bahar** — aadha kata nahi. Background ki cheezein bhi kinare par aadhi na katein.
 - Sir ke upar maathe jitni jagah (mukut/jata upar ke kinare ko na chhuye); aankhein upar ke teesre hisse par; jis taraf character dekh/chal raha ho us taraf zyada jagah.
-- Bolne wale par camera zoom; har 2–3 sec mein cut ya halki camera chaal.
+- Bolne wale par camera zoom. Raftaar scene ke hisaab se (tez scene mein jaldi cut, bhavuk scene mein dheema lamba shot; VIRAL.md section 3); koi khaali second nahi.
 - Movement **smooth** (jhatke nahi): chalne mein pair baari-baari uthein (fisalna nahi); khada hona dheere-dheere; mudna/haath uthana beech ke frames se (dhundhla aar-paar nahi).
 - Yagya **baith kar** hota hai (aasan par paalthi maar kar, kund ke chaaron taraf).
 - Rishi ke aane par raja **kamar se jhuk kar haath jod ke pranam** karta hai; rishi haath utha ke aashirvaad deta hai. Jhukte waqt koi kisi ko chhuye nahi.
