@@ -17,6 +17,8 @@ export PYTHONPATH=$R/template/lib:$PYTHONPATH
 EP=$EP VOICE_ZIP=$EP/voice.zip python3 "$DRAW"
 EP=$EP python3 "$BUILD"
 cd "$EP/proj"
+# the cover is its own small project: copy every picture it uses from proj/assets
+for f in $(grep -o -E 'assets/[A-Za-z0-9_./-]+' cover/index.html | sort -u); do [ -f "$f" ] && cp "$f" "cover/$f"; done
 npx hyperframes lint . | tee "$OUT/lint.txt"
 grep -q -E '\b[1-9][0-9]* error' "$OUT/lint.txt" && { echo "lint errors"; exit 1; } || true
 npx hyperframes render . -q delivery -o raw.mp4
