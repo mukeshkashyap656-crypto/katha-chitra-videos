@@ -381,26 +381,32 @@ def autopost_brief():
 
 
 def story_check(ep_json, bhag):
-    """Valmiki se mel: kuch jodha/badla ho toh list. Jawab samajh na aaye toh bhi 'galti' maani jaati hai."""
+    """Valmiki se mel. Sirf PAKKI galti (Valmiki se seedha ulta ya apni taraf se joda hua) maani jaati hai.
+    Shuru/aakhir ka sawaal, 'kamment karein: jai shri ram' aur 'agle bhaag' wali lines galti nahi hain."""
     it = queue_item(bhag) or {}
     try:
         lines = json.loads(ep_json).get("LINES", {})
     except ValueError:
         return [{"line": "?", "what": "episode.json padhi nahi gayi", "fix": "episode.json theek karo"}]
     txt = "\n".join(f"{k}: {v[0] if isinstance(v, list) else v}" for k, v in lines.items())
-    prompt = ("You are a strict scholar of Valmiki Ramayan (Bala Kanda only, NOT Tulsidas, NOT TV serials). Below are the "
-              "narration lines of a Hindi Short. Topic: {t}; sargas (approx.): {s}. List every statement that is NOT in "
-              "Valmiki Ramayan, or contradicts it, or is an invented detail. If everything matches Valmiki, return an empty list. "
-              "Never list things you are unsure about. Reply with ONLY valid JSON: "
-              '{{"problems":[{{"line":"<line id>","what":"Hinglish: kya galat/jodha hua","fix":"exact change"}}]}}\n\nLINES:\n{l}'
-              ).format(t=it.get("topic", "?"), s=it.get("sargas", "?"), l=txt)
+    prompt = ("You are a scholar of Valmiki Ramayan (Bala Kanda only, NOT Tulsidas, NOT TV serials). Below are the narration "
+              "lines of a short Hindi video. Topic: {t}; sargas (approx.): {s}.\n"
+              "Find ONLY lines that clearly CONTRADICT Valmiki Ramayan or add an event/fact that is certainly NOT in it. "
+              "Do NOT flag: simple everyday Hindi wording, the opening hook question, the ending question about the next part, "
+              "the 'comment: जय श्री राम' call, short natural dialogue that only restates the story, or anything you are not "
+              "100% sure about. Do not think aloud and do not explain; no 'Wait' or 'Let me check'.\n"
+              "Reply with ONLY valid JSON, at most 3 items, each 'what' under 25 words: "
+              '{{"problems":[{{"line":"<line id>","confidence":"high","what":"Hinglish","fix":"exact change"}}]}}. '
+              "If nothing is certainly wrong: {{\"problems\":[]}}\n\nLINES:\n{l}").format(t=it.get("topic", "?"), s=it.get("sargas", "?"), l=txt)
     for _ in range(3):
         raw = ask(prompt, want_json=False)
         mt = re.search(r"\{.*\}", raw, re.DOTALL)
         try:
-            return list(json.loads(mt.group(0) if mt else raw).get("problems") or [])
+            items = list(json.loads(mt.group(0) if mt else raw).get("problems") or [])
         except ValueError:
             continue
+        return [p for p in items if str(p.get("confidence", "")).lower() == "high"
+                and 0 < len(str(p.get("what", ""))) <= 300 and "wait" not in str(p.get("what", "")).lower()][:3]
     return [{"line": "?", "what": "Valmiki jaanch ka jawab samajh nahi aaya", "fix": "line dobara jaancho"}]
 
 
@@ -519,7 +525,7 @@ SCORE_KEYS = ["hook", "structure", "pace", "emotion", "mood", "ending", "camera"
 
 def fetch_sheet(ep):
     rb = "render-" + os.path.basename(ep)
-    run(["git", "fetch", "--depth", "1", "origin", f"{rb}:refs/remotes/origin/{rb}"])
+    run(["git", "fetch", "--depth", "1", "origin", f"+{rb}:refs/remotes/origin/{rb}"])
     return subprocess.run(["git", "show", f"origin/{rb}:check_sheet.jpg"], capture_output=True).stdout
 
 
@@ -594,7 +600,7 @@ def finish(issue, branch, st, ep, run_url):
         if sc_problems:
             verdict["pass"] = False
             verdict["hard_fails"] = list(verdict.get("hard_fails") or []) + [{"rule": 9, **p} for p in sc_problems]
-            verdict["text"] += "\n" + "\n".join(f"- ❌ Niyam 9 (Valmiki): {p.get('line')}: {p.get('what')}" for p in sc_problems)
+            verdict["text"] = verdict["text"].replace("✅ PASS", "❌ FAIL (Valmiki jaanch)") + "\n" + "\n".join(f"- ❌ Niyam 9 (Valmiki): {p.get('line')}: {p.get('what')}" for p in sc_problems)
             verdict["fix_text"] = (verdict.get("fix_text", "") + "\n" + "\n".join(
                 f"RULE 9: line {p.get('line')}: {p.get('what')} -> {p.get('fix')}" for p in sc_problems)).strip()
         print(f"Jaanch round {rv}: pass={verdict['pass']} score={verdict['score']}")
@@ -634,7 +640,7 @@ def finish(issue, branch, st, ep, run_url):
 
 def deliver(issue, ep, run_url, verdict=None):
     rb = "render-" + os.path.basename(ep)
-    run(["git", "fetch", "--depth", "1", "origin", f"{rb}:refs/remotes/origin/{rb}"])
+    run(["git", "fetch", "--depth", "1", "origin", f"+{rb}:refs/remotes/origin/{rb}"])
     ref = f"origin/{rb}"
     names = run(["git", "ls-tree", "--name-only", ref]).split()
     mp4 = next((n for n in names if n.endswith(".mp4")), None)
