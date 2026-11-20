@@ -27,10 +27,10 @@ T["n1"] = 0.35
 T["n2"] = T["n1"] + D["n1"] + 0.35
 T["vm"] = T["n2"] + D["n2"] + 0.3
 T["n3"] = T["vm"] + D["vm"] + 0.55
-T["dev"] = T["n3"] + D["n3"] + 1.0
+T["dev"] = T["n3"] + D["n3"] + 0.8
 T["ram1"] = T["dev"] + D["dev"] + 0.65
 ORB0 = T["ram1"] + D["ram1"] + 0.05; ORB_END = ORB0 + 1.1
-T["ram2"] = ORB_END + 0.8
+T["ram2"] = ORB_END + 0.65
 S8 = T["ram2"] + D["ram2"] + 0.35; WALK_D = 1.5
 T["ram3"] = S8 + WALK_D + 0.25
 T["n4"] = T["ram3"] + D["ram3"] + 0.4
@@ -48,7 +48,7 @@ S4 = E["vm"] + 0.05
 ICONS = [("दंड", "ic_chakra"), ("धर्म", "ic_chakra2"), ("काल", "ic_chakra3"), ("विष्णु", "ic_chakra4"), ("वज्र", "ic_vajra"), ("त्रिशूल", "ic_trishul")]
 ICON_T = [wt("n3", s) for s, _ in ICONS]
 T_BRAHMA = wt("n3", "ब्रह्मास्त्र")
-S5 = T["dev"] - 0.9
+S5 = T["dev"] - 0.75
 S6 = T["ram1"] - 0.5
 S7 = T["ram2"] - 0.6
 T_BADAL = wt("ram3", "बादलों")
@@ -146,6 +146,8 @@ def chunks(k):
         if out and sum(len(WT[k][i][0]) + 1 for i in cur) < 9: out[-1] += cur
         else: out.append(cur)
     return out
+# old line fully gone before the next one shows (next line shows at T - 0.2)
+LINE_OFF = {k: (min(E[k] + 0.25, T[ORDER[i + 1]] - 0.36) if i + 1 < len(ORDER) else E[k] + 0.25) for i, k in enumerate(ORDER)}
 sub_html = []; sub_js = []
 for k in ORDER:
     cs = chunks(k); body = []
@@ -153,11 +155,11 @@ for k in ORDER:
         spans = "".join(f'<span id="w{k}{i}" class="w{" key" if norm(WT[k][i][0]).rstrip("ा") in LINEKEYS[k] or norm(WT[k][i][0]) in LINEKEYS[k] or any(norm(WT[k][i][0]).startswith(x) for x in LINEKEYS[k]) else ""}">{html.escape(WT[k][i][0])}</span> ' for i in idx)
         body.append(f'<div class="chunk" id="c{k}{ci}">{spans}</div>')
         t_on = T[k] - 0.18 if ci == 0 else WT[k][idx[0]][1] - 0.08
-        t_off = (WT[k][cs[ci + 1][0]][1] - 0.16) if ci + 1 < len(cs) else E[k] + 0.25
+        t_off = (WT[k][cs[ci + 1][0]][1] - 0.16) if ci + 1 < len(cs) else LINE_OFF[k]
         sub_js.append(f'tl.to("#c{k}{ci}",{{opacity:1,duration:0.08}},{t_on:.3f});tl.to("#c{k}{ci}",{{opacity:0,duration:0.07}},{t_off:.3f});')
     nm = f'<div class="name">{NAMES[k]}</div>' if k in NAMES else ""
     sub_html.append(f'<div class="sline" id="L{k}">{nm}{"".join(body)}</div>')
-    sub_js.append(f'tl.set("#L{k}",{{opacity:1}},{T[k] - 0.2:.3f});tl.set("#L{k}",{{opacity:0}},{E[k] + 0.33:.3f});')
+    sub_js.append(f'tl.set("#L{k}",{{opacity:1}},{T[k] - 0.2:.3f});tl.set("#L{k}",{{opacity:0}},{LINE_OFF[k] + 0.08:.3f});')
     for i, (w, t) in enumerate(WT[k]): sub_js.append(f'tl.to("#w{k}{i}",{{opacity:1,duration:0.08}},{t:.3f});')
 
 # ---------- camera: world 1360x1660 in a 1008x1228 window ----------
@@ -296,9 +298,9 @@ doc = f"""<!DOCTYPE html>
  </div>
  <img id="finger" src="assets/finger.png">
  <audio id="a-pad1" src="assets/sfx_pad.wav" data-start="0" data-duration="{S2:.3f}" data-volume="0.6" data-fade-out="0.4"></audio>
- <audio id="a-morn1" src="assets/sfx_morning.wav" data-start="{S2:.3f}" data-duration="{S5 - S2:.3f}" data-volume="0.5"></audio>
+ <audio id="a-morn1" src="assets/sfx_morning.wav" data-start="{S2:.3f}" data-duration="{S5 - S2:.3f}" data-volume="0.7"></audio>
  <audio id="a-pad2" src="assets/sfx_pad.wav" data-start="{S5:.3f}" data-duration="{S6 - S5:.3f}" data-volume="0.6" data-fade-out="0.3"></audio>
- <audio id="a-morn2" src="assets/sfx_morning.wav" data-start="{S6:.3f}" data-duration="{END - S6:.3f}" data-volume="0.5" data-fade-out="0.8"></audio>
+ <audio id="a-morn2" src="assets/sfx_morning.wav" data-start="{S6:.3f}" data-duration="{END - S6:.3f}" data-volume="0.7" data-fade-out="0.8"></audio>
  <audio id="a-sh1" src="assets/sfx_shimmer.wav" data-start="0.05" data-duration="1.1" data-volume="0.5"></audio>
  <audio id="a-wh1" src="assets/sfx_whoosh_soft.wav" data-start="{S2 - 0.45:.3f}" data-duration="1.05" data-volume="0.5"></audio>
  {''.join(f'<audio id="a-sp{i}" src="assets/sfx_spark.wav" data-start="{t:.3f}" data-duration="0.53" data-volume="0.55"></audio>' for i, t in enumerate(ICON_T))}

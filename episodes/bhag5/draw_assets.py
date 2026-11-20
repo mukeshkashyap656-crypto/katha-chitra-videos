@@ -370,6 +370,9 @@ def to_wav(k):
         for j in range(len(ws)): ws[j][1] -= st
     end = ws[-1][1] + ws[-1][2] + 0.22; a = a[:int(end * SR)]
     a[-int(0.05 * SR):] *= np.linspace(1, 0, int(0.05 * SR))
+    fr = a[:len(a) // 441 * 441].reshape(-1, 441); e = np.sqrt((fr ** 2).mean(1))   # same loudness for every voice
+    voiced = fr[e > e.max() * 0.15]; rms = np.sqrt((voiced ** 2).mean()) if len(voiced) else 0.1
+    a = a * min(0.17 / max(rms, 1e-4), 0.97 / max(np.abs(a).max(), 1e-4))
     w = wave.open(f"{OUT}/{k}.wav", "w"); w.setnchannels(1); w.setsampwidth(2); w.setframerate(SR)
     w.writeframes((np.clip(a, -1, 1) * 32767).astype(np.int16).tobytes()); w.close()
     return a
