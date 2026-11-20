@@ -20,3 +20,8 @@ User se Hinglish mein, aam bolchaal ke shabdon mein baat karo. Memory ke saare R
 
 ## Awaazein laana
 Actions → "Fetch free CC0 sounds (Openverse)" → Run workflow → jo awaaz chahiye likho. Sirf CC0 aati hain.
+
+## Niyam aur free AI Helper
+- `NIYAM.md` — Katha Chitra ke saare niyam ek jagah (kisi bhi AI ko do). Naya niyam bane toh yahan bhi jodo.
+- `tools/ramayan_ai.py` + `.github/workflows/ai_helper.yml` (main branch par bhi) — free Gemini helper: Issue/comment mein `@ai <kaam>`. Har issue ki branch `ai/issue-N`, `ai_state.json` mein us issue ka episode. Video render ka intezaar karke link + AI director check issue mein deta hai, fail ho toh 3 baar tak khud theek karta hai.
+- Katha (auto Bhakti Shorts, `auto-youtube` repo) alag channel hai — use yahan mat milao.
