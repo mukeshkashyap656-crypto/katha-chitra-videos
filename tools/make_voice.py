@@ -27,7 +27,6 @@ async def gen_edge(path, text, rate, pitch):
 
 
 def piper_model(tmp):
-    subprocess.run([sys.executable, "-m", "pip", "install", "-q", "piper-tts"], check=True)
     for v in PIPER_VOICES:
         try:
             onnx = f"{tmp}/{v}.onnx"
@@ -82,6 +81,7 @@ async def main(cfg_path, out_zip):
     else:
         engine = "piper"
     if engine == "piper":   # whole episode in one voice, never mixed
+        subprocess.run([sys.executable, "-m", "pip", "install", "-q", "piper-tts"], check=True)
         from piper import PiperVoice
         voice = PiperVoice.load(piper_model(tmp))
         res = {k: gen_piper(voice, f"{tmp}/{k}.mp3", text, rate, pitch) for k, (text, rate, pitch) in lines.items()}
