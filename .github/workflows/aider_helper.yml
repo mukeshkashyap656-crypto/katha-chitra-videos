@@ -1,0 +1,85 @@
+name: Katha Chitra Aider Helper
+
+# Free code helper (Aider + Gemini key). Claude subscription ke bina code/video-script sudharne ke liye.
+# Issue ya comment mein "@aider <kaam>" likho (jaise "@aider tools/ramayan_ai.py mein subtitle ka timing theek karo").
+# Kaam "auto-video" branch se nayi branch ai/aider-issue-<number> par hota hai; main ya auto-video ko seedha nahi chhedta.
+# Ye file "main" branch par honi chahiye. "@ai" wala purana helper alag hai, use nahi chhedta.
+on:
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: aider-helper-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  aider-task:
+    # Sirf repo ka maalik (aap) "@aider" se kaam de sakta hai.
+    if: >-
+      (github.event_name == 'issues' &&
+       contains(github.event.issue.body, '@aider') &&
+       github.event.issue.user.login == github.repository_owner) ||
+      (github.event_name == 'issue_comment' &&
+       !github.event.issue.pull_request &&
+       contains(github.event.comment.body, '@aider') &&
+       github.event.comment.user.login == github.repository_owner)
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: auto-video
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Install Aider
+        run: pip install -q aider-chat
+      - name: Run Aider
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          # Model badalna ho to repo Variable AIDER_MODEL set karo (default neeche).
+          AIDER_MODEL: ${{ vars.AIDER_MODEL || 'gemini/gemini-2.5-flash' }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          REQUEST: ${{ github.event.comment.body || github.event.issue.body }}
+        run: |
+          if [ -z "$GEMINI_API_KEY" ]; then
+            gh issue comment "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY" --body "⚠️ GEMINI_API_KEY secret nahi mila. Settings → Secrets and variables → Actions mein GEMINI_API_KEY daalo."
+            exit 1
+          fi
+          BRANCH="ai/aider-issue-${ISSUE_NUMBER}"
+          git config user.name "aider-helper"
+          git config user.email "aider-helper@users.noreply.github.com"
+          git checkout -B "$BRANCH"
+          # "@aider" hata kar sirf kaam ka text rakho
+          TASK=$(printf '%s' "$REQUEST" | sed 's/@aider//g')
+          set +e; set -o pipefail
+          aider --model "$AIDER_MODEL" --yes-always --no-check-update --no-analytics \
+                --no-gitignore --message "$TASK" 2>&1 | tail -n 80 > aider_log.txt
+          STATUS=$?
+          set -e
+          git push -u origin "$BRANCH" --force-with-lease || true
+          CHANGED=$(git diff --stat "origin/auto-video...$BRANCH" | tail -n 15)
+          {
+            echo "Aider kaam khatam (exit $STATUS). Branch: \`$BRANCH\`"
+            echo
+            echo "Badlav:"
+            echo '```'
+            echo "${CHANGED:-koi badlav nahi}"
+            echo '```'
+            echo
+            echo "Aider ka akhri output:"
+            echo '```'
+            tail -n 30 aider_log.txt
+            echo '```'
+            echo
+            echo "Dekhkar theek lage to is branch ko auto-video mein milao."
+          } > comment.md
+          gh issue comment "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY" --body-file comment.md
