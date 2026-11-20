@@ -1,0 +1,15 @@
+name: composio-key-test
+on:
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check Composio key (read-only)
+        env:
+          K: ${{ secrets.COMPOSIO_API_KEY }}
+        run: |
+          code=$(curl -s -o resp.json -w "%{http_code}" -H "x-api-key: $K" "https://backend.composio.dev/api/v3/connected_accounts?limit=20")
+          echo "HTTP_STATUS=$code"
+          python3 -c "import json;d=json.load(open('resp.json'));print('ACCOUNTS=',sorted((i.get('toolkit',{}).get('slug'),i.get('status')) for i in d.get('items',[])))" || true
+          test "$code" = "200"
