@@ -44,18 +44,34 @@ def bow_at(c, hx, hy, u, skin):   # bow gripped in the hand: grip at the fist, l
 ARMS_BOW = (-0.42, 0.22, -0.12, -0.05)   # left (screen-left) arm slightly out, holding the bow
 
 def draw_char(name, file, walk=None, side=0, **kw):
-    C.WALK = walk; C.SIDE = side   # side = +1 / -1: side-view walk facing screen right / left (face turns the same way)
+    # side = +1 / -1: side-view walk facing screen right / left; kw turn= head turn, bend= bow from waist (pranam),
+    # bowpos = 0 bow in hand ... 1 bow slung on the back (smooth hand-over for pranam)
+    C.WALK = walk; C.SIDE = side
+    bowpos = kw.pop("bowpos", 0.0)
     s = cairo.ImageSurface(cairo.FORMAT_ARGB32, int(CW * KS), int(CH * KS)); c = cairo.Context(s); c.scale(KS, KS)
     x, feet = CW / 2, CH - 30
     archer = name in ("ram", "lakshman")
+    turn = kw.get("turn"); bend = kw.get("bend", 0.0)
+    d = side or (0 if not turn else (1 if turn > 0 else -1))
+    tall = C.CHARS[name].get("tall", 1.0); u = HS * tall / 5.0; waist_y = feet - HS * tall + 2.35 * u
     if archer:
         kw.setdefault("arms", ARMS_BOW)
         tmp = cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, CW, CH))
         info = person(tmp, name, x, feet, HS, **kw)
-        quiver(c, x, feet - HS, HS / 5, side)
+        c.save()
+        if bend: c.translate(x, waist_y); c.rotate(bend); c.translate(-x, -waist_y)
+        quiver(c, x, feet - HS, HS / 5, d)
+        c.restore()
     info = person(c, name, x, feet, HS, **kw)
     if archer:
-        hx, hy = info["hands"][0]; bow_at(c, hx + 0.34 * info["u"], hy, info["u"], C.CHARS[name]["skin"])  # grip lands on the fist
+        hx, hy = info["hands"][0]; hx += 0.34 * info["u"]          # grip lands on the fist
+        if bowpos:
+            tx, ty = x - 0.55 * u * (d or 1), feet - HS * 0.5      # slung behind the back
+            if bend:
+                ca, sa = math.cos(bend), math.sin(bend); dx, dy = tx - x, ty - waist_y
+                tx, ty = x + dx * ca - dy * sa, waist_y + dx * sa + dy * ca
+            hx, hy = hx + (tx - hx) * bowpos, hy + (ty - hy) * bowpos
+        bow_at(c, hx, hy, info["u"], C.CHARS[name]["skin"])
     s.write_to_png(f"{OUT}/{file}.png"); C.WALK = None; C.SIDE = 0
 
 MOUTHS = ["X", "A", "B", "E", "O", "M"]

@@ -27,6 +27,24 @@ def poly(ctx, pts):
         ctx.line_to(*p)
     ctx.close_path()
 
+
+# ---- REAL human gait: average of two walkers from the CMU motion-capture database (free for all uses; BVH by B. Hahne).
+# 24 samples per step cycle starting at left heel strike; angles in degrees from straight-down, + = forward.
+GAIT = {"L_thigh": [33.1, 33.4, 34.1, 33.1, 27.6, 20.8, 14.7, 9.0, 5.3, 0.2, -7.7, -16.4, -23.0, -27.6, -25.1, -18.7, -7.6, 2.8, 12.2, 20.6, 27.4, 31.2, 31.4, 31.9], "L_shank": [18.0, 13.2, 6.0, -1.6, -6.2, -8.8, -11.2, -13.9, -18.1, -20.8, -21.0, -20.7, -23.0, -27.9, -37.8, -47.9, -57.5, -60.1, -56.3, -47.9, -35.4, -19.3, -1.3, 13.0], "R_thigh": [-18.7, -22.9, -24.0, -15.2, -5.3, 4.8, 13.8, 21.5, 27.9, 31.6, 32.8, 34.1, 36.5, 35.7, 35.4, 33.9, 28.2, 21.7, 15.8, 10.8, 6.7, 0.7, -5.3, -12.6], "R_shank": [-26.8, -31.8, -38.0, -49.9, -58.8, -61.3, -57.4, -49.2, -37.0, -21.5, -4.1, 9.3, 12.9, 8.5, 2.1, -5.5, -10.2, -13.3, -15.7, -18.8, -22.0, -23.6, -25.2, -25.6], "L_uarm": [-27.4, -29.6, -29.1, -26.5, -22.6, -16.7, -9.9, -3.3, 3.1, 9.7, 16.0, 20.5, 23.1, 22.2, 19.0, 14.1, 10.0, 6.6, 2.9, -1.2, -5.9, -11.4, -17.6, -23.0], "L_farm": [-19.7, -23.7, -24.8, -22.4, -17.5, -10.5, -1.2, 11.9, 25.9, 38.6, 50.4, 60.5, 68.1, 72.4, 72.7, 68.6, 60.4, 49.3, 36.6, 24.6, 12.3, 1.4, -6.9, -15.0], "R_uarm": [14.6, 15.7, 13.3, 8.9, 4.6, 1.2, -3.5, -7.7, -12.3, -16.4, -20.2, -24.2, -26.7, -27.3, -25.7, -23.0, -19.8, -15.0, -9.5, -4.3, 0.5, 5.8, 10.9, 14.9], "R_farm": [59.8, 62.4, 62.1, 58.9, 53.7, 46.5, 38.1, 29.1, 20.9, 12.6, 4.5, -1.5, -6.8, -10.9, -13.2, -12.4, -8.3, -2.3, 6.3, 16.3, 27.5, 38.1, 47.4, 55.5]}
+
+def _gait(phase):
+    """phase (radians) -> dict of interpolated real joint angles (degrees)."""
+    n = 24; f = (phase / (2 * math.pi) * n) % n; i = int(f); w = f - i; j = (i + 1) % n
+    return {k: v[i] * (1 - w) + v[j] * w for k, v in GAIT.items()}
+
+def _gait_legs(phase, seg):
+    """real leg angles -> (dtop, {s: (thigh_rad, shank_rad, ext)}) ; dtop = how far the pelvis sits below straight-leg height"""
+    g = _gait(phase); r = {}
+    for s_, p in ((-1, "L"), (1, "R")):
+        th, sh = math.radians(g[p + "_thigh"]), math.radians(g[p + "_shank"])
+        r[s_] = (th, sh, seg * (math.cos(th) + math.cos(sh)))
+    return max(v[2] for v in r.values()), r
+
 def _dk(h, f=0.78):
     r, g, b = hexc(h)
     return "#%02x%02x%02x" % (int(r * f * 255), int(g * f * 255), int(b * f * 255))
@@ -227,7 +245,7 @@ def face(ctx, c, hx, hy, u, mouth="X", blink=False, emo="neutral", look=0.0, tur
 
 
 def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=False, emo="neutral",
-           look=0.0, bow=0.0, prop=None, t=0.0, turn=None):
+           look=0.0, bow=0.0, prop=None, t=0.0, turn=None, bend=0.0):
     """arms = (l_sh, l_el, r_sh, r_el) radians from straight-down; positive -> screen right."""
     c = CHARS[cname]
     if turn is None:
@@ -250,7 +268,13 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
     if pose == "sit":
         top = feet - H * 0.72
     if WALK is not None and pose == "stand":      # walking: body dips at footfall, rises mid-step
-        top += 0.10 * u * (1 - abs(math.sin(WALK)))
+        if SIDE:
+            _extmax, _lg = _gait_legs(WALK, 1.015 * u)
+            top += 2.0 * u - _extmax                 # real data: pelvis height follows the leg angles so the lower foot stays on the ground
+        else:
+            top += 0.10 * u * (1 - abs(math.sin(WALK)))
+    if pose == "stand" and WALK is None and t:
+        top += 0.012 * u * math.sin(t)                 # idle breathing: whole upper body rises/falls a little
     hx, hy = x, top + 0.5 * u + bow * u * 0.25
     sh_y = top + 1.12 * u
     sh_w = (0.62 * u if kind != "f" else 0.52 * u) * c.get("build", 1.0)
@@ -262,14 +286,15 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
     if WALK is not None and pose == "stand":      # arms swing opposite to the legs (bow arm stays put)
         _sw = -math.cos(WALK)
         _la, _le, _ra, _re = arms
-        if SIDE and free_arms:                    # side view: arms swing forward/back in the picture plane, elbow folds on the forward swing
-            _la, _ra = 0.0, 0.0
-            arms = (-0.55 * _sw * SIDE, SIDE * (0.18 + 0.55 * max(0.0, -_sw)), 0.55 * _sw * SIDE, SIDE * (0.18 + 0.55 * max(0.0, _sw)))
+        if SIDE and free_arms:                    # side view: real mocap arm swing (upper arm + elbow fold)
+            _g = _gait(WALK); _r = math.radians
+            arms = (_r(_g["L_uarm"]) * SIDE, _r(_g["L_farm"] - _g["L_uarm"]) * SIDE, _r(_g["R_uarm"]) * SIDE, _r(_g["R_farm"] - _g["R_uarm"]) * SIDE)
         elif free_arms:
             arms = (_la - 0.34 * _sw, _le + 0.12 + 0.10 * max(0.0, -_sw), _ra + 0.34 * _sw, _re + 0.12 + 0.10 * max(0.0, _sw))
         else:
             if SIDE:
-                arms = (_la, _le, _ra + 0.50 * _sw * SIDE, _re + SIDE * (0.15 + 0.45 * max(0.0, _sw)))
+                _g = _gait(WALK); _r = math.radians
+                arms = (_la, _le, _r(_g["R_uarm"]) * SIDE, _r(_g["R_farm"] - _g["R_uarm"]) * SIDE)
             else:
                 arms = (_la, _le, _ra + 0.20 * _sw, _re + 0.08 + 0.06 * max(0.0, _sw))
     if c.get("halo"):
@@ -301,28 +326,37 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
             else:
                 for s in (-1, 1):
                     if WALK is not None:
-                        # ground foot slides BACK under the body, swing foot lifts and goes FORWARD; knee bends (two-bone IK)
-                        q = (WALK + (0 if s < 0 else math.pi)) % (2 * math.pi)
-                        A = (0.40 if SIDE else 0.19) * u
-                        if q < math.pi:
-                            t = q / math.pi; e = t * t * (3 - 2 * t)
-                            dx = -A + 2 * A * e; lift = 0.16 * u * math.sin(math.pi * t); toe = 0.35 * (1 - 2 * t)
-                        else:
-                            t = (q - math.pi) / math.pi
-                            dx = A - 2 * A * t; lift = 0.0; toe = 0.0
                         if SIDE:
-                            dx *= SIDE; lift *= 1.25
-                            hip = (x + s * 0.03 * u, waist_y + 0.6 * u); foot = (x + s * 0.02 * u + dx, feet - 0.05 * u - lift)
+                            # REAL mocap angles: forward kinematics from the hip (thigh) to the knee to the foot
+                            _th, _sh, _ext = _lg[s]; seg = 1.015 * u
+                            hip = (x + s * 0.03 * u, waist_y + 0.6 * u)
+                            knee = (hip[0] + SIDE * seg * math.sin(_th), hip[1] + seg * math.cos(_th))
+                            foot = (knee[0] + SIDE * seg * math.sin(_sh), knee[1] + seg * math.cos(_sh))
+                            _w = max(0.0, 1.0 - (_extmax - _ext) / (0.25 * u))       # 1 while the foot is on the ground
+                            toe = max(-0.55, min(0.55, -0.6 * _sh * _w))
                         else:
-                            hip = (x + s * 0.17 * u, waist_y + 0.6 * u)
-                            foot = (x + s * 0.19 * u + dx, feet - 0.05 * u - lift)
-                        seg = 1.015 * u
-                        ddx, ddy = foot[0] - hip[0], foot[1] - hip[1]
-                        d = min(math.hypot(ddx, ddy), 2 * seg - 1)
-                        vx, vy = ddx / math.hypot(ddx, ddy), ddy / math.hypot(ddx, ddy)
-                        hh = math.sqrt(max(seg * seg - (d / 2) ** 2, 0.0))
-                        _bd = SIDE if SIDE else 1
-                        knee = (hip[0] + vx * d / 2 + vy * hh * _bd, hip[1] + vy * d / 2 - vx * hh * _bd)
+                            # ground foot slides BACK under the body, swing foot lifts and goes FORWARD; knee bends (two-bone IK)
+                            q = (WALK + (0 if s < 0 else math.pi)) % (2 * math.pi)
+                            A = (0.40 if SIDE else 0.19) * u
+                            if q < math.pi:
+                                t = q / math.pi; e = t * t * (3 - 2 * t)
+                                dx = -A + 2 * A * e; lift = 0.16 * u * math.sin(math.pi * t); toe = 0.35 * (1 - 2 * t)
+                            else:
+                                t = (q - math.pi) / math.pi
+                                dx = A - 2 * A * t; lift = 0.0; toe = 0.0
+                            if SIDE:
+                                dx *= SIDE; lift *= 1.25
+                                hip = (x + s * 0.03 * u, waist_y + 0.6 * u); foot = (x + s * 0.02 * u + dx, feet - 0.05 * u - lift)
+                            else:
+                                hip = (x + s * 0.17 * u, waist_y + 0.6 * u)
+                                foot = (x + s * 0.19 * u + dx, feet - 0.05 * u - lift)
+                            seg = 1.015 * u
+                            ddx, ddy = foot[0] - hip[0], foot[1] - hip[1]
+                            d = min(math.hypot(ddx, ddy), 2 * seg - 1)
+                            vx, vy = ddx / math.hypot(ddx, ddy), ddy / math.hypot(ddx, ddy)
+                            hh = math.sqrt(max(seg * seg - (d / 2) ** 2, 0.0))
+                            _bd = SIDE if SIDE else 1
+                            knee = (hip[0] + vx * d / 2 + vy * hh * _bd, hip[1] + vy * d / 2 - vx * hh * _bd)
                         limb(ctx, [hip, knee, foot], 0.30 * u, _dk(c["lower"]) if (SIDE and s < 0) else c["lower"])
                         ctx.save(); ctx.translate(foot[0] + 0.05 * u * (SIDE or 1), foot[1] + 0.01 * u); ctx.rotate(toe * (SIDE or 1))
                         ellipse(ctx, 0, 0, 0.22 * u, 0.09 * u); fill_stroke(ctx, "#6b3a1e", 4); ctx.restore()
@@ -350,6 +384,8 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
             poly(ctx, [(x - 0.46 * u, waist_y - 0.1 * u), (x + 0.46 * u, waist_y - 0.1 * u), (x + 0.5 * u, waist_y + 0.55 * u), (x - 0.5 * u, waist_y + 0.55 * u)])
             fill_stroke(ctx, c["coat"])
     # ---- torso ----
+    if bend:                                       # bow from the waist (pranam): torso, head and arms rotate together about the hips
+        ctx.save(); ctx.translate(x, waist_y); ctx.rotate(bend); ctx.translate(-x, -waist_y)
     if _walking:                                   # shoulders twist against the hips (front view: torso narrows at max twist)
         _tw = math.cos(WALK) ** 2
         ctx.save(); ctx.translate(x, 0); ctx.scale(0.74 if SIDE else 1 - 0.13 * _tw, 1); ctx.translate(-x, 0)
@@ -507,5 +543,6 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
         ctx.arc(kx, ky - 0.06 * u, 0.14 * u, math.pi, 0); ctx.set_source_rgb(*OL); ctx.set_line_width(4); ctx.stroke()
         ctx.arc(kx, ky - 0.18 * u, 0.11 * u, 0, 6.3); fill_stroke(ctx, c["skin"], 4)
     if _walking: ctx.restore()
+    if bend: ctx.restore()
     if _walking: ctx.restore()
     return dict(head=(hx, hy), u=u, hands=hands, top=top - 0.3 * u)

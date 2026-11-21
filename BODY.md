@@ -8,6 +8,12 @@ Pehle NIYAM.md aur SEEKH.md padho, phir ye. Naya sudhaar mile toh SEEKH.md mein 
 - Chalne wala jis taraf ja raha hai, chehra aur body usi taraf. Samne khada insaan us aane wale ki taraf dekhe (person(turn=...)). Camera ki taraf koi nahi dekhta, jab tak kahani mein camera se baat na ho.
 - Har scene ke liye pehle likho: kaun kahan, kis taraf mukh, kya harkat, kaisa bhav. Phir banao.
 
+## Asli insaan ka data (motion capture) se liya hua
+- Chalne ke angle ab asli logon ke motion capture (CMU, free for all uses) se liye gaye hain: `template/lib/chars.py` mein GAIT table (24 sample ka ek chakkar). Jaanghon ka swing ~+33 se -30 degree, ghutna swing mein ~60 degree mudta hai, paon zameen se ~0.2 pair-lambai uthta hai, kadam lamba hai (pehle ka lagbhag doguna), haath ~+-28 degree jhoolta aur kohni aage jaate waqt ~40 degree mudti hai.
+- Paer phislein nahi: body ko har 12 frame (ek chakkar) mein 3.2*u aage badhao (u = insaan ki oonchai/5). Isse kam/zyada karoge to paer zameen par skate karte dikhenge.
+- Aur harkat chahiye toh `tools/gait.py` aur `tools/bvh.py` se kisi bhi CMU motion (baithna-uthna 13_01, ruk kar chalna 16_33, mudna 16_17, jhukna 02_06) ke angle nikaal kar chars.py mein table banao. Data: github.com/sfd158/cmu-mocap (data/<subject>/<file>.bvh).
+- person(..., bend=radian) = kamar se jhukna (pranam). Pranam ke haath: arms=(0.1, 2.24, -0.1, -2.24). Pranam mein dhanush kandhe par (draw_char bowpos=0..1 se haath se peeth par dheere se). Khade character mein t=samay se halki saans.
+
 ## Naap (sab insaan ek size ke, bas chhote farq)
 - Sar = 1 unit; bada insaan ~7.5 sar lamba. Bachcha 5-6 sar (sar bada), boodha thoda jhuka (~7).
 - Kandhe ~2 sar chaude, kulhe ~1.5, haath ka sira jaangh ke beech tak. Aurat ke kulhe chaude, kandhe patle; aadmi ke kandhe chaude.
