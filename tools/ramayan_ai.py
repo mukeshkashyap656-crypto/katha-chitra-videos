@@ -695,18 +695,21 @@ def autopost_brief():
     it = queue_item(b) or {}
     text = fetch_valmiki(it.get("sargas", ""))
     radar = {}
-    try:      # radar kabhi video nahi rokta: kuch bhi atke toh bina radar ke chalega
-        import datetime
-        today = (datetime.datetime.utcnow() + datetime.timedelta(hours=5, minutes=30)).date()
-        radar = VR.advise(ask, b, it.get("topic", "?"), it.get("sargas", "?"), today, open("VIRAL.md", encoding="utf-8").read())
-        if radar:
-            os.makedirs("plans/radar", exist_ok=True)
-            with open(f"plans/radar/bhag{b}.json", "w", encoding="utf-8") as fh:
-                json.dump(radar, fh, ensure_ascii=False, indent=1)
-            run(["git", "add", f"plans/radar/bhag{b}.json"], check=False)
-            print("Viral radar:", radar.get("question"))
-    except Exception as e:
-        print("Viral radar nahi chala (koi baat nahi):", str(e)[:150])
+    if os.path.exists(f"episodes/bhag{b}/episode.json"):
+        print("Episode pehle se bana hai: radar kahani/sawaal nahi badlega.")
+    else:
+      try:      # radar kabhi video nahi rokta: kuch bhi atke toh bina radar ke chalega
+          import datetime
+          today = (datetime.datetime.utcnow() + datetime.timedelta(hours=5, minutes=30)).date()
+          radar = VR.advise(ask, b, it.get("topic", "?"), it.get("sargas", "?"), today, open("VIRAL.md", encoding="utf-8").read(), valmiki_text=text)
+          if radar:
+              os.makedirs("plans/radar", exist_ok=True)
+              with open(f"plans/radar/bhag{b}.json", "w", encoding="utf-8") as fh:
+                  json.dump(radar, fh, ensure_ascii=False, indent=1)
+              run(["git", "add", f"plans/radar/bhag{b}.json"], check=False)
+              print("Viral radar:", radar.get("question"))
+      except Exception as e:
+          print("Viral radar nahi chala (koi baat nahi):", str(e)[:150])
     st_txt = ("The Valmiki text below is the ONLY source; use nothing else:\n" + text) if text else \
              ("Valmiki's full text could not be fetched. Use only what you are SURE is in Valmiki Ramayan Bala Kanda; "
               "if unsure, leave it out. Do not add anything.")
@@ -714,7 +717,7 @@ def autopost_brief():
             "judge the result, so do NOT ask for an OK. In ONE answer write plans/bhag{b}_PLAN.md, plans/bhag{b}_episode.json AND "
             "episodes/bhag{b}/episode.json (action change, render true). Episode: Bhag {b}; topic: {t}; Valmiki Bala Kanda "
             "sargas (approx.): {s}. Follow VIRAL.md (hook in the first line, QUESTION banner, scene-wise pace, ending with the "
-            "next part's question + comment call) and SEEKH.md. About 35-45 seconds. Story exactly as in Valmiki, nothing added.\n"
+            "next part's question + comment call) and SEEKH.md. About 35-45 seconds. Story exactly as in Valmiki, nothing added; every scene must follow the Valmiki text in the order it happens.\n"
             ).format(b=b, t=it.get("topic", "?"), s=it.get("sargas", "?")) + VR.brief_text(radar) + st_txt
 
 

@@ -93,7 +93,7 @@ def gather(topic):
     return sig
 
 
-def advise(ask, bhag, topic, sargas, today, viral_md, sig=None):
+def advise(ask, bhag, topic, sargas, today, viral_md, sig=None, valmiki_text=""):
     """Signals dekhkar AI se: sabse zordaar pehla sawaal + 2 vikalp + tags. Kuch na mile toh {}."""
     sig = sig if sig is not None else gather(topic)
     if not (sig["autocomplete"] or sig["trends"] or sig["stats"]):
@@ -107,11 +107,14 @@ def advise(ask, bhag, topic, sargas, today, viral_md, sig=None):
         "(no clickbait that the episode does not answer); Hindi in simple spoken Devanagari, under 60 characters; no film/actor/TV names. "
         "If a trending item or a festival/date of today really connects to this episode, you may use it as the angle; otherwise ignore the trends. "
         "Prefer the wording people actually search (see autocomplete). Follow VIRAL.md section 1 and 5.\n"
+        "THE STORY COMES FIRST: the question may only be about something that really happens in the VALMIKI TEXT below and is answered in it. "
+        "Trends and search words only decide the WORDING; they never decide what the episode is about, never add or change a scene. "
+        "If no signal fits the story, take the most natural question from the story itself.\n"
         "Reply with ONLY valid JSON: "
         '{{"question":"...","alternatives":["...","..."],"search_words":["valmiki ramayan ..."],"angle":"Hinglish, 1 line","reason":"Hinglish, 1 line: kis signal ki wajah se"}}\n\n'
-        "# AUTOCOMPLETE\n{ac}\n\n# TRENDS INDIA TODAY\n{tr}\n\n# OUR STATS\n{st}\n\n# VIRAL.md\n{v}"
+        "# VALMIKI TEXT\n{vt}\n\n# AUTOCOMPLETE\n{ac}\n\n# TRENDS INDIA TODAY\n{tr}\n\n# OUR STATS\n{st}\n\n# VIRAL.md\n{v}"
     ).format(today=today, b=bhag, t=topic, s=sargas, ac=json.dumps(sig["autocomplete"], ensure_ascii=False),
-             tr=", ".join(sig["trends"]) or "(not available)", st=sig["stats"] or "(none yet)", v=viral_md[:4000])
+             tr=", ".join(sig["trends"]) or "(not available)", st=sig["stats"] or "(none yet)", v=viral_md[:4000], vt=(valmiki_text or "(not available: use only what you are sure is in Valmiki Bala Kanda)")[:3500])
     for _ in range(2):
         try:
             raw = ask(prompt, want_json=False)
