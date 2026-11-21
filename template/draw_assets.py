@@ -48,6 +48,9 @@ def draw_char(name, file, walk=None, side=0, **kw):
     # bowpos = 0 bow in hand ... 1 bow slung on the back (smooth hand-over for pranam)
     C.WALK = walk; C.SIDE = side
     bowpos = kw.pop("bowpos", 0.0)
+    stop = kw.pop("stop", None)       # 0..1 = real 'walk, then stop' (use with side=+-1); body travel = C.stop_disp(stop) * u
+    if stop is not None:
+        C.GAITOV = C.stop_pose(stop); walk = 0.0; C.WALK = 0.0
     s = cairo.ImageSurface(cairo.FORMAT_ARGB32, int(CW * KS), int(CH * KS)); c = cairo.Context(s); c.scale(KS, KS)
     x, feet = CW / 2, CH - 30
     archer = name in ("ram", "lakshman")
@@ -72,7 +75,7 @@ def draw_char(name, file, walk=None, side=0, **kw):
                 tx, ty = x + dx * ca - dy * sa, waist_y + dx * sa + dy * ca
             hx, hy = hx + (tx - hx) * bowpos, hy + (ty - hy) * bowpos
         bow_at(c, hx, hy, info["u"], C.CHARS[name]["skin"])
-    s.write_to_png(f"{OUT}/{file}.png"); C.WALK = None; C.SIDE = 0
+    s.write_to_png(f"{OUT}/{file}.png"); C.WALK = None; C.SIDE = 0; C.GAITOV = None
 
 MOUTHS = ["X", "A", "B", "E", "O", "M"]
 PH = [0, math.pi / 2, math.pi, 3 * math.pi / 2]

@@ -32,7 +32,25 @@ def poly(ctx, pts):
 # 24 samples per step cycle starting at left heel strike; angles in degrees from straight-down, + = forward.
 GAIT = {"L_thigh": [33.1, 33.4, 34.1, 33.1, 27.6, 20.8, 14.7, 9.0, 5.3, 0.2, -7.7, -16.4, -23.0, -27.6, -25.1, -18.7, -7.6, 2.8, 12.2, 20.6, 27.4, 31.2, 31.4, 31.9], "L_shank": [18.0, 13.2, 6.0, -1.6, -6.2, -8.8, -11.2, -13.9, -18.1, -20.8, -21.0, -20.7, -23.0, -27.9, -37.8, -47.9, -57.5, -60.1, -56.3, -47.9, -35.4, -19.3, -1.3, 13.0], "R_thigh": [-18.7, -22.9, -24.0, -15.2, -5.3, 4.8, 13.8, 21.5, 27.9, 31.6, 32.8, 34.1, 36.5, 35.7, 35.4, 33.9, 28.2, 21.7, 15.8, 10.8, 6.7, 0.7, -5.3, -12.6], "R_shank": [-26.8, -31.8, -38.0, -49.9, -58.8, -61.3, -57.4, -49.2, -37.0, -21.5, -4.1, 9.3, 12.9, 8.5, 2.1, -5.5, -10.2, -13.3, -15.7, -18.8, -22.0, -23.6, -25.2, -25.6], "L_uarm": [-27.4, -29.6, -29.1, -26.5, -22.6, -16.7, -9.9, -3.3, 3.1, 9.7, 16.0, 20.5, 23.1, 22.2, 19.0, 14.1, 10.0, 6.6, 2.9, -1.2, -5.9, -11.4, -17.6, -23.0], "L_farm": [-19.7, -23.7, -24.8, -22.4, -17.5, -10.5, -1.2, 11.9, 25.9, 38.6, 50.4, 60.5, 68.1, 72.4, 72.7, 68.6, 60.4, 49.3, 36.6, 24.6, 12.3, 1.4, -6.9, -15.0], "R_uarm": [14.6, 15.7, 13.3, 8.9, 4.6, 1.2, -3.5, -7.7, -12.3, -16.4, -20.2, -24.2, -26.7, -27.3, -25.7, -23.0, -19.8, -15.0, -9.5, -4.3, 0.5, 5.8, 10.9, 14.9], "R_farm": [59.8, 62.4, 62.1, 58.9, 53.7, 46.5, 38.1, 29.1, 20.9, 12.6, 4.5, -1.5, -6.8, -10.9, -13.2, -12.4, -8.3, -2.3, 6.3, 16.3, 27.5, 38.1, 47.4, 55.5]}
 
+# real "walk, then stop" from CMU 16_33 (24 samples, ~1.1 s). disp = forward travel of the pelvis in leg-lengths.
+STOPT = {"L_thigh": [-8.1, -7.2, -2.5, 4.7, 12.1, 18.1, 23.0, 25.9, 26.3, 24.1, 19.6, 15.7, 14.2, 13.4, 12.6, 11.7, 11.1, 10.8, 10.6, 10.6, 10.3, 10.1, 10.1, 10.0], "L_shank": [-28.3, -33.8, -39.9, -45.7, -49.8, -50.8, -49.1, -45.4, -39.2, -31.4, -23.6, -19.3, -19.9, -19.7, -20.1, -20.4, -20.8, -21.1, -21.3, -21.5, -21.6, -21.7, -21.8, -22.0], "R_thigh": [26.3, 24.9, 21.8, 17.5, 12.9, 9.5, 7.5, 6.9, 8.2, 9.3, 10.9, 11.0, 10.1, 9.7, 8.6, 8.3, 8.3, 8.0, 7.7, 7.3, 7.2, 7.1, 7.1, 7.1], "R_shank": [6.2, 1.5, -1.6, -3.6, -3.8, -3.9, -4.4, -6.0, -9.0, -12.2, -15.5, -17.6, -18.5, -19.6, -20.0, -20.7, -21.1, -21.2, -21.4, -21.6, -22.1, -22.1, -22.1, -21.9], "L_uarm": [5.2, 3.5, 2.8, 1.7, 1.7, 1.3, -0.5, -1.6, -2.4, -3.1, -3.5, -3.6, -3.4, -1.8, -1.0, 0.3, 1.0, 1.6, 1.5, 1.8, 1.7, 1.4, 1.2, -0.1], "L_farm": [39.3, 37.3, 34.0, 31.5, 29.2, 27.4, 26.0, 24.2, 21.7, 19.1, 16.9, 15.9, 15.9, 16.2, 18.6, 22.1, 25.0, 29.4, 32.4, 33.4, 33.6, 32.5, 31.1, 30.2], "R_uarm": [-8.5, -7.2, -6.5, -6.2, -4.2, -1.6, 1.0, 3.8, 5.6, 7.0, 8.5, 9.3, 9.5, 8.5, 6.5, 5.2, 4.4, 3.2, 1.7, -1.3, -4.2, -6.1, -6.6, -6.7], "R_farm": [10.7, 11.8, 14.4, 18.5, 22.0, 26.1, 30.0, 34.6, 39.5, 44.3, 47.9, 50.5, 51.2, 49.1, 45.0, 39.0, 31.3, 24.1, 18.9, 16.8, 16.2, 16.0, 15.4, 14.8], "disp": [0.0, 0.053, 0.104, 0.151, 0.189, 0.222, 0.248, 0.272, 0.293, 0.314, 0.335, 0.354, 0.368, 0.38, 0.39, 0.399, 0.406, 0.411, 0.415, 0.42, 0.424, 0.426, 0.427, 0.427]}
+GAITOV = None   # when set to a dict of angles, _gait() returns it instead of the walking table (used for the stop)
+
+def stop_pose(t):
+    """t = 0..1 through the stop. Real stopping angles, easing into a relaxed upright stance at the end."""
+    t = max(0.0, min(1.0, t)); n = 24; f = t * (n - 1); i = int(min(f, n - 2)); w = f - i
+    g = {k: v[i] * (1 - w) + v[i + 1] * w for k, v in STOPT.items()}
+    rest = {"L_thigh": 3.0, "L_shank": 1.0, "R_thigh": 3.0, "R_shank": 1.0, "L_uarm": 4.0, "L_farm": 12.0, "R_uarm": -4.0, "R_farm": 12.0}
+    b = max(0.0, (t - 0.55) / 0.45); b = b * b * (3 - 2 * b)    # settle into the standing pose
+    for k, v in rest.items(): g[k] = g[k] * (1 - b) + v * b
+    return g
+
+def stop_disp(t):
+    """forward travel (in units u, 1 u = height/5) the body should make during the stop up to t"""
+    return stop_pose(t)["disp"] * 2.03
+
 def _gait(phase):
+    if GAITOV is not None: return GAITOV
     """phase (radians) -> dict of interpolated real joint angles (degrees)."""
     n = 24; f = (phase / (2 * math.pi) * n) % n; i = int(f); w = f - i; j = (i + 1) % n
     return {k: v[i] * (1 - w) + v[j] * w for k, v in GAIT.items()}
@@ -248,7 +266,7 @@ def face(ctx, c, hx, hy, u, mouth="X", blink=False, emo="neutral", look=0.0, tur
 
 
 def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=False, emo="neutral",
-           look=0.0, bow=0.0, prop=None, t=0.0, turn=None, bend=0.0):
+           look=0.0, bow=0.0, prop=None, t=0.0, turn=None, bend=0.0, fixarms=False):
     """arms = (l_sh, l_el, r_sh, r_el) radians from straight-down; positive -> screen right."""
     c = CHARS[cname]
     if turn is None:
@@ -286,7 +304,7 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
     free_arms = arms is None
     if arms is None:
         arms = (0.12, 0.05, -0.12, -0.05)
-    if WALK is not None and pose == "stand":      # arms swing opposite to the legs (bow arm stays put)
+    if WALK is not None and pose == "stand" and not fixarms:      # arms swing opposite to the legs (bow arm stays put)
         _sw = -math.cos(WALK)
         _la, _le, _ra, _re = arms
         if SIDE and free_arms:                    # side view: real mocap arm swing (upper arm + elbow fold)
