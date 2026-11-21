@@ -63,10 +63,18 @@ def seeds_from_topic(topic):
 
 
 def stats_text(path="stats/STATS.md"):
+    """Apne asli views: local file, warna main branch se (wahan roz ki workflow likhti hai)."""
     try:
         with open(path, encoding="utf-8") as f:
             return f.read()[-3000:]
     except OSError:
+        pass
+    try:
+        import subprocess
+        subprocess.run(["git", "fetch", "--depth", "1", "origin", "main"], capture_output=True, timeout=60)
+        r = subprocess.run(["git", "show", f"FETCH_HEAD:{path}"], capture_output=True, text=True, timeout=30)
+        return r.stdout[-3000:] if r.returncode == 0 else ""
+    except Exception:
         return ""
 
 
