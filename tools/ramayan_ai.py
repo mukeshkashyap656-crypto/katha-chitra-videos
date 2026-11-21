@@ -818,7 +818,10 @@ def mode_review():
     comment(issue, f"🔍 Bhag {n} ki poori jaanch shuru (video dekhna-sunna + Valmiki mel). Isme 3-8 minute lagte hain, kuch badlega nahi.")
     run(["git", "fetch", "--depth", "1", "origin", "main"], check=False)
     ep_json, vid, sheet, how = "{}", None, None, ""
-    for ref in (["HEAD"] + run(["git", "branch", "-r", "--list", "origin/ai/issue-*"], check=False).split()):
+    heads = [l.split()[1] for l in (run(["git", "ls-remote", "--heads", "origin", "ai/issue-*"], check=False) or "").splitlines() if len(l.split()) > 1]
+    for h in heads[-30:]:                      # har issue ki branch par script dhoondho (nayi se purani)
+        run(["git", "fetch", "--depth", "1", "origin", f"+{h}:refs/remotes/origin/{h[len('refs/heads/'):]}"], check=False)
+    for ref in (["HEAD"] + sorted(run(["git", "branch", "-r", "--list", "origin/ai/issue-*"], check=False).split(), reverse=True)):
         try:
             ep_json = run(["git", "show", f"{ref}:{ep}/episode.json"]); break
         except Exception:
