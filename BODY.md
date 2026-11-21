@@ -70,3 +70,5 @@ Pehle NIYAM.md aur SEEKH.md padho, phir ye. Naya sudhaar mile toh SEEKH.md mein 
 - Sabse zaroori: episode ke build mein naya chalna lagana (4 ki jagah 12 walk frame, har chakkar mein body 3.2*u aage, ruk-ne ke liye stop=..., chehra scene ki disha mein) aur phir poora video dekhkar jaanch.
 
 - NAZAR: samne chalte/dekhte/bolte character ke pupil beech mein (look=0); kisi aur ko dekhna ho toh `turn` se sar modo. Details ANIMATION.md.
+
+- BOLNA/MUDNA: bolte waqt sar halka nod-tilt (engine khud, `t` badlo); sar mudne par `turn_seq(p)` se pehle aankhen phir sar. Details ANIMATION.md.

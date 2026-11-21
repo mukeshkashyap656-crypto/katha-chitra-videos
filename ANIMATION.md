@@ -78,3 +78,11 @@ Sources: Adobe walk cycle, BMCC 2D animation walk cycles, LinkedIn Learning 2D w
 - Line of action (S ya C curve): har pose mein ek behta hua rekha; seedha khada khamba nahi.
 - Wazan: khade/chalte waqt wazan ek pair par shift ho, kandha-kamar ulte jhuken. Bhaari cheez dheemi, halki tez.
 - Drag/overlap: kapde, jata, dupatta baad mein ruken.
+
+### Aur seekha + engine mein laga diya (21 Nov 2026)
+Sources: Animator Island eyes, Pluralsight 12 steps walk cycle.
+- Aankhen sar se pehle mudti hain; tez chhoti chhoti nazar-badal (dart) se "dekh raha/soch raha" lagta hai; par bina maksad pupil idhar-udhar tairna ya sar mud jaye aur aankh ek jagah atki rahe, ye galtiyan hain. Bahut der aankh bilkul na hile toh character "murda" lagta hai (palak/halki nazar chahiye). Nazar ka badlav tab dikhao jab body ruk jaye.
+- Chalte waqt: uchhal zyada nahi, kamar paer ke theek upar rahe; contact par ghutna halka mudha; haath ki harkat kandhe se kohni se kalai tak kramse; seena tabhi hile jab haath hilein; paer hawa se zameen par 1-2 frame mein aaye.
+- ENGINE: `chars.turn_seq(p)` (p=0..1) dega (turn, look, blink): pehle aankhen, phir sar, shuru mein palak, slow-in/slow-out. Sar mudne wale scene mein isi se `turn=`, `look=`, `blink=` do.
+- ENGINE: `mouth` "X" ke alawa kuch ho (bol raha) toh sar/body mein halka nod-tilt apne aap aata hai (`t` badalte raho); chup khade par nahi.
+- Jab vidIQ ke credits wapas aayein: YouTube tutorials ke transcript khud padho (vidiq_youtube_search + vidiq_video_transcript), seekhi baatein yahin likho, user se pooche bina.

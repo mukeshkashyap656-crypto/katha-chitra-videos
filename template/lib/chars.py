@@ -473,6 +473,10 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
     if _walking: ctx.restore()
     if _walking:                                   # head stays level: cancels the body sway, small nod with each step
         ctx.save(); ctx.translate(hx, hy + 0.4 * u); ctx.rotate(-0.07 * SIDE + 0.012 * math.cos(2 * WALK) if SIDE else -0.045 * math.sin(WALK) - 0.035 + 0.012 * math.cos(2 * WALK)); ctx.translate(-hx, -(hy + 0.4 * u))
+    _talk = (mouth != "X") and not _walking          # TALKING: head/body speak too (mouth is only 10-20% of the effect): small nod + tilt accents
+    if _talk:
+        ctx.save(); ctx.translate(0, 0.012 * u * math.sin(t * 4.1)); ctx.translate(hx, hy + 0.4 * u)
+        ctx.rotate(0.018 * math.sin(t * 2.3) + 0.008 * math.sin(t * 5.1)); ctx.translate(-hx, -(hy + 0.4 * u))
     # ---- head ----
     face(ctx, c, hx, hy, u, mouth, blink, emo, look, turn)
     if c.get("mala"):
@@ -525,7 +529,7 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
             ctx.move_to(hx - 0.42 * u, py + 0.02 * u - k * 0.11 * u); ctx.curve_to(hx - 0.1 * u, py - 0.06 * u - k * 0.1 * u, hx + 0.15 * u, py - 0.07 * u - k * 0.1 * u, hx + 0.44 * u, py - k * 0.1 * u)
             ctx.set_source_rgb(*hexc(c["pagdi2"])); ctx.set_line_width(0.035 * u); ctx.stroke()
         ellipse(ctx, hx + 0.42 * u, py - 0.12 * u, 0.1 * u, 0.14 * u); fill_stroke(ctx, c["pagdi"], 4)
-    if _walking: ctx.restore()
+    if _walking or _talk: ctx.restore()
     if _walking:
         ctx.save(); ctx.translate(x, 0); ctx.scale(1.0 if SIDE else 1 - 0.13 * math.cos(WALK) ** 2, 1); ctx.translate(-x, 0)
         if not SIDE: ctx.translate(x, waist_y); ctx.rotate(-0.05 * math.sin(WALK)); ctx.translate(-x, -waist_y)
@@ -571,3 +575,13 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
     if bend: ctx.restore()
     if _walking: ctx.restore()
     return dict(head=(hx, hy), u=u, hands=hands, top=top - 0.3 * u)
+
+
+def turn_seq(p):
+    """Head turn the way animators do it: the EYES reach the target first, then the head follows (eases in/out), blink at the start.
+    p = 0..1 progress of the turn. Returns (turn, look, blink) for person(): turn=-1..1 head direction (sign = target side), look = pupil lead, blink bool."""
+    p = max(0.0, min(1.0, p))
+    e = lambda q: q * q * (3 - 2 * q)                       # slow in / slow out
+    look = e(min(1.0, p / 0.35))                            # eyes arrive in the first third
+    turn = e(max(0.0, (p - 0.15) / 0.85))                   # head starts a little later, settles slowly
+    return turn, look, (0.08 < p < 0.22)
