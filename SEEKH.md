@@ -3,6 +3,7 @@
 Ye wo galtiyan aur sudhaar hain jo pichhle episodes (Bhag 2, 3, 4, 5) mein mile. **Har naye episode par ye sab pehle se lagte hain** (user ne kaha: "har video mein bolna nahi padna chahiye"). NIYAM.md aur VIRAL.md ke saath padho. Naya sudhaar mile toh yahin joddo.
 
 ## Hinsa/Harkat (movement)
+- Insaan ki body ka poora gyaan BODY.md mein hai (naap, chalna, baithna, pranam, bolna, bhavna, dhanush). Chalna ab 12 frame ka, kamar-kandhe ke twist aur level sar ke saath (template/lib/chars.py).
 - Chalte waqt pair baari-baari uthein, fisalna nahi.
 - Baitha character pehle dheere-dheere khada ho, phir chale. Mudna aur haath uthana beech ke frames se (aar-paar dhundhla nahi).
 - Yagya/puja mein sab aasan par paalthi maar kar kund ke chaaron taraf baithte hain (khade nahi).
