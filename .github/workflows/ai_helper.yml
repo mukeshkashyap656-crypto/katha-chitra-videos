@@ -12,6 +12,11 @@ on:
   schedule:
     - cron: '7 0 * * *'    # subah 5:37 IST: free AI khaali, 'baad-mein' wale kaam
     - cron: '37 9 * * *'   # dopahar 3:07 IST: doosri koshish
+    - cron: '37 2 * * *'   # subah 8:07 IST: teesri koshish
+    - cron: '7 4 * * *'    # subah 9:37 IST: chauthi koshish
+    - cron: '37 5 * * *'   # subah 11:07 IST: paanchvi koshish
+    - cron: '7 7 * * *'    # dopahar 12:37 IST: chhathi koshish
+    - cron: '37 11 * * *'  # shaam 5:07 IST: saatvi koshish
   workflow_dispatch:
 
 permissions:
@@ -51,6 +56,9 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
           ISSUE_TITLE: ${{ github.event.issue.title }}
           REQUEST: ${{ github.event.comment.body || github.event.issue.body }}
@@ -80,4 +88,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
         run: python -u tools/ramayan_ai.py queue
