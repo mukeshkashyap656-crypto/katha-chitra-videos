@@ -801,7 +801,13 @@ def review(sheet, ep_json, video_path=None):
     if not main_sheet:
         return bad("check sheet nahi mili")
     sheets = [main_sheet] + ([end_sheet] if end_sheet else [])
-    runs = [review_once(sheets, ep_json) for _ in range(2)]
+    # teeno jaanch (2 baar chitra + asli video) ek saath, line se nahi: samay aadha
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=3) as ex:
+        f1, f2 = ex.submit(review_once, sheets, ep_json), ex.submit(review_once, sheets, ep_json)
+        fw = ex.submit(watch_video, video_path, ep_json)
+        runs = [f1.result(), f2.result()]
+        watch = fw.result()
     runs = [r for r in runs if r]
     if not runs:
         return bad("jaanch ka jawab samajh nahi aaya, isliye PASS nahi")
@@ -818,7 +824,6 @@ def review(sheet, ep_json, video_path=None):
         hard.append({"rule": rule, "what": f"(machine jaanch) {f}", "fix": "us hisse ke shot/lines badlo ya chhota karo, VERSION badhao"})
     sc = {k: round(sum(r["scores"][k] for r in runs) / len(runs)) for k in SCORE_KEYS}
     total = sum(sc.values())
-    watch = watch_video(video_path, ep_json)
     watch_high = [pr for pr in ((watch or {}).get("problems") or [])[:6]
                   if str(pr.get("confidence", "")).lower() == "high" and pr.get("what")]
     # ek akeli "pakki" raay se video nahi rukta (free AI ghalat bhi ho sakta hai); 2 ya zyada pakki dikkatein = sudhaar zaroori
@@ -864,9 +869,12 @@ def finish(issue, branch, st, ep, run_url):
     verdict = None
     for rv in range(MAX_REVIEW_ROUNDS + 1):
         sheet = fetch_sheet(ep)
-        verdict = review(sheet, ep_json, fetch_video(ep))
         bh = title_bhag() or re.sub(r"\D", "", os.path.basename(ep))
-        sc_problems = story_check(ep_json, bh)
+        from concurrent.futures import ThreadPoolExecutor
+        with ThreadPoolExecutor(max_workers=2) as ex:      # Valmiki jaanch aur video jaanch saath-saath
+            fs = ex.submit(story_check, ep_json, bh)
+            verdict = review(sheet, ep_json, fetch_video(ep))
+            sc_problems = fs.result()
         if sc_problems:
             verdict["pass"] = False
             verdict["hard_fails"] = list(verdict.get("hard_fails") or []) + [{"rule": 9, **p} for p in sc_problems]
