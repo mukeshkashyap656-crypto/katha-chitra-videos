@@ -53,7 +53,7 @@ def g(o):
     return o[0] if isinstance(o, tuple) else o
 fn = {json.dumps(ep["file"])}
 meta = g(proxy_execute("GET", "/repos/{REPO}/contents/" + fn, "github", query_params={{"ref": "main"}}))
-p = "/home/user/" + fn
+p = "/home/user/" + os.path.basename(fn)
 urllib.request.urlretrieve(meta["download_url"], p)
 size = os.path.getsize(p)
 print("SIZE=" + str(size))
@@ -63,7 +63,7 @@ else:
     up = g(upload_local_file(p))
     s3 = up.get("s3key") if isinstance(up, dict) else up
     print("S3KEY_OK=" + ("1" if s3 else "0"))
-    res, err = run_composio_tool("INSTAGRAM_POST_IG_USER_MEDIA", {{"ig_user_id": "{IG_USER}", "media_type": "REELS", "video_file": {{"name": fn, "mimetype": "video/mp4", "s3key": s3}}, "caption": {json.dumps(ep["caption"], ensure_ascii=False)}, "share_to_feed": True, "thumb_offset": 0}}, account="{IG_ACCOUNT}")
+    res, err = run_composio_tool("INSTAGRAM_POST_IG_USER_MEDIA", {{"ig_user_id": "{IG_USER}", "media_type": "REELS", "video_file": {{"name": os.path.basename(fn), "mimetype": "video/mp4", "s3key": s3}}, "caption": {json.dumps(ep["caption"], ensure_ascii=False)}, "share_to_feed": True, "thumb_offset": 0}}, account="{IG_ACCOUNT}")
     cid = find_id(res)
     print("CREATION_ID=" + str(cid))
     print("CREATE_ERR=", str(err)[:300])
