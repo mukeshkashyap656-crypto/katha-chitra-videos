@@ -18,8 +18,8 @@ C.CHARS["lakshman"] = dict(fw=0.93, fh=1.02, build=0.96, eye=1.08, nose=0.95, br
                            tunic="#e0552a", sash="#f2c230", upper="#f6f0e2", lower="#e0552a", hem="#f2c230",
                            crown=True, jewel=True, bare=True, skirt=1.4, mous=None)
 
-def quiver(c, x, top, u):   # quiver on the back: top and feathers rise above the right shoulder
-    c.save(); c.translate(x + 0.62 * u, top + 1.55 * u); c.rotate(0.32)
+def quiver(c, x, top, u, d=0):   # quiver on the back: top and feathers rise above the right shoulder
+    c.save(); c.translate(x + (0.62 if not d else -0.34 * d) * u, top + 1.55 * u); c.rotate(0.32 if not d else -0.32 * d)
     for k in range(4):
         ax = -0.16 * u + k * 0.11 * u
         c.move_to(ax, -1.25 * u); c.line_to(ax, -1.05 * u); c.set_source_rgb(*OL); c.set_line_width(3); c.stroke()
@@ -43,8 +43,8 @@ def bow_at(c, hx, hy, u, skin):   # bow gripped in the hand: grip at the fist, l
 
 ARMS_BOW = (-0.42, 0.22, -0.12, -0.05)   # left (screen-left) arm slightly out, holding the bow
 
-def draw_char(name, file, walk=None, **kw):
-    C.WALK = walk
+def draw_char(name, file, walk=None, side=0, **kw):
+    C.WALK = walk; C.SIDE = side   # side = +1 / -1: side-view walk facing screen right / left (face turns the same way)
     s = cairo.ImageSurface(cairo.FORMAT_ARGB32, int(CW * KS), int(CH * KS)); c = cairo.Context(s); c.scale(KS, KS)
     x, feet = CW / 2, CH - 30
     archer = name in ("ram", "lakshman")
@@ -52,11 +52,11 @@ def draw_char(name, file, walk=None, **kw):
         kw.setdefault("arms", ARMS_BOW)
         tmp = cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, CW, CH))
         info = person(tmp, name, x, feet, HS, **kw)
-        quiver(c, x, feet - HS, HS / 5)
+        quiver(c, x, feet - HS, HS / 5, side)
     info = person(c, name, x, feet, HS, **kw)
     if archer:
         hx, hy = info["hands"][0]; bow_at(c, hx + 0.34 * info["u"], hy, info["u"], C.CHARS[name]["skin"])  # grip lands on the fist
-    s.write_to_png(f"{OUT}/{file}.png"); C.WALK = None
+    s.write_to_png(f"{OUT}/{file}.png"); C.WALK = None; C.SIDE = 0
 
 MOUTHS = ["X", "A", "B", "E", "O", "M"]
 PH = [0, math.pi / 2, math.pi, 3 * math.pi / 2]

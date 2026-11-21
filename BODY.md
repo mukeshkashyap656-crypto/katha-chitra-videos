@@ -14,6 +14,7 @@ Pehle NIYAM.md aur SEEKH.md padho, phir ye. Naya sudhaar mile toh SEEKH.md mein 
 - Kamar aur kandhe ulte ghoomte hain (kamar pehle). Body halka upar-neeche (zyada bounce nahi). Halka aage jhukaav.
 - Shuru karne se pehle wazan thoda neeche. Rukte waqt ek chhota kadam, kamar pehle ruke, haath baad mein, kapde/gehne baad mein.
 - Bachcha: chhote kadam, paon door-door. Boodha: dheere, chhote kadam, jhuka hua. Daudna: body aage, dono pair hawa mein.
+- Side-view (bagal se) chalna: draw_char(..., walk=phase, side=+1/-1) (+1 = screen ke daayein dekhta hai). Chehra chalne ki disha mein ghoomta hai (person(turn=...) se koi bhi scene mein chehra jis taraf dekhna ho us taraf), tarkash peeth par, door wala haath-pair gehre rang mein. Chehra camera ki taraf nahi, scene ki disha mein.
 - Engine mein ye `template/lib/chars.py` ke WALK code mein lag chuka hai (12 frame ka chakkar). Naya chalne wala scene 12 frame se banao, 4 se nahi.
 
 ## Mudna, baithna, uthna

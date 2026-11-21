@@ -3,6 +3,7 @@ import math, cairo
 OL = (0.16, 0.07, 0.04)      # bold dark outline
 LW = 5.0
 WALK = None   # set to a phase (radians) to draw walking legs
+SIDE = 0      # 0 = walk facing the camera; +1 / -1 = side-view walk facing screen right / left
 
 def hexc(h):
     h = h.lstrip('#')
@@ -25,6 +26,10 @@ def poly(ctx, pts):
     for p in pts[1:]:
         ctx.line_to(*p)
     ctx.close_path()
+
+def _dk(h, f=0.78):
+    r, g, b = hexc(h)
+    return "#%02x%02x%02x" % (int(r * f * 255), int(g * f * 255), int(b * f * 255))
 
 def limb(ctx, pts, w, col):
     ctx.set_line_cap(cairo.LINE_CAP_ROUND); ctx.set_line_join(cairo.LINE_JOIN_ROUND)
@@ -76,7 +81,7 @@ CHARS = {
                       belt=None, trouser="#1f1f2a", mous=None, cravat=True),
 }
 
-def face(ctx, c, hx, hy, u, mouth="X", blink=False, emo="neutral", look=0.0):
+def face(ctx, c, hx, hy, u, mouth="X", blink=False, emo="neutral", look=0.0, turn=0.0):
     rx, ry = 0.40 * u * c.get("fw", 1.0), 0.48 * u * c.get("fh", 1.0)
     kind = c["kind"]
     if kind == "f":
@@ -135,6 +140,9 @@ def face(ctx, c, hx, hy, u, mouth="X", blink=False, emo="neutral", look=0.0):
         if bl > 1.2:
             for k in (-0.12, 0.12):
                 ctx.move_to(hx + k * u, hy + ry * 0.75); ctx.curve_to(hx + k * 1.4 * u, hy + ry * 1.0 * bl, hx + k * 0.8 * u, hy + ry * 1.15 * bl, hx + k * 0.4 * u, hy + ry * 1.25 * bl); ctx.stroke()
+    # head turned (3/4 view): face features slide toward the direction the character looks
+    hx = hx + 0.20 * u * turn
+    look = look + 0.9 * turn
     # brows by emotion
     for s in (-1, 1):
         ex = hx + s * 0.16 * u; ey = hy - 0.17 * u - (0.06 * u if emo == "shock" else 0)
@@ -152,6 +160,7 @@ def face(ctx, c, hx, hy, u, mouth="X", blink=False, emo="neutral", look=0.0):
     for s in (-1, 1):
         ex = hx + s * 0.16 * u; ey = hy - 0.04 * u
         w, h = 0.12 * u * c.get("eye", 1.0), 0.065 * u * c.get("eye", 1.0) * c.get("eyeh", 1.0)
+        if turn and s * turn > 0: w *= 1 - 0.38 * min(1.0, abs(turn))
         if blink:
             ctx.move_to(ex - w, ey); ctx.curve_to(ex - w * 0.4, ey + h * 0.7, ex + w * 0.4, ey + h * 0.7, ex + w, ey)
             ctx.set_source_rgb(*OL); ctx.set_line_width(4); ctx.stroke(); continue
@@ -213,13 +222,18 @@ def face(ctx, c, hx, hy, u, mouth="X", blink=False, emo="neutral", look=0.0):
 
 
 def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=False, emo="neutral",
-           look=0.0, bow=0.0, prop=None, t=0.0):
+           look=0.0, bow=0.0, prop=None, t=0.0, turn=None):
     """arms = (l_sh, l_el, r_sh, r_el) radians from straight-down; positive -> screen right."""
     c = CHARS[cname]
+    if turn is None:
+        turn = 0.8 * SIDE if (SIDE and WALK is not None) else 0.0   # side-view walkers look where they walk
     _walking = WALK is not None and pose == "stand"
     if _walking:
-        ctx.save(); ctx.translate(x, feet)
-        ctx.rotate(0.035 + 0.03 * math.sin(WALK))       # slight forward lean + side-to-side sway
+        if SIDE:
+            ctx.save(); ctx.translate(x, feet); ctx.rotate(0.07 * SIDE)           # side view: lean forward, no side sway
+        else:
+            ctx.save(); ctx.translate(x + 0.05 * (H / 5.0) * math.sin(WALK), feet)   # weight shifts over the standing leg
+            ctx.rotate(0.035 + 0.045 * math.sin(WALK))       # slight forward lean + side-to-side sway
         ctx.translate(-x, -feet)
     H = H * c.get("tall", 1.0)
     bow = bow + c.get("stoop", 0.0)
@@ -243,10 +257,16 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
     if WALK is not None and pose == "stand":      # arms swing opposite to the legs (bow arm stays put)
         _sw = -math.cos(WALK)
         _la, _le, _ra, _re = arms
-        if free_arms:
+        if SIDE and free_arms:                    # side view: arms swing forward/back in the picture plane, elbow folds on the forward swing
+            _la, _ra = 0.0, 0.0
+            arms = (-0.55 * _sw * SIDE, SIDE * (0.18 + 0.55 * max(0.0, -_sw)), 0.55 * _sw * SIDE, SIDE * (0.18 + 0.55 * max(0.0, _sw)))
+        elif free_arms:
             arms = (_la - 0.34 * _sw, _le + 0.12 + 0.10 * max(0.0, -_sw), _ra + 0.34 * _sw, _re + 0.12 + 0.10 * max(0.0, _sw))
         else:
-            arms = (_la, _le, _ra + 0.20 * _sw, _re + 0.08 + 0.06 * max(0.0, _sw))
+            if SIDE:
+                arms = (_la, _le, _ra + 0.50 * _sw * SIDE, _re + SIDE * (0.15 + 0.45 * max(0.0, _sw)))
+            else:
+                arms = (_la, _le, _ra + 0.20 * _sw, _re + 0.08 + 0.06 * max(0.0, _sw))
     if c.get("halo"):
         g = cairo.RadialGradient(hx, hy - 0.1 * u, 0.2 * u, hx, hy - 0.1 * u, 0.95 * u)
         g.add_color_stop_rgba(0, 1, 0.85, 0.3, 0.55); g.add_color_stop_rgba(1, 1, 0.8, 0.2, 0)
@@ -278,23 +298,28 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
                     if WALK is not None:
                         # ground foot slides BACK under the body, swing foot lifts and goes FORWARD; knee bends (two-bone IK)
                         q = (WALK + (0 if s < 0 else math.pi)) % (2 * math.pi)
-                        A = 0.19 * u
+                        A = (0.40 if SIDE else 0.19) * u
                         if q < math.pi:
                             t = q / math.pi; e = t * t * (3 - 2 * t)
                             dx = -A + 2 * A * e; lift = 0.16 * u * math.sin(math.pi * t); toe = 0.35 * (1 - 2 * t)
                         else:
                             t = (q - math.pi) / math.pi
                             dx = A - 2 * A * t; lift = 0.0; toe = 0.0
-                        hip = (x + s * 0.17 * u, waist_y + 0.6 * u)
-                        foot = (x + s * 0.19 * u + dx, feet - 0.05 * u - lift)
+                        if SIDE:
+                            dx *= SIDE; lift *= 1.25
+                            hip = (x + s * 0.03 * u, waist_y + 0.6 * u); foot = (x + s * 0.02 * u + dx, feet - 0.05 * u - lift)
+                        else:
+                            hip = (x + s * 0.17 * u, waist_y + 0.6 * u)
+                            foot = (x + s * 0.19 * u + dx, feet - 0.05 * u - lift)
                         seg = 1.015 * u
                         ddx, ddy = foot[0] - hip[0], foot[1] - hip[1]
                         d = min(math.hypot(ddx, ddy), 2 * seg - 1)
                         vx, vy = ddx / math.hypot(ddx, ddy), ddy / math.hypot(ddx, ddy)
                         hh = math.sqrt(max(seg * seg - (d / 2) ** 2, 0.0))
-                        knee = (hip[0] + vx * d / 2 + vy * hh, hip[1] + vy * d / 2 - vx * hh)
-                        limb(ctx, [hip, knee, foot], 0.30 * u, c["lower"])
-                        ctx.save(); ctx.translate(foot[0] + 0.05 * u, foot[1] + 0.01 * u); ctx.rotate(toe)
+                        _bd = SIDE if SIDE else 1
+                        knee = (hip[0] + vx * d / 2 + vy * hh * _bd, hip[1] + vy * d / 2 - vx * hh * _bd)
+                        limb(ctx, [hip, knee, foot], 0.30 * u, _dk(c["lower"]) if (SIDE and s < 0) else c["lower"])
+                        ctx.save(); ctx.translate(foot[0] + 0.05 * u * (SIDE or 1), foot[1] + 0.01 * u); ctx.rotate(toe * (SIDE or 1))
                         ellipse(ctx, 0, 0, 0.22 * u, 0.09 * u); fill_stroke(ctx, "#6b3a1e", 4); ctx.restore()
                         continue
                     lift = dx = 0.0
@@ -303,8 +328,8 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
                                (x + s * 0.28 * u + dx, fy - 0.05 * u), (x + s * 0.1 * u + dx, fy - 0.05 * u)])
                     fill_stroke(ctx, c["lower"])
                     ellipse(ctx, x + s * 0.24 * u + dx * 1.3, fy - 0.04 * u, 0.17 * u, 0.07 * u); fill_stroke(ctx, "#6b3a1e", 4)
-                sk = c.get("skirt", 1.0)
-                _sway = 0.05 * u * math.sin(WALK) if WALK is not None else 0.0
+                sk = c.get("skirt", 1.0) * (0.84 if (SIDE and WALK is not None) else 1.0)
+                _sway = 0.05 * u * math.sin(WALK) if (WALK is not None and not SIDE) else 0.0
                 poly(ctx, [(x - (bw - 0.03) * u, waist_y), (x + (bw - 0.03) * u, waist_y), (x + (bw + 0.05 + 0.12 * sk) * u + _sway, waist_y + sk * u), (x - (bw + 0.05 + 0.12 * sk) * u + _sway, waist_y + sk * u)])
                 fill_stroke(ctx, c["tunic"])
                 if c.get("hem"):
@@ -322,7 +347,8 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
     # ---- torso ----
     if _walking:                                   # shoulders twist against the hips (front view: torso narrows at max twist)
         _tw = math.cos(WALK) ** 2
-        ctx.save(); ctx.translate(x, 0); ctx.scale(1 - 0.13 * _tw, 1); ctx.translate(-x, 0)
+        ctx.save(); ctx.translate(x, 0); ctx.scale(0.74 if SIDE else 1 - 0.13 * _tw, 1); ctx.translate(-x, 0)
+        if not SIDE: ctx.translate(x, waist_y); ctx.rotate(-0.05 * math.sin(WALK)); ctx.translate(-x, -waist_y)   # shoulders tilt against the hips
     neck_w = 0.13 * u
     poly(ctx, [(x - neck_w, hy + 0.35 * u), (x + neck_w, hy + 0.35 * u), (x + neck_w, sh_y + 0.05 * u), (x - neck_w, sh_y + 0.05 * u)])
     fill_stroke(ctx, c["skin"], 4)
@@ -380,9 +406,9 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
             ellipse(ctx, x + s * sh_w * 0.85, sh_y + 0.02 * u, 0.16 * u, 0.06 * u); fill_stroke(ctx, c["trim"], 3)
     if _walking: ctx.restore()
     if _walking:                                   # head stays level: cancels the body sway, small nod with each step
-        ctx.save(); ctx.translate(hx, hy + 0.4 * u); ctx.rotate(-0.030 * math.sin(WALK) - 0.035 + 0.012 * math.cos(2 * WALK)); ctx.translate(-hx, -(hy + 0.4 * u))
+        ctx.save(); ctx.translate(hx, hy + 0.4 * u); ctx.rotate(-0.07 * SIDE + 0.012 * math.cos(2 * WALK) if SIDE else -0.030 * math.sin(WALK) - 0.035 + 0.012 * math.cos(2 * WALK)); ctx.translate(-hx, -(hy + 0.4 * u))
     # ---- head ----
-    face(ctx, c, hx, hy, u, mouth, blink, emo, look)
+    face(ctx, c, hx, hy, u, mouth, blink, emo, look, turn)
     if c.get("mala"):
         for k in range(15):
             a = math.pi * 0.15 + k * math.pi * 0.7 / 14
@@ -435,27 +461,36 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
         ellipse(ctx, hx + 0.42 * u, py - 0.12 * u, 0.1 * u, 0.14 * u); fill_stroke(ctx, c["pagdi"], 4)
     if _walking: ctx.restore()
     if _walking:
-        ctx.save(); ctx.translate(x, 0); ctx.scale(1 - 0.13 * math.cos(WALK) ** 2, 1); ctx.translate(-x, 0)
+        ctx.save(); ctx.translate(x, 0); ctx.scale(1.0 if SIDE else 1 - 0.13 * math.cos(WALK) ** 2, 1); ctx.translate(-x, 0)
+        if not SIDE: ctx.translate(x, waist_y); ctx.rotate(-0.05 * math.sin(WALK)); ctx.translate(-x, -waist_y)
     # ---- arms ----
     la, le, ra, re = arms
     sleeve = {"f": c.get("blouse"), "m": c.get("tunic"), "b": c.get("coat")}[kind]
     L1, L2 = 0.75 * u, 0.7 * u
     hands = []
     for s, a1, a2 in ((-1, la, le), (1, ra, re)):
-        sx, sy = x + s * sh_w * 0.88, sh_y + 0.12 * u
-        ex, ey = sx + math.sin(a1) * L1, sy + math.cos(a1) * L1
-        hx2, hy2 = ex + math.sin(a1 + a2) * L2, ey + math.cos(a1 + a2) * L2
-        limb(ctx, [(sx, sy), (ex, ey)], 0.24 * u, c["skin"] if c.get("bare") else sleeve)
+        _far = bool(SIDE and _walking and s < 0)
+        _sl = _dk(sleeve) if _far else sleeve
+        _skn = _dk(c["skin"]) if _far else c["skin"]
+        sx, sy = x + s * sh_w * (0.18 if (SIDE and _walking) else 0.88), sh_y + 0.12 * u
+        _f1 = _f2 = 1.0
+        if _walking and free_arms and not SIDE:                  # front view: a swinging arm shortens (foreshortening), forearm folds up when forward
+            _sv = (-_sw if s < 0 else _sw)
+            _f1 = 1 - 0.10 * abs(_sv); _f2 = 1 - 0.30 * max(0.0, _sv)
+            sy -= 0.05 * u * max(0.0, _sv)
+        ex, ey = sx + math.sin(a1) * L1 * _f1, sy + math.cos(a1) * L1 * _f1
+        hx2, hy2 = ex + math.sin(a1 + a2) * L2 * _f2, ey + math.cos(a1 + a2) * L2 * _f2
+        limb(ctx, [(sx, sy), (ex, ey)], 0.24 * u, _skn if c.get("bare") else _sl)
         if c.get("bare"):
             mx_, my_ = (sx + ex) / 2, (sy + ey) / 2
             ctx.move_to(mx_ - math.cos(a1) * 0.13 * u, my_ + math.sin(a1) * 0.13 * u); ctx.line_to(mx_ + math.cos(a1) * 0.13 * u, my_ - math.sin(a1) * 0.13 * u)
             ctx.set_source_rgb(*hexc(c.get("bandcol", "#f2c230"))); ctx.set_line_width(0.07 * u); ctx.stroke()
-        limb(ctx, [(ex, ey), (hx2, hy2)], 0.2 * u if kind != "f" else 0.15 * u, sleeve if kind == "b" else c["skin"])
+        limb(ctx, [(ex, ey), (hx2, hy2)], 0.2 * u if kind != "f" else 0.15 * u, _sl if kind == "b" else _skn)
         if kind == "f" or c.get("bare"):
             bx, by = ex + math.sin(a1 + a2) * L2 * 0.8, ey + math.cos(a1 + a2) * L2 * 0.8
             col = c.get("bandcol") or ("#e8b730" if (c.get("jewel") or c.get("bare")) else "#d9cfb8")
             ctx.arc(bx, by, 0.08 * u if kind == "f" else 0.1 * u, 0, 6.3); ctx.set_source_rgb(*hexc(col)); ctx.set_line_width(5); ctx.stroke()
-        ctx.arc(hx2, hy2, 0.11 * u, 0, 6.3); fill_stroke(ctx, c["skin"], 4)
+        ctx.arc(hx2, hy2, 0.11 * u, 0, 6.3); fill_stroke(ctx, _skn, 4)
         hands.append((hx2, hy2))
     if c.get("kamandalu") and prop != "none":
         kx, ky = hands[0]
