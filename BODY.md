@@ -74,3 +74,5 @@ Pehle NIYAM.md aur SEEKH.md padho, phir ye. Naya sudhaar mile toh SEEKH.md mein 
 - BOLNA/MUDNA: bolte waqt sar halka nod-tilt (engine khud, `t` badlo); sar mudne par `turn_seq(p)` se pehle aankhen phir sar. Details ANIMATION.md.
 
 - BOLNA: munh ka shape awaaz se 2-4 frame PEHLE, sirf accents par shape (zyada shape nahi), vaaky se pehle munh thoda khule. CHALNA: paer zameen par jame (phisle nahi), kamar paer ke ulte, haath paer ke ulte. Details ANIMATION.md.
+
+- ENGINE (21 Nov): tools/engine/build.py mein LIP_LEAD=3 -> munh awaaz se 3 frame (30fps) pehle chalta hai; badalna ho toh wahi ek number.

@@ -71,8 +71,9 @@ U_H, HEAD_H = 128, 904                # human: head unit + head centre (world px
 U_B, HEAD_B = 160, 760
 def is_big(who): return bool(SP.char_meta(who, EPI).get("big"))
 def blink(t, off): return (t + off) % 3.4 < 0.12
+LIP_LEAD = 3            # animators: mouth shapes come 2-4 frames BEFORE the sound (see ANIMATION.md); tune here
 def mouth(k, t):
-    sh = lip[k]["shapes"]; f = int((t - T[k]) * FPS)
+    sh = lip[k]["shapes"]; f = int((t - T[k]) * FPS) + LIP_LEAD
     return sh[f] if 0 <= f < len(sh) else "X"
 
 sets = []; layers = []; moves = []
@@ -84,7 +85,7 @@ for si, sh in enumerate(SHOTS):
         off = (ci * 1.3 + si * 0.7) % 3.4
         def state(t, e=e, base=base, p=p, keys=keys, off=off):
             if p["pose"] == "walk": return f"{base}_walk{int((t - t0) / 0.13) % 4}"
-            if sp == e["who"] and T[k] <= t < E[k] and not p["shadow"]:
+            if sp == e["who"] and T[k] - LIP_LEAD / FPS <= t < E[k] and not p["shadow"]:
                 m = mouth(k, t); return base if m == "X" else f"{base}_{m}"
             return f"{base}_blink" if blink(t, off) and f"{base}_blink" in keys else base
         cid = f"s{si}c{ci}"; big = is_big(e["who"]); w_, h_, top = (BW, BH, BTOP) if big else (DW, DH, DTOP)
