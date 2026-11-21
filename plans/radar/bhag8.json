@@ -1,0 +1,23 @@
+{
+ "question": "सौ राजकुमारियों का शरीर क्यों झुक गया था?",
+ "alternatives": [
+  "वायु के शाप से क्या हुआ था?",
+  "विश्वामित्र के वंश की कथा क्या है?"
+ ],
+ "search_words": [
+  "valmiki ramayan kushanabh",
+  "ramayan 100 kanyayein",
+  "valmiki ramayan baal kand"
+ ],
+ "angle": "Kushanabh ki 100 kanyayon aur Vayu dev ke shaap ke raaz par seedha sawaal jo scroll roke.",
+ "reason": "Autocomplete mein 'ramayan 100 kanyayein' ki search aur Valmiki sargas 1.32-1.34 ki mukhya ghatna (Vayu dev dwara 100 kanyayon ko kubda karna) par aadharit hai.",
+ "signals_used": {
+  "autocomplete_seeds": [
+   "valmiki ramayan",
+   "ramayan 100 kanyayein",
+   "ramayan Gadhi"
+  ],
+  "trends": 10,
+  "stats": false
+ }
+}
