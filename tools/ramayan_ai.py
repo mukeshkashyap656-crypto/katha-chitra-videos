@@ -420,8 +420,8 @@ How to work:
 # Helper ab engine ka code bhi badal sakta hai (naya background/pose/effect, bug fix) aur SEEKH.md mein seekh likh sakta hai.
 # Par: sirf apni issue ki branch par; render wale computer ke paas koi secret nahi; naye code mein khatarnaak cheezein mana;
 # jaanch (PASS) ke baad hi shared engine mein jaata hai, peechhe backup tag ke saath.
-CODE_PATHS = [r"^tools/engine/[A-Za-z0-9_]+\.py$", r"^template/lib/[A-Za-z0-9_]+\.py$", r"^episodes/[a-z0-9_]+/[A-Za-z0-9_]+\.py$"]
-DOC_PATHS = ["SEEKH.md"]
+CODE_PATHS = [r"^tools/engine/[A-Za-z0-9_]+\.py$", r"^tools/(?!ramayan_ai\.py$)[A-Za-z0-9_]+\.(py|sh)$", r"^template/lib/[A-Za-z0-9_]+\.py$", r"^episodes/[a-z0-9_]+/[A-Za-z0-9_]+\.py$"]
+DOC_PATHS = ["SEEKH.md", "tools/engine/README.md"]
 DENY = re.compile(
     r"(GITHUB_TOKEN|GH_TOKEN|github\.token|extraheader|COMPOSIO|[A-Z_]*(API_KEY|SECRET|TOKEN)\b|\.git/|git\s+(push|remote|config)|"
     r"import\s+(requests|urllib|socket|http|ftplib|smtplib|paramiko|aiohttp|httpx)|from\s+(requests|urllib|socket|http)\b|"
@@ -468,7 +468,7 @@ def scan_new_code(p, old_text, new_text):
 
 RULES_CODE = """
 CODE RULES (you may now change the engine yourself; you are free, but careful):
-- Allowed: edits to tools/engine/*.py, template/lib/*.py, episodes/<name>/*.py, SEEKH.md, plus episode.json/plans as before.
+- Allowed: edits to tools/engine/*.py, template/lib/*.py, episodes/<name>/*.py, tools/*.py and tools/*.sh (voice, render script, machine checks, viral radar; NOT tools/ramayan_ai.py), SEEKH.md, tools/engine/README.md, plus episode.json/plans as before.
 - For code ALWAYS use small edits, never a whole file: {"path": "...", "old": "EXACT text that occurs ONCE in the file", "new": "replacement"}.
   (A new small .py file may be given whole as {"path","content"}.) Several edits per file are applied in order.
 - Keep everything that works. Do not change how existing characters, backgrounds and episodes look. Only ADD or FIX.
