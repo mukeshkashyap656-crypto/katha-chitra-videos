@@ -37,6 +37,7 @@ STATE = "ai_state.json"
 CONTEXT = ["NIYAM.md", "VIRAL.md", "SEEKH.md", "tools/engine/README.md"]
 
 
+BASE = {}    # auto-video ka commit jahan se is issue ka kaam shuru hua
 USED = []    # which AI answered (shown under each comment)
 LEASE = {}   # branch -> remote commit we started from (safe overwrite of the issue branch)
 
@@ -64,6 +65,7 @@ def checkout_branch(branch):
     """Issue ki branch ho to uspe jao, warna auto-video se nayi banao."""
     run(["git", "config", "user.name", "github-actions[bot]"])
     run(["git", "config", "user.email", "github-actions[bot]@users.noreply.github.com"])
+    BASE["sha"] = run(["git", "rev-parse", "HEAD"]).strip()      # auto-video ka wo commit jahan se shuru kiya (promote ke waqt milaya jaata hai)
     run(["git", "checkout", "-b", branch])          # always start from the newest auto-video (newest engine + rules)
     if run(["git", "ls-remote", "--heads", "origin", branch]).strip():
         # bring over only this issue's own work: its state, plans and scene-list episodes (never old code)
@@ -72,6 +74,13 @@ def checkout_branch(branch):
         old = run(["git", "ls-tree", "-r", "--name-only", "FETCH_HEAD"]).split()
         keep = [f for f in old if f == STATE or f.startswith("plans/") or
                 (re.match(r"^episodes/[a-z0-9_]+/episode\.json$", f) and '"SHOTS"' in run(["git", "show", f"FETCH_HEAD:{f}"]))]
+        try:      # is issue ke apne engine/code badlaav bhi saath laao (state mein likhe hain)
+            prev = json.loads(run(["git", "show", f"FETCH_HEAD:{STATE}"]))
+            keep += [f for f in prev.get("code_files", []) if f in old and (is_code_path(f) or f in DOC_PATHS)]
+            if prev.get("base"):
+                BASE["sha"] = prev["base"]
+        except Exception:
+            pass
         if keep:
             run(["git", "checkout", "FETCH_HEAD", "--"] + keep)
 
@@ -325,7 +334,7 @@ def ask(prompt_text, image=None, want_json=True):
     def parse(txt):
         mt = re.search(r"\{.*\}", txt, re.DOTALL)
         data = json.loads(mt.group(0) if mt else txt)
-        if data.get("action") not in ("change", "none"):
+        if data.get("action") not in ("change", "none", "need_code"):
             raise ValueError("action galat")
         data.setdefault("files", []); data.setdefault("summary", ""); data.setdefault("render", False)
         return data
@@ -362,8 +371,12 @@ def ask(prompt_text, image=None, want_json=True):
                 q.put((nm, None, str(ex)[:60]))
         for nm, f in rest:
             threading.Thread(target=worker, args=(nm, f, prompt), daemon=True).start()
+        deadline = time.time() + 300      # kul 5 minute: tab tak jawab nahi aaya toh Busy -> kaam 'baad-mein' queue mein
         for _ in rest:
-            nm, res, err = q.get()
+            try:
+                nm, res, err = q.get(timeout=max(1, deadline - time.time()))
+            except queue.Empty:
+                errs.append("baaki AI 5 min mein jawab nahi de paaye"); break
             if err is None:
                 print("Daud ka jeetne wala AI:", nm)
                 return res
@@ -392,19 +405,102 @@ How to work:
 - FIX a look/render problem: change as little as possible in that episode.json, bump VERSION, "render": true.
 - Owner only wants the video made again without changes: "action": "none", "render": true.
 - Question only: "action": "none", "render": false, answer in summary.
-- Only plans/... and episodes/<name>/episode.json may be written. Always the FULL file.
+- Normally only plans/... and episodes/<name>/episode.json may be written (always the FULL file).
+- If the story or a review problem needs something the engine cannot do yet (new background, pose, effect, camera move, or an engine bug),
+  do NOT work around it badly: reply {"action": "need_code", "render": false, "summary": "what is missing and what you will add", "files": []}.
+  You will then get the engine source and may change it (see CODE RULES).
+- You may also learn: when a real problem and its fix are now clear, add one short Hinglish line to SEEKH.md (an edit, see CODE RULES).
 - Use only backgrounds, poses, faces, moods and characters listed in tools/engine/README.md; a new character goes in
   NEW_CHARS with its look decided from Valmiki. Keep people at least 260 apart (330 with a big devta/rakshas).
 """
 
 
+
+# ---------------- code ki azadi (guard ke saath) ----------------
+# Helper ab engine ka code bhi badal sakta hai (naya background/pose/effect, bug fix) aur SEEKH.md mein seekh likh sakta hai.
+# Par: sirf apni issue ki branch par; render wale computer ke paas koi secret nahi; naye code mein khatarnaak cheezein mana;
+# jaanch (PASS) ke baad hi shared engine mein jaata hai, peechhe backup tag ke saath.
+CODE_PATHS = [r"^tools/engine/[A-Za-z0-9_]+\.py$", r"^template/lib/[A-Za-z0-9_]+\.py$", r"^episodes/[a-z0-9_]+/[A-Za-z0-9_]+\.py$"]
+DOC_PATHS = ["SEEKH.md"]
+DENY = re.compile(
+    r"(GITHUB_TOKEN|GH_TOKEN|github\.token|extraheader|COMPOSIO|[A-Z_]*(API_KEY|SECRET|TOKEN)\b|\.git/|git\s+(push|remote|config)|"
+    r"import\s+(requests|urllib|socket|http|ftplib|smtplib|paramiko|aiohttp|httpx)|from\s+(requests|urllib|socket|http)\b|"
+    r"curl\b|wget\b|\bssh\b|\beval\(|\bexec\(|__import__|environ\s*\.\s*(items|keys|values|copy)|dict\(\s*os\.environ|"
+    r"shutil\.rmtree|rm\s+-rf|os\.(remove|unlink|rmdir)\(\s*['\"]/)", re.I)
+
+
+def is_code_path(p):
+    return any(re.match(x, p) for x in CODE_PATHS)
+
+
+def materialize(changes):
+    """Badlaav ki list (poori file ya edits) ko {path: naya content} mein badlo. (contents, problems)."""
+    out, problems = {}, []
+    for it in changes:
+        p = it.get("path", "")
+        if ".." in p:
+            problems.append(f"{p}: galat path"); continue
+        if "old" in it:
+            if not (is_code_path(p) or p in DOC_PATHS):
+                problems.append(f"{p}: edits sirf engine/lib/episode ke .py aur SEEKH.md par"); continue
+            cur = out.get(p)
+            if cur is None:
+                try:
+                    with open(p, encoding="utf-8") as f:
+                        cur = f.read()
+                except OSError:
+                    problems.append(f"{p}: file nahi mili"); continue
+            old, new = str(it["old"]), str(it.get("new", ""))
+            if cur.count(old) != 1:
+                problems.append(f"{p}: 'old' text {cur.count(old)} jagah mila (ek hi baar hona chahiye)"); continue
+            out[p] = cur.replace(old, new, 1)
+        else:
+            out[p] = it.get("content", "")
+    return out, problems
+
+
+def scan_new_code(p, old_text, new_text):
+    """Sirf NAYE jode gaye hisse mein khatarnaak cheezein dhundho (purana code jaisa hai waisa rehta hai)."""
+    added = [l for l in new_text.splitlines() if l not in set(old_text.splitlines())]
+    bad = DENY.search("\n".join(added))
+    return [f"{p}: mana hai (khatarnaak cheez): {bad.group(0)[:40]}"] if bad else []
+
+
+RULES_CODE = """
+CODE RULES (you may now change the engine yourself; you are free, but careful):
+- Allowed: edits to tools/engine/*.py, template/lib/*.py, episodes/<name>/*.py, SEEKH.md, plus episode.json/plans as before.
+- For code ALWAYS use small edits, never a whole file: {"path": "...", "old": "EXACT text that occurs ONCE in the file", "new": "replacement"}.
+  (A new small .py file may be given whole as {"path","content"}.) Several edits per file are applied in order.
+- Keep everything that works. Do not change how existing characters, backgrounds and episodes look. Only ADD or FIX.
+- The new code must run on the render machine: Python 3.12, pycairo, numpy, pillow, ffmpeg; no internet, no secrets.
+  Forbidden (rejected automatically): network libraries, reading API keys/tokens/environment lists, git commands, eval/exec, deleting outside the work folder.
+- After your edit the engine checks (spec.py) and the render must still pass for ALL existing episodes; bump VERSION in the episode so it renders.
+- Explain in "summary" (Hinglish, simple words) what you added and why.
+"""
+
+
 def check_changes(changes):
     problems = []
-    for it in changes:
-        p, c = it.get("path", ""), it.get("content", "")
-        ok_path = p.startswith("plans/") or re.match(r"^episodes/[a-z0-9_]+/episode\.json$", p)
-        if not ok_path or ".." in p:
-            problems.append(f"{p}: sirf plans/ aur episodes/<naam>/episode.json likhne ki ijazat hai (code nahi)")
+    contents, pr = materialize(changes)
+    problems += pr
+    for p, c in contents.items():
+        if p in DOC_PATHS:
+            continue
+        ok_path = p.startswith("plans/") or re.match(r"^episodes/[a-z0-9_]+/episode\.json$", p) or is_code_path(p)
+        if not ok_path:
+            problems.append(f"{p}: yahan likhne ki ijazat nahi (sirf plans/, episodes/<naam>/episode.json, engine/lib ka code)")
+            continue
+        if is_code_path(p):
+            try:
+                with open(p, encoding="utf-8") as f:
+                    old = f.read()
+            except OSError:
+                old = ""
+            problems += scan_new_code(p, old, c)
+            try:
+                compile(c, p, "exec")
+            except SyntaxError as e:
+                problems.append(f"{p}: Python galat hai: {e}")
             continue
         if p.endswith(".json"):
             try:
@@ -423,12 +519,27 @@ def check_changes(changes):
     return problems
 
 
-def solve(task):
+def engine_sources():
+    out = []
+    for pat in ("tools/engine", "template/lib"):
+        for fn in sorted(os.listdir(pat)):
+            if fn.endswith(".py"):
+                with open(os.path.join(pat, fn), encoding="utf-8") as f:
+                    out.append(f"===== CODE: {pat}/{fn} =====\n{f.read()}")
+    return "\n\n".join(out)
+
+
+def solve(task, code=False):
     files = context_files()
     block = "\n\n".join(f"===== FILE: {p} =====\n{c}" for p, c in files.items())
     prompt = f"{RULES}\n\n# FILES\n{block}\n\n# TASK\n{task}"
+    if code:
+        prompt = f"{RULES}\n{RULES_CODE}\n\n# ENGINE SOURCE (you may edit these)\n{engine_sources()}\n\n# FILES\n{block}\n\n# TASK\n{task}"
     for _ in range(3):
         data = ask(prompt)
+        if data["action"] == "need_code" and not code:
+            print("AI ko engine mein badlaav chahiye:", data.get("summary", "")[:200])
+            return solve(task + "\n\nYou said the engine needs: " + data.get("summary", "") + "\nNow write the engine edits and the episode files.", code=True)
         if data["action"] != "change" or not data["files"]:
             data["action"] = "none"; data["files"] = []
             return data
@@ -442,17 +553,23 @@ def solve(task):
                        "Thoda saaf likh kar dobara `@ai` boliye, ya ye issue Claude chat mein bhejiye."}
 
 
+CODE_TOUCHED = set()
+
+
 def write_files(data):
     eps = set()
-    for it in data["files"]:
-        d = os.path.dirname(it["path"])
+    contents, _ = materialize(data["files"])
+    for path, content in contents.items():
+        d = os.path.dirname(path)
         if d:
             os.makedirs(d, exist_ok=True)
-        with open(it["path"], "w", encoding="utf-8") as f:
-            f.write(it["content"])
-        run(["git", "add", it["path"]])
-        if it["path"].startswith("episodes/"):
-            eps.add("/".join(it["path"].split("/")[:2]))
+        with open(path, "w", encoding="utf-8") as f:
+            f.write(content)
+        run(["git", "add", path])
+        if path.startswith("episodes/") and path.endswith("episode.json"):
+            eps.add("/".join(path.split("/")[:2]))
+        if is_code_path(path) or path in DOC_PATHS:
+            CODE_TOUCHED.add(path)
     return eps
 
 
@@ -630,6 +747,9 @@ def mode_task():
     st["issue"] = int(issue)
     if data["action"] == "change":
         eps = write_files(data)
+        st.setdefault("base", BASE.get("sha", ""))
+        if CODE_TOUCHED:
+            st["code_files"] = sorted(set(st.get("code_files", [])) | CODE_TOUCHED)
         if eps:
             st["episode"] = sorted(eps)[0]
         st["fix_rounds"] = 0
@@ -928,6 +1048,11 @@ def finish(issue, branch, st, ep, run_url):
             break
         ep_json = open(f"{ep}/episode.json", encoding="utf-8").read()
     deliver(issue, ep, run_url, verdict)
+    if verdict["pass"]:
+        try:
+            promote_engine(issue, branch, st)
+        except Exception as e:
+            print("promote nahi hua:", str(e)[:200])
     if not autopost_on():
         return
     if verdict["pass"]:
@@ -941,6 +1066,61 @@ def finish(issue, branch, st, ep, run_url):
         run(["gh", "issue", "edit", str(issue), "--repo", REPO, "--add-label", "dekhna-hai"], check=False)
         comment(issue, "⛔ Jaanch 3 baar sudhaar ke baad bhi PASS nahi hui, isliye aaj **post nahi hoga**. "
                        "Upar ki list dekhiye; theek karwana ho toh yahin `@ai ...` likhiye.")
+
+
+
+def promote_engine(issue, branch, st):
+    """PASS ke baad: is issue ke engine/SEEKH badlaav shared auto-video mein. Pehle sabhi purane episodes ki jaanch,
+    peechhe backup tag, aur tabhi jab auto-video beech mein aage na badha ho."""
+    files = [f for f in st.get("code_files", []) if os.path.exists(f)]
+    if not files:
+        return
+    code = [f for f in files if is_code_path(f)]
+    problems = []
+    for f in code:
+        try:
+            compile(open(f, encoding="utf-8").read(), f, "exec")
+        except SyntaxError as e:
+            problems.append(f"{f}: {e}")
+    import glob
+    for ej in sorted(glob.glob("episodes/*/episode.json")):
+        try:
+            if '"SHOTS"' in open(ej, encoding="utf-8").read():
+                problems += [f"{ej}: {x}" for x in SP.check(SP.load(ej))]
+        except Exception as e:
+            problems.append(f"{ej}: {str(e)[:100]}")
+    if problems:
+        comment(issue, "⛔ Engine badlaav shared engine mein **nahi** gaya: purane episodes ki jaanch mein dikkat aayi.\n- " +
+                "\n- ".join(problems[:8]) + f"\n\nBadlaav sirf branch `{branch}` par hai.")
+        return
+    run(["git", "fetch", "--depth", "1", "origin", "auto-video"])
+    head = run(["git", "rev-parse", "FETCH_HEAD"]).strip()
+    if st.get("base") and head != st["base"]:
+        comment(issue, f"⏸️ Engine badlaav taiyaar hai par auto-video beech mein aage badh chuka hai, isliye apne aap nahi daala. "
+                       f"Badlaav branch `{branch}` par hai; Claude chat mein ye issue bhejiye, wo mila dega.")
+        return
+    import datetime
+    tag = "engine-backup-" + datetime.datetime.utcnow().strftime("%Y%m%d-%H%M%S")
+    wt = tempfile.mkdtemp(prefix="promo_")
+    try:
+        run(["git", "worktree", "add", "--detach", wt, head])
+        for f in files:
+            os.makedirs(os.path.dirname(os.path.join(wt, f)) or wt, exist_ok=True)
+            with open(f, encoding="utf-8") as src, open(os.path.join(wt, f), "w", encoding="utf-8") as dst:
+                dst.write(src.read())
+        run(["git", "-C", wt, "add", "-A"])
+        if subprocess.run(["git", "-C", wt, "diff", "--cached", "--quiet"]).returncode == 0:
+            return
+        run(["git", "-C", wt, "-c", "user.name=github-actions[bot]", "-c", "user.email=github-actions[bot]@users.noreply.github.com",
+             "commit", "-m", f"AI Helper (issue {issue}): engine/seekh badlaav, jaanch PASS ke baad"])
+        run(["git", "tag", tag, head]); run(["git", "push", "origin", tag])
+        run(["git", "-C", wt, "push", "origin", "HEAD:refs/heads/auto-video"])
+        comment(issue, "🛠️ Engine/seekh ke badlaav jaanch PASS hone par **shared engine (auto-video) mein daal diye** gaye: " +
+                       ", ".join(f"`{f}`" for f in files) + f".\nGalti nikle toh wapas jaane ke liye backup tag: `{tag}`.")
+    except Exception as e:
+        comment(issue, f"⚠️ Engine badlaav auto-video mein daalte waqt dikkat aayi, badlaav branch `{branch}` par safe hai.\n\n<sub>{str(e)[:200]}</sub>")
+    finally:
+        run(["git", "worktree", "remove", "--force", wt], check=False)
 
 
 def deliver(issue, ep, run_url, verdict=None):
