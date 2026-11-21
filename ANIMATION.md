@@ -108,3 +108,12 @@ Ye khaas hamare kaam ka hai kyunki wo cut-out/puppet rig ki walk hai (humari eng
 - Zyada baarik details (freckles, extra lines) animation ke liye hata do, shape saaf rakho.
 - Key pose sabse zaroori; breakdown/inbetween thode ajeeb dikh sakte hain, wo theek hai.
 - Kisi ki baat par sudhar karo, apni zid mat rakho.
+
+### Poses aur acting (YouTube: owenferny "Acting and Body Mechanics" review se, 21 Nov 2026)
+- TWINNING mat karo: dono haath/kandhe/paer ek jaise sheesha-tasveer na hon. Ek haath/kandha doosre se alag ooncha, alag kona; ek haath pehle ruke ya hate (natural offset).
+- Reedh/dhad mein seedhi line nahi: C ya S curve. Kamar (hips) ek taraf uthi toh seena (chest) ulti taraf; sar un dono ke balance mein. Silhouette (kaali parchhai) mein shape saaf badle, upar-neeche sidhi line nahi.
+- Wazan dikhao: jis haath par tika hai wo zameen/sathah par pehle jame (plant) hua; kandha us taraf jhuke; sar usi ke upar balance mein.
+- Negative space (body aur haath ke beech khali jagah) saaf dikhe; par pose balanced bhi lage, ek taraf bharkar nahi.
+- Acting dialogue ke bhaav se mile: ek sa bhaav poore dialogue mein (jaise vyangya ya gussa) ho toh body ke chhote tez/ya dheere harkat bhi usi ke hisaab se; bhaav ka jhootha badlav na daalo.
+- Har harkat ek hi "formula" (pose → anticipation → overshoot → settle) na ho; kuch harkat seedhi, kuch ruki hui, taaki roboti na lage.
+- Aankhon ki palak seedhi ya ek taraf jhuki rakho (gol/oval nahi); munh mein ek taraf ka kona thoda uthao (chehra ek taraf se khulta hai).
