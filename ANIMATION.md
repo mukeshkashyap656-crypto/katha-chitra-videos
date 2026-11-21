@@ -136,3 +136,24 @@ Ye khaas hamare kaam ka hai kyunki wo cut-out/puppet rig ki walk hai (humari eng
 **Taiyari (anticipation):** badi harkat se pehle chhoti ulti harkat (baseball swing se pehle haath peeche, kudne se pehle jhukna). Harkat jitni tez, taiyari utni zyada. Subtle bhi: aankh pehle, sar baad mein. Bojh uthane se pehle lambi saans, seena phulao. Taiyari se bhaar (power) aur irada dikhta hai.
 **Timing aur spacing:** timing = drawing kab (kaun sa frame), spacing = kahan. 24 fps film; "twos" = har drawing 2 frame (12 drawings/sec) kaam aadha, achha chalta hai; tez harkat (daud) ones par. Barabar doori ka beech wala frame mat rakho, shuru/ant ke paas rakho (slow in/out).
 **Pose to pose:** pehle badi pose (shuru, beech, ant), phir beech ke breakdown/inbetween (zyadatar kaam ke liye theek); straight-ahead mein size/jagah badalne ka khatra.
+
+### Poora padha: baaki transcripts ka saar (21 Nov 2026)
+**Chalna/daudna/khade rehna (Doodley):**
+- Hamesha kam se kam EK paer zameen par (chalte/ladkhadate waqt bhi); dono paer hawa mein sirf daudte (run) waqt, jo "up" pose mein hota hai. Dono hawa mein bina wajah ke ho toh wazan-santulan galat lagta hai.
+- Daud: paer zyada door, badan zyada upar, down par bada gira, haath andar ki taraf santulan banate hain; paer ka raasta bhi 8 ki shakl banata hai. Koi kyun daud raha hai (darr/jaldi) wo pose mein dikhao.
+- Chalne ka mizaaj: bada kadam jhoolta = aaram-pasand; patakna = gussa; panjon par = nazuk/chup chaap; dheere uthana = chup chaap/dara hua.
+- Khade rehna: paer thode bahar, ghutne thoda mudhe (neutral). Kuch der baad wazan ek paer se doosre par jaye (idle loop) — isse chup khada character "jinda" lagta hai.
+- Santulan khona: tezi se paer badalna, ghabrahat mein; paer ka sthan kendra (center of gravity) ke saath badle: jhukao toh paer us taraf.
+**Cut-out (BaM) walk:** 10 drawings ek chakkar, twos par ~20 frame. Badan ko ek "symbol" bana kar upar-neeche chalao, har pose alag mat banao. Haath beech mein tez, mod par dheere (spacing). Sar thoda offset (der se) taaki badan ke upar uchhle. Sirf contact aur passing sabse zaroori. Dost se dikhao, feedback lo.
+**Bolna, practical (Dong, Japani animation):**
+- Teen munh: band, aadha khula, poora khula (aadha khula beech ka frame hota hai). Munh alag layer par, baaki chehra rukha (held).
+- Timing: shabd kab shuru, kitne frame (jaise "no" ~6 frame, "I" ~12). Munh ko twos ya threes par chalao.
+- Bade/josheele bolne par munh ka shape 8-16 frame pehle bana do; chhoti baat-cheet mein 2-4 frame pehle.
+- Poore badan ko bhi munh ke saath hilao: poora khula shape par sar thoda upar, aankhen thodi badi, baal phaile, seena upar, haath neeche, mutthi hilao.
+- Bolte hue sar mudna ho toh mudne ke beech aankhen band (palak), phir sar poora mud kar munh ke shape chalu. Beech ke frame mein bhi munh ka shape likh do.
+**Timing aur spacing (6UXjRCORV44):**
+- Do tarah ki gati: barabar (har frame ki doori same) aur tezi/ dheeme hona (doori badhti/ghat-ti). Beech ke frame banane ke 3 tareeke: halves (aadhi doori), thirds (ek tihai, tez-tarra), favors (thoda sa manzil ki taraf, sabse jhatke-daar).
+- Vaktu kaise tay karo: wo harkat khud kar ke stopwatch se naapo; seconds x fps = frame (24 fps par ~1 sec = 24 frame).
+- Har badi pose ke beech ek chart: ease in, ease out, ya dono, ya seedha.
+- Animation theek na lage toh aksar timing/spacing ka masla hota hai.
+**Pose to pose vs straight ahead:** pose to pose (key, breakdown, phir inbetween) kam galti (size/jagah nahi badalti), time bachta hai; straight ahead mein jaan/jaadu par bhatakne ka khatra. Computer tween (puppet rig) mein bhi easing curve (slow-in/out) manao warna doori barabar aur seedhi line ban jati hai; squash/stretch alag key se do.
