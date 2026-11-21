@@ -235,7 +235,7 @@ def _discover(url, key):
         return []
 
 
-def _openai_style(name, url, key, models, prompt_text, want_json):
+def _openai_style(name, url, key, models, prompt_text, want_json, timeout=300):
     if not key:
         raise Busy(f"{name}: key nahi")
     last = None
@@ -247,10 +247,10 @@ def _openai_style(name, url, key, models, prompt_text, want_json):
             tried.add(m)
             try:
                 body = {"model": m, "temperature": 0.3, "messages": [{"role": "user", "content": prompt_text}]}
-                r = requests.post(url, timeout=300, headers={"Authorization": f"Bearer {key}"},
+                r = requests.post(url, timeout=timeout, headers={"Authorization": f"Bearer {key}"},
                                   json={**body, **({"response_format": {"type": "json_object"}} if want_json else {})})
                 if want_json and r.status_code >= 400:    # kuch jagah JSON-mode nahi hota: bina uske dobara
-                    r = requests.post(url, timeout=300, headers={"Authorization": f"Bearer {key}"}, json=body)
+                    r = requests.post(url, timeout=timeout, headers={"Authorization": f"Bearer {key}"}, json=body)
                 txt = r.json()["choices"][0]["message"]["content"].strip()
                 if txt:
                     print(f"Jawab ({name}):", m); USED.append(f"{name} {m}")
@@ -319,6 +319,45 @@ def nvidia(p, j):
                   ["meta/llama-3.3-70b-instruct", "qwen/qwen2.5-coder-32b-instruct"], p, j)
 
 
+# ---------------- aakhri sahara: GitHub ke computer par hi chhota AI (Ollama), koi key/limit nahi ----------------
+LOCAL_URL = "http://127.0.0.1:11434"
+
+
+def _local_up():
+    try:
+        return requests.get(LOCAL_URL + "/api/tags", timeout=3).status_code == 200
+    except Exception:
+        return False
+
+
+def local_ai(p, j, hard=False):
+    """Baaki sab AI na chalein tab. Pehli baar Ollama install + model download (kuch minute), phir CPU par chalta hai: dheema par kabhi band nahi."""
+    if os.environ.get("NO_LOCAL"):
+        raise Busy("Local AI: is kaam ke liye band")
+    model = os.environ.get("LOCAL_MODEL", "").strip() or ("qwen2.5:7b" if hard else "qwen2.5:3b")
+    if not _local_up():
+        if not (os.environ.get("GITHUB_ACTIONS") or os.environ.get("LOCAL_AI")):
+            raise Busy("Local AI: sirf GitHub computer par")
+        print("Local AI: Ollama laga raha hoon...")
+        if subprocess.run(["sh", "-c", "command -v ollama >/dev/null || curl -fsSL https://ollama.com/install.sh | sh"],
+                          capture_output=True, text=True, timeout=900).returncode != 0:
+            raise Busy("Local AI: Ollama install nahi hua")
+        subprocess.Popen(["ollama", "serve"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        for _ in range(40):
+            if _local_up():
+                break
+            time.sleep(2)
+        else:
+            raise Busy("Local AI: server shuru nahi hua")
+    have = requests.get(LOCAL_URL + "/api/tags", timeout=10).json().get("models", [])
+    if not any(m.get("name", "").startswith(model.split(":")[0]) and m.get("name", "") == model for m in have):
+        print("Local AI: model utaar raha hoon:", model)
+        r = subprocess.run(["ollama", "pull", model], capture_output=True, text=True, timeout=1500)
+        if r.returncode != 0:
+            raise Busy("Local AI: model nahi utra: " + r.stderr[-120:])
+    return _openai_style("Local", LOCAL_URL + "/v1/chat/completions", "local", [model], p, j, timeout=1500 if hard else 900)
+
+
 def ask(prompt_text, image=None, want_json=True, hard=False):
     imgs = image if isinstance(image, (list, tuple)) else ([image] if image else [])
     contents = [types.Part.from_bytes(data=i, mime_type="image/jpeg") for i in imgs] + [prompt_text] if imgs else prompt_text
@@ -384,6 +423,12 @@ def ask(prompt_text, image=None, want_json=True, hard=False):
                 print("Daud ka jeetne wala AI:", nm)
                 return res
             errs.append(f"{nm}: {err}")
+    if not imgs:                                  # sab free AI fail: aakhri sahara, apne computer par chhota AI
+        try:
+            t = local_ai(prompt_text, want_json, hard)
+            return parse(t) if want_json else t
+        except Exception as e:
+            errs.append(f"Local: {str(e)[:60]}")
     raise Busy("Saare raaste try kiye: " + " | ".join(errs)[-300:])
 
 
@@ -1192,9 +1237,59 @@ def mode_queue():
             comment(n, f"⚠️ Subah wali koshish mein galti hui. Yahin dobara `@ai ...` likhiye.\n\n<sub>{str(e)[:300]}</sub>")
 
 
+def mode_report():
+    """Roz ka report: pichhle 24 ghante mein kya bana, kaun sa AI chala, asli views, aur agla kadam. Ek hi issue mein comment."""
+    os.environ["NO_LOCAL"] = "1"          # report ke liye bhaari local AI na lagao
+    import datetime as _dt
+    now = _dt.datetime.now(_dt.timezone.utc).replace(tzinfo=None)
+    since = (now - _dt.timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    lines = [f"## 📊 Katha Chitra roz ka report — {now + _dt.timedelta(hours=5, minutes=30):%d %b %Y}", ""]
+    try:
+        runs = json.loads(run(["gh", "api", f"repos/{REPO}/actions/runs?per_page=100"]))["workflow_runs"]
+        rc = {}
+        for r in runs:
+            if r["created_at"] >= since and r["conclusion"] in ("success", "failure"):
+                k = r["name"]; rc.setdefault(k, [0, 0]); rc[k][0 if r["conclusion"] == "success" else 1] += 1
+        lines.append("**Pichhle 24 ghante ke kaam** (theek / kharab):")
+        lines += [f"- {k}: {a} / {b}" for k, (a, b) in sorted(rc.items())] or ["- kuch nahi chala"]
+    except Exception as e:
+        lines.append(f"- (runs nahi mile: {str(e)[:80]})")
+    try:
+        cms = json.loads(run(["gh", "api", f"repos/{REPO}/issues/comments?since={since}&per_page=100"]))
+        ai = {}
+        for c in cms:
+            m = re.search(r"<sub>AI: (\S+)", c.get("body", ""))
+            if m:
+                ai[m.group(1)] = ai.get(m.group(1), 0) + 1
+        lines += ["", "**Kaun sa AI chala:** " + (", ".join(f"{k} ×{v}" for k, v in sorted(ai.items(), key=lambda x: -x[1])) or "koi kaam nahi aaya")]
+    except Exception:
+        pass
+    try:
+        q = json.loads(run(["gh", "api", f"repos/{REPO}/issues?labels={QUEUE}&state=open", "-q", "[.[].number]"]) or "[]")
+        lines.append(f"**'Baad-mein' queue mein:** {len(q)} kaam" + (f" ({', '.join('#' + str(n) for n in q)})" if q else ""))
+    except Exception:
+        pass
+    st = VR.stats_text()
+    if st.strip():
+        lines += ["", "**Asli views (YouTube):**", "", st.strip()[:1800]]
+    try:
+        tip = ask("Below are the real YouTube stats of a new channel of Valmiki Ramayan Hindi Shorts (Katha Chitra). In 2-3 short lines of simple "
+                  "Hinglish (everyday words), say which hook/title style seems to work best and one small thing to try in the next episode. "
+                  "Do not change the Ramayan story. Do not invent numbers; if the data is too small say so.\n\n" + st[:2500], want_json=False)
+        lines += ["", "**Agle episode ke liye salaah:** " + tip.strip()[:600]]
+    except Exception:
+        pass
+    title = "📊 Roz ka report"
+    num = run(["gh", "api", f"repos/{REPO}/issues?state=open&per_page=100", "-q", f'[.[]|select(.title=="{title}")|.number][0] // empty']).strip()
+    if not num:
+        num = run(["gh", "api", "-X", "POST", f"repos/{REPO}/issues", "-f", f"title={title}",
+                   "-f", "body=Helper roz yahan apna report likhta hai. Yahan @ai mat likhna; kaam ke liye naya issue banao.", "-q", ".number"]).strip()
+    comment(num, "\n".join(lines))
+
+
 if __name__ == "__main__":
     try:
-        {"task": mode_task, "queue": mode_queue, "daily": mode_daily}[sys.argv[1]]()
+        {"task": mode_task, "queue": mode_queue, "daily": mode_daily, "report": mode_report}[sys.argv[1]]()
     except (Busy, ValueError) as e:      # free AI busy or kept sending broken answers: queue for the morning
         if os.environ.get("ISSUE_NUMBER"):
             queue_issue(os.environ["ISSUE_NUMBER"], str(e))
