@@ -32,7 +32,7 @@ if hasattr(sys.stdout, "reconfigure"):
 
 REPO = os.environ["GITHUB_REPOSITORY"]
 MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite"]
-MAX_FIX_ROUNDS = 3
+MAX_FIX_ROUNDS = 5
 STATE = "ai_state.json"
 CONTEXT = ["NIYAM.md", "VIRAL.md", "SEEKH.md", "tools/engine/README.md"]
 
@@ -398,9 +398,11 @@ Reply with ONLY valid JSON:
  "files": [{"path": "...", "content": "THE COMPLETE FILE CONTENT"}]}
 
 How to work:
-- NEW episode: first a plan only: plans/<bhagN>_PLAN.md (shot list in Hinglish, every shot 2-3 s, who stands where,
-  new character looks from Valmiki) + plans/<bhagN>_episode.json (the scene list). Show it in summary and ask
-  for OK. Do NOT create episodes/ until the owner says the plan is OK / asks to build ("pehle tay, phir banao").
+- NEW episode: the owner has given you FULL FREEDOM. Never ask the owner for an OK or a question; decide yourself, think it through,
+  and state your assumptions in the summary. In ONE answer write plans/<bhagN>_PLAN.md (shot list, every shot 2-3 s, who stands where,
+  new character looks from Valmiki) + plans/<bhagN>_episode.json AND episodes/<bhagN>/episode.json (render true). Plan first in your
+  head like a film director (every scene decided from the story), then build.
+- When something is unclear, decide the most sensible way yourself (look at the rules in NIYAM.md/SEEKH.md/VIRAL.md) and go on.
 - BUILD: write episodes/<bhagN>/episode.json (copy the plan's scene list). "render": true.
 - FIX a look/render problem: change as little as possible in that episode.json, bump VERSION, "render": true.
 - Owner only wants the video made again without changes: "action": "none", "render": true.
@@ -809,7 +811,7 @@ def render_loop(issue, branch, st):
 
 
 # ---------------- kadi jaanch + apne aap sudhaar (VIRAL.md section 6) ----------------
-MAX_REVIEW_ROUNDS = 3
+MAX_REVIEW_ROUNDS = 5
 PASS_SCORE = 56
 SCORE_KEYS = ["hook", "structure", "pace", "emotion", "mood", "ending", "camera"]
 
