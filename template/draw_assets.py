@@ -30,13 +30,15 @@ def quiver(c, x, top, u, d=0):   # quiver on the back: top and feathers rise abo
         c.rectangle(-0.25 * u, yy * u, 0.5 * u, 0.13 * u); fill_stroke(c, "#e8b730", 3)
     c.restore()
 
-def bow_at(c, hx, hy, u, skin):   # bow gripped in the hand: grip at the fist, limbs curve outwards
+def bow_at(c, hx, hy, u, skin, fist=True):   # bow gripped in the hand: grip at the fist, limbs curve outwards
     y0, y1 = hy - 1.55 * u, hy + 1.55 * u; bx = hx
     c.move_to(bx + 0.05 * u, y0); c.line_to(bx + 0.05 * u, y1); c.set_source_rgb(*hexc("#f6f0e2")); c.set_line_width(2.5); c.stroke()
     c.move_to(bx + 0.05 * u, y0); c.curve_to(bx - 0.5 * u, y0 + 0.6 * u, bx - 0.5 * u, y1 - 0.6 * u, bx + 0.05 * u, y1)
     c.set_source_rgb(*OL); c.set_line_width(15); c.stroke_preserve()
     c.set_source_rgb(*hexc("#a0662a")); c.set_line_width(8); c.stroke()
     gx = bx - 0.34 * u   # grip point on the curve, the fist closes over it
+    if not fist:                      # bow slung on the back: no hand left holding it (the hands are joined for pranam)
+        return
     c.arc(gx, hy, 0.13 * u, 0, 6.3); fill_stroke(c, skin, 4)
     c.move_to(gx - 0.1 * u, hy - 0.03 * u); c.line_to(gx + 0.1 * u, hy - 0.03 * u); c.move_to(gx - 0.1 * u, hy + 0.04 * u); c.line_to(gx + 0.1 * u, hy + 0.04 * u)
     c.set_source_rgb(*OL); c.set_line_width(2); c.stroke()
@@ -69,12 +71,12 @@ def draw_char(name, file, walk=None, side=0, **kw):
     if archer:
         hx, hy = info["hands"][0]; hx += 0.34 * info["u"]          # grip lands on the fist
         if bowpos:
-            tx, ty = x - 0.55 * u * (d or 1), feet - HS * 0.5      # slung behind the back
+            tx, ty = x - 0.2 * u * (d or 1), feet - HS * 0.5      # slung behind the back
             if bend:
                 ca, sa = math.cos(bend), math.sin(bend); dx, dy = tx - x, ty - waist_y
                 tx, ty = x + dx * ca - dy * sa, waist_y + dx * sa + dy * ca
             hx, hy = hx + (tx - hx) * bowpos, hy + (ty - hy) * bowpos
-        bow_at(c, hx, hy, info["u"], C.CHARS[name]["skin"])
+        bow_at(c, hx, hy, info["u"], C.CHARS[name]["skin"], fist=bowpos < 0.5)
     s.write_to_png(f"{OUT}/{file}.png"); C.WALK = None; C.SIDE = 0; C.GAITOV = None
 
 MOUTHS = ["X", "A", "B", "E", "O", "M"]

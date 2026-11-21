@@ -34,7 +34,7 @@ REPO = os.environ["GITHUB_REPOSITORY"]
 MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite"]
 MAX_FIX_ROUNDS = 5
 STATE = "ai_state.json"
-CONTEXT = ["NIYAM.md", "VIRAL.md", "SEEKH.md", "BODY.md", "tools/engine/README.md"]
+CONTEXT = ["NIYAM.md", "VIRAL.md", "SEEKH.md", "BODY.md", "ANIMATION.md", "tools/engine/README.md"]
 
 
 BASE = {}    # auto-video ka commit jahan se is issue ka kaam shuru hua
@@ -471,7 +471,7 @@ How to work:
 # Par: sirf apni issue ki branch par; render wale computer ke paas koi secret nahi; naye code mein khatarnaak cheezein mana;
 # jaanch (PASS) ke baad hi shared engine mein jaata hai, peechhe backup tag ke saath.
 CODE_PATHS = [r"^tools/engine/[A-Za-z0-9_]+\.py$", r"^tools/(?!ramayan_ai\.py$)[A-Za-z0-9_]+\.(py|sh)$", r"^template/lib/[A-Za-z0-9_]+\.py$", r"^episodes/[a-z0-9_]+/[A-Za-z0-9_]+\.py$"]
-DOC_PATHS = ["SEEKH.md", "BODY.md", "tools/engine/README.md"]
+DOC_PATHS = ["SEEKH.md", "BODY.md", "ANIMATION.md", "tools/engine/README.md"]
 DENY = re.compile(
     r"(GITHUB_TOKEN|GH_TOKEN|github\.token|extraheader|COMPOSIO|[A-Z_]*(API_KEY|SECRET|TOKEN)\b|\.git/|git\s+(push|remote|config)|"
     r"import\s+(requests|urllib|socket|http|ftplib|smtplib|paramiko|aiohttp|httpx)|from\s+(requests|urllib|socket|http)\b|"
@@ -897,7 +897,7 @@ def review_once(sheets, ep_json):
         '"scores":{"hook":0-10,"structure":0-10,"pace":0-10,"emotion":0-10,"mood":0-10,"ending":0-10,"camera":0-10},'
         '"weak":[{"what":"...","fix":"..."}],"cannot_check":["..."],"summary":"Hinglish, 2 short lines"}\n\n'
         "# VIRAL.md\n" + viral + "\n\n# NIYAM.md\n" + open("NIYAM.md", encoding="utf-8").read() + "\n\n# SEEKH.md\n"
-        + open("SEEKH.md", encoding="utf-8").read() + "\n\n# BODY.md\n" + open("BODY.md", encoding="utf-8").read() + "\n\n# EPISODE\n" + ep_json)
+        + open("SEEKH.md", encoding="utf-8").read() + "\n\n# BODY.md\n" + open("BODY.md", encoding="utf-8").read() + "\n\n# ANIMATION.md\n" + open("ANIMATION.md", encoding="utf-8").read() + "\n\n# EPISODE\n" + ep_json)
     for _ in range(3):
         txt = ask(prompt, image=sheets, want_json=False, hard=True)
         mt = re.search(r"\{.*\}", txt, re.DOTALL)
