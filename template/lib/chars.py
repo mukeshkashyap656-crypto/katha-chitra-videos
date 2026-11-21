@@ -272,6 +272,10 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
     if turn is None:
         turn = 1.0 * SIDE if (SIDE and WALK is not None) else 0.0   # side-view walkers look where they walk
     _walking = WALK is not None and pose == "stand"
+    # GAZE RULE: eyes always go where the head/body goes. Head to the front (walking toward the viewer, talking to the viewer)
+    # -> both pupils centred (old Katha Chitra style). To look at someone off to the side, turn the head (turn=+-1), do not push the pupils alone.
+    if not turn:
+        look = 0.0 if (_walking and not SIDE) else max(-0.25, min(0.25, look))
     if _walking:
         if SIDE:
             ctx.save(); ctx.translate(x, feet); ctx.rotate(0.07 * SIDE)           # side view: lean forward, no side sway
@@ -468,7 +472,7 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
             ellipse(ctx, x + s * sh_w * 0.85, sh_y + 0.02 * u, 0.16 * u, 0.06 * u); fill_stroke(ctx, c["trim"], 3)
     if _walking: ctx.restore()
     if _walking:                                   # head stays level: cancels the body sway, small nod with each step
-        ctx.save(); ctx.translate(hx, hy + 0.4 * u); ctx.rotate(-0.07 * SIDE + 0.012 * math.cos(2 * WALK) if SIDE else -0.030 * math.sin(WALK) - 0.035 + 0.012 * math.cos(2 * WALK)); ctx.translate(-hx, -(hy + 0.4 * u))
+        ctx.save(); ctx.translate(hx, hy + 0.4 * u); ctx.rotate(-0.07 * SIDE + 0.012 * math.cos(2 * WALK) if SIDE else -0.045 * math.sin(WALK) - 0.035 + 0.012 * math.cos(2 * WALK)); ctx.translate(-hx, -(hy + 0.4 * u))
     # ---- head ----
     face(ctx, c, hx, hy, u, mouth, blink, emo, look, turn)
     if c.get("mala"):

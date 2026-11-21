@@ -43,3 +43,9 @@ Sources: Thomas & Johnston ke 12 niyam (en.wikipedia.org/wiki/Twelve_basic_princ
 8. Wazan dikhta hai, taiyari aur follow-through hai?
 9. Phone ke chhote screen par saaf dikhta hai?
 Ek bhi nahi toh sudharo, phir dobara jaancho.
+
+## Nazar (gaze) ka niyam — aankhen wahin jahan chehra/body
+- Samne (camera ki taraf) chalta, dekhta ya baat karta character: DONO pupil seedhe beech mein (purani Katha Chitra style). Pupil ek kone mein khinche nahi.
+- Kisi aur ki taraf dekhna ho (Ram rishi ko): sar mod do (`turn=+1/-1`) aur body usi taraf; sirf pupil mat khischo. Engine bina `turn` ke pupil ko +-0.25 se zyada hone nahi deta.
+- Dekhne wale ki taraf hi dekha jaye: dono character ek-doosre ki taraf (A→B toh B bhi A ki taraf).
+- Chalte waqt sar seedha (level) rahe, tedha nahi; chehra ghoom kar camera se na hate jab tak scene na maange.

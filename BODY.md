@@ -68,3 +68,5 @@ Pehle NIYAM.md aur SEEKH.md padho, phir ye. Naya sudhaar mile toh SEEKH.md mein 
 - Ho chuka: asli data se chalna + rukna, chehra disha mein, pranam (bend), dhanush kandhe par, saans.
 - Baaki: mudna (CMU 16_17 se), baithna-uthna (CMU 13_01), jude haath aur aashirvaad ka khula haath, tunic ka halka jhoolna, Lakshman/rishi/aurat/bachche/boodhe ki alag chaal, samne ya door chalna.
 - Sabse zaroori: episode ke build mein naya chalna lagana (4 ki jagah 12 walk frame, har chakkar mein body 3.2*u aage, ruk-ne ke liye stop=..., chehra scene ki disha mein) aur phir poora video dekhkar jaanch.
+
+- NAZAR: samne chalte/dekhte/bolte character ke pupil beech mein (look=0); kisi aur ko dekhna ho toh `turn` se sar modo. Details ANIMATION.md.
