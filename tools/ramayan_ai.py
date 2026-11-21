@@ -134,7 +134,8 @@ def gemini(contents, want_json):
     cfg = types.GenerateContentConfig(temperature=0.3, max_output_tokens=32768,
                                       response_mime_type="application/json" if want_json else None)
     last = None
-    for attempt in range(max(6, len(mlist) + 2)):          # fail fast when busy; the job is queued for the quiet morning
+    patient = os.environ.get("PATIENT") == "1"      # shaant samay (queue) mein sabr; warna jaldi hatke doosre AI par
+    for attempt in range(max(6, len(mlist) + 2) if patient else 3):
         m = mlist[attempt % len(mlist)]
         try:
             txt = (c.models.generate_content(model=m, contents=contents, config=cfg).text or "").strip()
@@ -145,7 +146,7 @@ def gemini(contents, want_json):
         except Exception as e:
             last = e
             busy = any(x in str(e) for x in ("503", "UNAVAILABLE", "429", "RESOURCE_EXHAUSTED", "overloaded"))
-            w = min(90, (20 if busy else 8) * (attempt + 1))
+            w = min(90, (20 if busy else 8) * (attempt + 1)) if patient else (3 if busy else 2) * (attempt + 1)
             print(f"Gemini koshish {attempt + 1} ({m}) nahi chali: {str(e)[:160]}. {w}s baad phir...")
             time.sleep(w)
     raise Busy(f"Gemini: {str(last)[:200]}")
@@ -321,26 +322,52 @@ def ask(prompt_text, image=None, want_json=True):
                   ("NVIDIA", lambda p: nvidia(p, want_json)),
                   ("Cohere", lambda p: cohere(p, want_json)),
                   ("HuggingFace", lambda p: huggingface(p, want_json))]
+    def parse(txt):
+        mt = re.search(r"\{.*\}", txt, re.DOTALL)
+        data = json.loads(mt.group(0) if mt else txt)
+        if data.get("action") not in ("change", "none"):
+            raise ValueError("action galat")
+        data.setdefault("files", []); data.setdefault("summary", ""); data.setdefault("render", False)
+        return data
+
+    import queue
+    import threading
     prompt, errs = prompt_text, []
     for _round in range(2):                      # poori list do baar
-        for name, fn in chain:
-            try:
-                txt = fn(prompt)
-            except Exception as e:   # koi bhi dikkat: agle raaste par jao
-                errs.append(f"{name}: {str(e)[:60]}"); continue
+        # 1) Gemini pehle (sabse achha, tasveer/video bhi dekhta hai)
+        name, fn = chain[0]
+        try:
+            txt = fn(prompt)
             if not want_json:
                 return txt
             try:
-                mt = re.search(r"\{.*\}", txt, re.DOTALL)
-                data = json.loads(mt.group(0) if mt else txt)
-                if data.get("action") not in ("change", "none"):
-                    raise ValueError("action galat")
-                data.setdefault("files", []); data.setdefault("summary", ""); data.setdefault("render", False)
-                return data
+                return parse(txt)
             except ValueError as e:
                 errs.append(f"{name}: JSON tooti")
                 prompt = (prompt_text + "\n\n# YOUR LAST ANSWER WAS NOT VALID JSON (" + str(e)[:120] +
                           "). Answer again with ONLY valid JSON; escape every double quote inside strings.")
+        except Exception as e:
+            errs.append(f"{name}: {str(e)[:60]}")
+        # 2) baaki free AI ek saath daudte hain: jo pehle sahi jawab de wahi jeeta (line se ek-ek karke nahi)
+        rest = chain[1:]
+        if not rest:
+            continue
+        q = queue.Queue()
+
+        def worker(nm, f, pr):
+            try:
+                t = f(pr)
+                q.put((nm, parse(t) if want_json else t, None))
+            except Exception as ex:
+                q.put((nm, None, str(ex)[:60]))
+        for nm, f in rest:
+            threading.Thread(target=worker, args=(nm, f, prompt), daemon=True).start()
+        for _ in rest:
+            nm, res, err = q.get()
+            if err is None:
+                print("Daud ka jeetne wala AI:", nm)
+                return res
+            errs.append(f"{nm}: {err}")
     raise Busy("Saare raaste try kiye: " + " | ".join(errs)[-300:])
 
 
@@ -958,6 +985,7 @@ def queue_issue(issue, why):
 
 def mode_queue():
     """Morning schedule: redo every queued issue with the owner's last @ai request."""
+    os.environ["PATIENT"] = "1"      # shaant samay hai: Gemini ke liye zyada sabr
     owner = REPO.split("/")[0]
     base = run(["git", "rev-parse", "HEAD"]).strip()
     nums = json.loads(run(["gh", "api", f"repos/{REPO}/issues?labels={QUEUE}&state=open", "-q", "[.[].number]"]) or "[]")
