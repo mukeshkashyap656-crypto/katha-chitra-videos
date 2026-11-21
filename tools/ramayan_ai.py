@@ -787,7 +787,86 @@ def mode_daily():
             comment(num, f"⚠️ Roz wali koshish mein galti hui, kal dobara ya yahin `@ai ...` likhiye.\n\n<sub>{str(e)[:300]}</sub>")
 
 
+
+def _sheet_from_mp4(path):
+    """Render branch na ho (purane/staged bhaag) toh asli MP4 se hi jaanch ki sheet banao (ffmpeg)."""
+    try:
+        dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", path],
+                                   capture_output=True, text=True).stdout.strip() or 0)
+    except ValueError:
+        dur = 0
+    if dur < 3:
+        return None, None
+    d = tempfile.gettempdir()
+    main_p, end_p = os.path.join(d, "rv_main.jpg"), os.path.join(d, "rv_end.jpg")
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-i", path, "-vf", f"fps=100/{dur:.2f},scale=216:-1,tile=10x10", "-frames:v", "1", "-q:v", "4", main_p])
+    subprocess.run(["ffmpeg", "-y", "-v", "error", "-ss", f"{max(0, dur - 5):.2f}", "-i", path, "-vf", "fps=4,scale=216:-1,tile=5x4", "-frames:v", "1", "-q:v", "4", end_p])
+    rd = lambda q: open(q, "rb").read() if os.path.exists(q) else b""
+    return rd(main_p), rd(end_p)
+
+
+def mode_review():
+    """Page se 'JAANCH-VIDEO Bhag N': bane hue video ko poora dekhkar director + Valmiki jaanch. Kuch badalta ya banata nahi."""
+    issue = os.environ["ISSUE_NUMBER"]
+    m = re.search(r"[Bb]hag\s*(\d+)", os.environ.get("REQUEST", "") + " " + os.environ.get("ISSUE_TITLE", ""))
+    if not m:
+        comment(issue, "Kaun sa bhaag? Aise likhiye: `@ai JAANCH-VIDEO Bhag 8`")
+        return
+    n = m.group(1)
+    os.environ["ISSUE_TITLE"] = f"Bhag {n} jaanch"
+    ep = f"episodes/bhag{n}"
+    comment(issue, f"🔍 Bhag {n} ki poori jaanch shuru (video dekhna-sunna + Valmiki mel). Isme 3-8 minute lagte hain, kuch badlega nahi.")
+    run(["git", "fetch", "--depth", "1", "origin", "main"], check=False)
+    ep_json, vid, sheet, how = "{}", None, None, ""
+    for ref in (["HEAD"] + run(["git", "branch", "-r", "--list", "origin/ai/issue-*"], check=False).split()):
+        try:
+            ep_json = run(["git", "show", f"{ref}:{ep}/episode.json"]); break
+        except Exception:
+            continue
+    try:
+        sheet = fetch_sheet(ep)
+        vid = fetch_video(ep)
+        how = "render branch se"
+        if not sheet[0]:
+            sheet = None
+    except Exception:
+        sheet = None
+    if sheet is None:
+        try:
+            eps = json.loads(run(["git", "show", "origin/main:episodes.json"]))
+            e = eps.get(n) or {}
+            data = subprocess.run(["git", "show", f"origin/main:{e.get('file', '')}"], capture_output=True).stdout
+            if len(data) < 100000:
+                raise ValueError("video file nahi mili")
+            vid = os.path.join(tempfile.gettempdir(), "watch_review.mp4")
+            open(vid, "wb").write(data)
+            a, b = _sheet_from_mp4(vid)
+            if not a:
+                raise ValueError("video se sheet nahi bani")
+            sheet = (a, b, "", {})
+            how = "tayyar (staged) video se"
+        except Exception as ex:
+            comment(issue, f"⚠️ Bhag {n} ka video nahi mila, isliye jaanch nahi ho payi.\n\n<sub>{str(ex)[:200]}</sub>")
+            return
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=2) as ex:
+        fs = ex.submit(story_check, ep_json, n)
+        verdict = review(sheet, ep_json, vid)
+        probs = fs.result() if ep_json != "{}" else []
+    msg = f"🔍 **Bhag {n} ki poori jaanch** ({how})\n\n{verdict['text']}"
+    if probs:
+        msg += "\n\n📖 **Valmiki mel:**\n" + "\n".join(f"- ❌ {p.get('line')}: {p.get('what')}" for p in probs)
+    elif ep_json != "{}":
+        msg += "\n\n📖 Valmiki mel: ✅ koi pakki galti nahi mili."
+    else:
+        msg += "\n\n📖 (is bhaag ki script nahi mili, isliye Valmiki mel nahi hua)"
+    msg += "\n\nSudhar karwana ho to page ka **✏️ Sudhar karwao** dabaiye, ya yahin `@ai ...` likhiye."
+    comment(issue, msg)
+
+
 def mode_task():
+    if "JAANCH-VIDEO" in os.environ.get("REQUEST", "").upper():
+        return mode_review()
     issue = os.environ["ISSUE_NUMBER"]
     branch = f"ai/issue-{issue}"
     checkout_branch(branch)
