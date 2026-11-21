@@ -86,3 +86,25 @@ Sources: Animator Island eyes, Pluralsight 12 steps walk cycle.
 - ENGINE: `chars.turn_seq(p)` (p=0..1) dega (turn, look, blink): pehle aankhen, phir sar, shuru mein palak, slow-in/slow-out. Sar mudne wale scene mein isi se `turn=`, `look=`, `blink=` do.
 - ENGINE: `mouth` "X" ke alawa kuch ho (bol raha) toh sar/body mein halka nod-tilt apne aap aata hai (`t` badalte raho); chup khade par nahi.
 - Jab vidIQ ke credits wapas aayein: YouTube tutorials ke transcript khud padho (vidiq_youtube_search + vidiq_video_transcript), seekhi baatein yahin likho, user se pooche bina.
+
+### YouTube transcripts se seekha (21 Nov 2026) — cut-out walk (Harmony puppet rig), head turn (BaM Animation), walk basics
+Ye khaas hamare kaam ka hai kyunki wo cut-out/puppet rig ki walk hai (humari engine bhi aisi hi hai).
+**Walk (cut-out rig):**
+- Pehle contact poses, phir passing, phir down, phir up (sab ek saath seedhe shuru se nahi). Ek kadam = 4 poses, do kadam = 8 drawings.
+- 24 fps par "twos" (har pose 2 frame) = 16 frame ka chakkar. Kam fps par ones. Koi bhi galat nahi, bas mood ke hisaab se.
+- Asli chal ko tracing karo toh "tairti" lagti hai; isliye up/down thoda badha kar dikhao. (Humne mocap angle liye hain, isliye up-down ko thoda exaggerate karna).
+- Ek hi jagah chalte raho (treadmill): pehle chakkar ban jaye, phir poore character ko raste par ek barabar raftaar se chalao taaki paer phisle nahi (hamara 3.2*u niyam).
+- Quarter (3/4) view mein chalna profile se zyada achha lagta hai (zyada dikhta hai); idle/bolte waqt bhi 3/4 achha.
+- Contact par pichhla paer thoda uncha aur aage ka seedha; passing par kamar upar (paer seedha), down par sabse neeche (ghutna mudha). Dono passing ki oonchai barabar. Ghutne par thoda mod rakho (knee pop se bachne ke liye).
+- Haath paer se ULTI disha mein, par timing alag (pe pehle, haath 2-3 frame baad). Haath mein halka mod; kandha-kohni-kalai kramse (drag/overlap), haath ke ant mein follow-through.
+- Kamar/pair ek taraf mudte hain, kandhe ulte, sar kandhe ke saath balance karta hai. Sar down par thoda neeche, up par thoda upar. Sar aur haath ki harkat 2-3 frame der se.
+- Paer zameen se uthte waqt ease out; haath ke peak par ease. Spacing barabar rakho taaki jhatke na lagein. Zameen se door wala paer door-door aaraam se, zameen wala paer barabar doori par.
+- 3/4 view mein kamar chauri, paer/haath beech ki taraf aate-jaate; kapde mein halka squash/stretch.
+**Sar mudna (head turn):**
+- Mudne se pehle halka anticipation (thoda neeche ya ulti taraf), phir mud kar; beech wala drawing BILKUL beech mein mat rakho (barabar doori = robot). Pehle frame ke paas rakho: dheere shuru, phir tezi se jhatke se mudna, phir settle.
+- Palak jhapakna: character mudte waqt aksar palak jhapakta hai.
+- Sar ghumne par sar ya dhad ka aakar na badle (sar "lamba" ya body chhoti-badi na ho); apne drawings ko dobara jaanch lo.
+- Baal/kapde sar ke baad ruke (secondary): sar mud jaye tab bhi thoda aage chalein, phir settle. Isse "plastic ka putla" nahi lagta.
+- Zyada baarik details (freckles, extra lines) animation ke liye hata do, shape saaf rakho.
+- Key pose sabse zaroori; breakdown/inbetween thode ajeeb dikh sakte hain, wo theek hai.
+- Kisi ki baat par sudhar karo, apni zid mat rakho.
