@@ -117,3 +117,22 @@ Ye khaas hamare kaam ka hai kyunki wo cut-out/puppet rig ki walk hai (humari eng
 - Acting dialogue ke bhaav se mile: ek sa bhaav poore dialogue mein (jaise vyangya ya gussa) ho toh body ke chhote tez/ya dheere harkat bhi usi ke hisaab se; bhaav ka jhootha badlav na daalo.
 - Har harkat ek hi "formula" (pose → anticipation → overshoot → settle) na ho; kuch harkat seedhi, kuch ruki hui, taaki roboti na lage.
 - Aankhon ki palak seedhi ya ek taraf jhuki rakho (gol/oval nahi); munh mein ek taraf ka kona thoda uthao (chehra ek taraf se khulta hai).
+
+### YouTube transcripts se aur seekha (21 Nov 2026): Doodley (legs/weight), Aaron Blaise (Disney, dialogue), mouth shapes, anticipation, timing & spacing
+**Wazan aur paer (Doodley):**
+- Paer zameen par "jame" rahein (2D mein ise feet register karna kehte hain): jab tak chhalaang na lage paer apni jagah se na khiske, nahi toh wazan chala jata hai.
+- Bhaari/bada character: chhalaang se pehle bada wind-up, aur dheema; jitna bada, utni dheemi harkat.
+- Chalna = aage ki taraf girna, paer har baar sambhal lete hain; up pose par sabse upar, contact par girna.
+- Contact: aage ka paer seedha aur edi pehle, peeche ka mudha. Down: aage ka paer poora zameen par. Passing: ek paer doosre ko paar karta hai.
+- Kamar (hips) paer ke ulte: jo paer uthta hai uski taraf ka kamar kinara neeche; passing par seedhi, contact par ulti taraf. Kamar side-to-side bhi hilti hai (figure-8 jaisi, upar-neeche + side).
+- Paer zameen se uthte waqt edi pehle (foot roll: edi uthe, panje ki gaand par ghume). Paer ki raftaar zameen chhoone tak barabar rahe (ease-in na karo).
+- Upar ka badan paer se ulta: haath paer ke ulte, seena kamar ke ulta ghume. Kabhi haath-paer ek hi taraf nahi.
+- Mizaaj chal se: gussa = badan aage, chauda kadam; garv/khushi = badan peeche, seena khula; sidha-sadha adhikari = ekdum kendra; nasha/beemari = kendra idhar-udhar. Jis taraf ja raha ho usse mu mod lo toh shak/darr dikhe.
+**Bolna (Aaron Blaise):**
+- Munh ka shape awaaz se 2 se 4 frame PEHLE (insaan pehle munh banata hai phir awaaz aati hai). Poora vaaky shuru hone se pehle munh 16-24 frame pehle khulne lage (bolne ki taiyari).
+- Har aawaz ka shape mat banao: bas accent par banao. Zyadatar shabdon mein munh ek shape se doosre mein behta hai. "I don't have any shoes" jaise vaaky mein sirf ~4 shape kaafi.
+- Muppets jaisa: sirf khula/band bhi accents par theek baithe toh lip-sync achha lagta hai. Baaki shape (f, v, o) upar ki sajaavat hai.
+- Munh ke shape: a/e = chauda munh, oo/o = gol gaanth, b/m/p = honth bilkul band (dabe hue), f/v = upar ka dant neeche ke honth par, l = jeebh upar. Bhaav ke saath shape badal jata hai (gussa = dant kase).
+**Taiyari (anticipation):** badi harkat se pehle chhoti ulti harkat (baseball swing se pehle haath peeche, kudne se pehle jhukna). Harkat jitni tez, taiyari utni zyada. Subtle bhi: aankh pehle, sar baad mein. Bojh uthane se pehle lambi saans, seena phulao. Taiyari se bhaar (power) aur irada dikhta hai.
+**Timing aur spacing:** timing = drawing kab (kaun sa frame), spacing = kahan. 24 fps film; "twos" = har drawing 2 frame (12 drawings/sec) kaam aadha, achha chalta hai; tez harkat (daud) ones par. Barabar doori ka beech wala frame mat rakho, shuru/ant ke paas rakho (slow in/out).
+**Pose to pose:** pehle badi pose (shuru, beech, ant), phir beech ke breakdown/inbetween (zyadatar kaam ke liye theek); straight-ahead mein size/jagah badalne ka khatra.

@@ -72,3 +72,5 @@ Pehle NIYAM.md aur SEEKH.md padho, phir ye. Naya sudhaar mile toh SEEKH.md mein 
 - NAZAR: samne chalte/dekhte/bolte character ke pupil beech mein (look=0); kisi aur ko dekhna ho toh `turn` se sar modo. Details ANIMATION.md.
 
 - BOLNA/MUDNA: bolte waqt sar halka nod-tilt (engine khud, `t` badlo); sar mudne par `turn_seq(p)` se pehle aankhen phir sar. Details ANIMATION.md.
+
+- BOLNA: munh ka shape awaaz se 2-4 frame PEHLE, sirf accents par shape (zyada shape nahi), vaaky se pehle munh thoda khule. CHALNA: paer zameen par jame (phisle nahi), kamar paer ke ulte, haath paer ke ulte. Details ANIMATION.md.
