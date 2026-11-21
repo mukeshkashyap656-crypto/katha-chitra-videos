@@ -115,31 +115,34 @@ _LIVE = {}
 
 
 def live_gemini_models(c):
-    """Google se abhi chalte flash models ki list (naam badal jaaye ya purana hat jaaye tab bhi helper na ruke)."""
+    """Google se abhi chalte models: ("flash" wale tez, "pro" wale zyada sochne wale). Naam badle tab bhi helper na ruke."""
     if "m" not in _LIVE:
         try:
             names = [m.name.split("/")[-1] for m in c.models.list()
                      if "generateContent" in (getattr(m, "supported_actions", None) or ["generateContent"])]
-            fl = sorted((n for n in names if "flash" in n and not any(x in n for x in ("image", "tts", "live", "audio", "thinking-exp", "preview-0"))),
-                        reverse=True)
-            _LIVE["m"] = fl[:4]
+            bad = ("image", "tts", "live", "audio", "thinking-exp", "preview-0", "embed", "vision", "robotics", "computer")
+            ok = [n for n in names if not any(x in n for x in bad)]
+            _LIVE["m"] = sorted((n for n in ok if "flash" in n), reverse=True)[:4]
+            _LIVE["pro"] = sorted((n for n in ok if "pro" in n), reverse=True)[:2]
         except Exception as e:
             print("Gemini model list nahi mili:", str(e)[:100])
-            _LIVE["m"] = []
+            _LIVE["m"], _LIVE["pro"] = [], []
     return _LIVE["m"]
 
 
-def gemini_model_list(c):
+def gemini_model_list(c, hard=False):
     out = list(MODELS)
     for m in live_gemini_models(c):
         if m not in out:
             out.append(m)
+    if hard:     # mushkil kaam (episode likhna, jaanch, video dekhna): pehle sabse zyada sochne wala "pro" model, free limit kam hai toh flash par
+        out = [m for m in _LIVE.get("pro", []) if m not in out[:0]] + out
     return out
 
 
-def gemini(contents, want_json):
+def gemini(contents, want_json, hard=False):
     c = genai.Client(api_key=os.environ["GEMINI_API_KEY"].strip(), http_options=types.HttpOptions(timeout=120000))
-    mlist = gemini_model_list(c)
+    mlist = gemini_model_list(c, hard)
     cfg = types.GenerateContentConfig(temperature=0.3, max_output_tokens=32768,
                                       response_mime_type="application/json" if want_json else None)
     last = None
@@ -316,10 +319,10 @@ def nvidia(p, j):
                   ["meta/llama-3.3-70b-instruct", "qwen/qwen2.5-coder-32b-instruct"], p, j)
 
 
-def ask(prompt_text, image=None, want_json=True):
+def ask(prompt_text, image=None, want_json=True, hard=False):
     imgs = image if isinstance(image, (list, tuple)) else ([image] if image else [])
     contents = [types.Part.from_bytes(data=i, mime_type="image/jpeg") for i in imgs] + [prompt_text] if imgs else prompt_text
-    chain = [("Gemini", lambda p: gemini(contents if p == prompt_text else p, want_json))]
+    chain = [("Gemini", lambda p: gemini(contents if p == prompt_text else p, want_json, hard))]
     if not imgs:   # tasveer sirf Gemini dekh sakta hai
         chain += [("OpenRouter", lambda p: openrouter(p, want_json)),
                   ("GitHub", lambda p: github_models(p, want_json)),
@@ -538,7 +541,7 @@ def solve(task, code=False):
     if code:
         prompt = f"{RULES}\n{RULES_CODE}\n\n# ENGINE SOURCE (you may edit these)\n{engine_sources()}\n\n# FILES\n{block}\n\n# TASK\n{task}"
     for _ in range(3):
-        data = ask(prompt)
+        data = ask(prompt, hard=True)
         if data["action"] == "need_code" and not code:
             print("AI ko engine mein badlaav chahiye:", data.get("summary", "")[:200])
             return solve(task + "\n\nYou said the engine needs: " + data.get("summary", "") + "\nNow write the engine edits and the episode files.", code=True)
@@ -848,7 +851,7 @@ def review_once(sheets, ep_json):
         "# VIRAL.md\n" + viral + "\n\n# NIYAM.md\n" + open("NIYAM.md", encoding="utf-8").read() + "\n\n# SEEKH.md\n"
         + open("SEEKH.md", encoding="utf-8").read() + "\n\n# EPISODE\n" + ep_json)
     for _ in range(3):
-        txt = ask(prompt, image=sheets, want_json=False)
+        txt = ask(prompt, image=sheets, want_json=False, hard=True)
         mt = re.search(r"\{.*\}", txt, re.DOTALL)
         try:
             d = json.loads(mt.group(0) if mt else txt)
@@ -918,7 +921,7 @@ def watch_video(path, ep_json):
             time.sleep(6)
             f = c.files.get(name=f.name)
         last = None
-        mlist = gemini_model_list(c)
+        mlist = gemini_model_list(c, True)
         for attempt in range(max(6, len(mlist) + 2)):
             m = mlist[attempt % len(mlist)]
             try:
