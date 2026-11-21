@@ -164,8 +164,8 @@ def face(ctx, c, hx, hy, u, mouth="X", blink=False, emo="neutral", look=0.0, tur
             for k in (-0.12, 0.12):
                 ctx.move_to(hx + k * u, hy + ry * 0.75); ctx.curve_to(hx + k * 1.4 * u, hy + ry * 1.0 * bl, hx + k * 0.8 * u, hy + ry * 1.15 * bl, hx + k * 0.4 * u, hy + ry * 1.25 * bl); ctx.stroke()
     # head turned (3/4 view): face features slide toward the direction the character looks
-    hx = hx + 0.20 * u * turn; _ef = 1 - 0.4 * min(1.0, abs(turn))
-    look = look + 0.9 * turn
+    hx = hx + 0.20 * u * turn; _ef = 1 - 0.3 * min(1.0, abs(turn))
+    look = look + 0.45 * turn                         # pupils lean toward the direction, not jammed in the corner
     # brows by emotion
     for s in (-1, 1):
         ex = hx + s * 0.16 * u * _ef; ey = hy - 0.17 * u - (0.06 * u if emo == "shock" else 0)
@@ -183,11 +183,14 @@ def face(ctx, c, hx, hy, u, mouth="X", blink=False, emo="neutral", look=0.0, tur
     for s in (-1, 1):
         ex = hx + s * 0.16 * u * _ef; ey = hy - 0.04 * u
         w, h = 0.12 * u * c.get("eye", 1.0), 0.065 * u * c.get("eye", 1.0) * c.get("eyeh", 1.0)
-        if turn and s * turn > 0: w *= 1 - 0.38 * min(1.0, abs(turn))
+        if turn and s * turn > 0: w *= 1 - 0.18 * min(1.0, abs(turn))
         if blink:
             ctx.move_to(ex - w, ey); ctx.curve_to(ex - w * 0.4, ey + h * 0.7, ex + w * 0.4, ey + h * 0.7, ex + w, ey)
             ctx.set_source_rgb(*OL); ctx.set_line_width(4); ctx.stroke(); continue
         def eyepath():
+            if turn:                                    # turned head: calm, symmetric almond eye (no slanted/pointed corners)
+                ctx.move_to(ex - w, ey + h * 0.1); ctx.curve_to(ex - w * 0.6, ey - h * 1.7, ex + w * 0.6, ey - h * 1.7, ex + w, ey + h * 0.1)
+                ctx.curve_to(ex + w * 0.6, ey + h * 1.5, ex - w * 0.6, ey + h * 1.5, ex - w, ey + h * 0.1); ctx.close_path(); return
             ctx.move_to(ex - w, ey); ctx.curve_to(ex - w * 0.4, ey - h * 1.5, ex + w * 0.5, ey - h * 1.4, ex + w, ey - h * 0.1)
             ctx.curve_to(ex + w * 0.4, ey + h * 1.2, ex - w * 0.4, ey + h * 1.2, ex - w, ey); ctx.close_path()
         eyepath(); fill_stroke(ctx, "#fbf6ee", 3.5)
