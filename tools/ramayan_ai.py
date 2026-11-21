@@ -185,10 +185,11 @@ def _openai_style(name, url, key, models, prompt_text, want_json):
     last = None
     for m in models:
         try:
+            body = {"model": m, "temperature": 0.3, "messages": [{"role": "user", "content": prompt_text}]}
             r = requests.post(url, timeout=300, headers={"Authorization": f"Bearer {key}"},
-                              json={"model": m, "temperature": 0.3,
-                                    "messages": [{"role": "user", "content": prompt_text}],
-                                    **({"response_format": {"type": "json_object"}} if want_json else {})})
+                              json={**body, **({"response_format": {"type": "json_object"}} if want_json else {})})
+            if want_json and r.status_code >= 400:    # kuch jagah JSON-mode nahi hota: bina uske dobara
+                r = requests.post(url, timeout=300, headers={"Authorization": f"Bearer {key}"}, json=body)
             txt = r.json()["choices"][0]["message"]["content"].strip()
             if txt:
                 print(f"Jawab ({name}):", m); USED.append(f"{name} {m}")
@@ -215,6 +216,41 @@ def mistral(p, j):
                          os.environ.get("MISTRAL_API_KEY", "").strip(), ["mistral-small-latest"], p, j)
 
 
+def _extra(name, url, key_env, models, p, j):
+    """Free raaste jinki key ho to chalte hain. Model badalna ho to secret <NAAM>_MODELS (comma se) daalo."""
+    custom = os.environ.get(name.upper() + "_MODELS", "").strip()
+    models = [x.strip() for x in custom.split(",") if x.strip()] or models
+    return _openai_style(name, url, os.environ.get(key_env, "").strip(), models, p, j)
+
+
+def nvidia(p, j):
+    return _extra("NVIDIA", "https://integrate.api.nvidia.com/v1/chat/completions", "NVIDIA_API_KEY",
+                  ["meta/llama-3.3-70b-instruct", "meta/llama-3.1-70b-instruct"], p, j)
+
+
+def cloudflare(p, j):
+    acc = os.environ.get("CLOUDFLARE_ACCOUNT_ID", "").strip()
+    if not acc:
+        raise Busy("Cloudflare: account id nahi")
+    return _extra("Cloudflare", f"https://api.cloudflare.com/client/v4/accounts/{acc}/ai/v1/chat/completions",
+                  "CLOUDFLARE_API_TOKEN", ["@cf/meta/llama-3.3-70b-instruct-fp8-fast", "@cf/openai/gpt-oss-120b"], p, j)
+
+
+def cohere(p, j):
+    return _extra("Cohere", "https://api.cohere.ai/compatibility/v1/chat/completions", "COHERE_API_KEY",
+                  ["command-a-03-2025", "command-r-plus"], p, j)
+
+
+def huggingface(p, j):
+    return _extra("HuggingFace", "https://router.huggingface.co/v1/chat/completions", "HF_TOKEN",
+                  ["meta-llama/Llama-3.3-70B-Instruct", "Qwen/Qwen2.5-72B-Instruct"], p, j)
+
+
+def zai(p, j):
+    return _extra("Zai", "https://api.z.ai/api/paas/v4/chat/completions", "ZAI_API_KEY",
+                  ["glm-4.5-flash", "glm-4.7-flash"], p, j)
+
+
 def ask(prompt_text, image=None, want_json=True):
     imgs = image if isinstance(image, (list, tuple)) else ([image] if image else [])
     contents = [types.Part.from_bytes(data=i, mime_type="image/jpeg") for i in imgs] + [prompt_text] if imgs else prompt_text
@@ -224,7 +260,12 @@ def ask(prompt_text, image=None, want_json=True):
                   ("GitHub", lambda p: github_models(p, want_json)),
                   ("Groq", lambda p: groq(p, want_json)),
                   ("Cerebras", lambda p: cerebras(p, want_json)),
-                  ("Mistral", lambda p: mistral(p, want_json))]
+                  ("Mistral", lambda p: mistral(p, want_json)),
+                  ("NVIDIA", lambda p: nvidia(p, want_json)),
+                  ("Cloudflare", lambda p: cloudflare(p, want_json)),
+                  ("Cohere", lambda p: cohere(p, want_json)),
+                  ("HuggingFace", lambda p: huggingface(p, want_json)),
+                  ("Zai", lambda p: zai(p, want_json))]
     prompt, errs = prompt_text, []
     for _round in range(2):                      # poori list do baar
         for name, fn in chain:
