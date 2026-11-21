@@ -3,6 +3,11 @@
 Poora research BODY_FULL.md mein hai (sources ke saath). Ye uska kaam ka saar hai. Har episode mein ye sab pehle se lagte hain.
 Pehle NIYAM.md aur SEEKH.md padho, phir ye. Naya sudhaar mile toh SEEKH.md mein joddo.
 
+## Sabse bada niyam: har scene ke hisaab se body movement
+- Body/chehra ki harkat hamesha scene ke hisaab se: kaun kiski taraf dekh raha hai, kis mood mein hai, kya kar raha hai (chalna, rukna, pranam, sunna, bolna, ladai).
+- Chalne wala jis taraf ja raha hai, chehra aur body usi taraf. Samne khada insaan us aane wale ki taraf dekhe (person(turn=...)). Camera ki taraf koi nahi dekhta, jab tak kahani mein camera se baat na ho.
+- Har scene ke liye pehle likho: kaun kahan, kis taraf mukh, kya harkat, kaisa bhav. Phir banao.
+
 ## Naap (sab insaan ek size ke, bas chhote farq)
 - Sar = 1 unit; bada insaan ~7.5 sar lamba. Bachcha 5-6 sar (sar bada), boodha thoda jhuka (~7).
 - Kandhe ~2 sar chaude, kulhe ~1.5, haath ka sira jaangh ke beech tak. Aurat ke kulhe chaude, kandhe patle; aadmi ke kandhe chaude.

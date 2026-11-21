@@ -88,6 +88,7 @@ def face(ctx, c, hx, hy, u, mouth="X", blink=False, emo="neutral", look=0.0, tur
         ellipse(ctx, hx, hy - 0.05 * u, rx * 1.08, ry * 1.02); fill_stroke(ctx, c["hair"])
         ellipse(ctx, hx, hy - 0.52 * u, 0.2 * u, 0.15 * u); fill_stroke(ctx, c["hair"])
     for s in (-1, 1):
+        if abs(turn) > 0.5 and s * turn > 0: continue      # far ear hidden when the head is turned
         ellipse(ctx, hx + s * rx * 0.98, hy + 0.02 * u, 0.07 * u, 0.11 * u); fill_stroke(ctx, c["skin"], 4)
         if c.get("jewel"):
             if kind == "m":
@@ -96,6 +97,10 @@ def face(ctx, c, hx, hy, u, mouth="X", blink=False, emo="neutral", look=0.0, tur
             else:
                 ctx.arc(hx + s * rx * 0.98, hy + 0.16 * u, 0.04 * u, 0, 6.3); fill_stroke(ctx, "#e8b730", 3)
     ellipse(ctx, hx, hy, rx, ry); fill_stroke(ctx, c["skin"])
+    if abs(turn) > 0.5:                                # nose sticks out past the cheek line in the direction of the look
+        _sg = 1 if turn > 0 else -1
+        ellipse(ctx, hx + _sg * rx * 1.0, hy + 0.07 * u, 0.065 * u, 0.085 * u); fill_stroke(ctx, c["skin"], 4)
+        ellipse(ctx, hx + _sg * rx * 0.78, hy + 0.0 * u, 0.12 * u, 0.2 * u); fill_stroke(ctx, c["skin"], 0.1)
     if c.get("jowl"):
         for s_ in (-1, 1):
             ctx.arc(hx + s_ * rx * 0.55, hy + ry * 0.45, 0.12 * u, (0.2 if s_ > 0 else 1.6), (1.5 if s_ > 0 else 2.9))
@@ -141,11 +146,11 @@ def face(ctx, c, hx, hy, u, mouth="X", blink=False, emo="neutral", look=0.0, tur
             for k in (-0.12, 0.12):
                 ctx.move_to(hx + k * u, hy + ry * 0.75); ctx.curve_to(hx + k * 1.4 * u, hy + ry * 1.0 * bl, hx + k * 0.8 * u, hy + ry * 1.15 * bl, hx + k * 0.4 * u, hy + ry * 1.25 * bl); ctx.stroke()
     # head turned (3/4 view): face features slide toward the direction the character looks
-    hx = hx + 0.20 * u * turn
+    hx = hx + 0.20 * u * turn; _ef = 1 - 0.4 * min(1.0, abs(turn))
     look = look + 0.9 * turn
     # brows by emotion
     for s in (-1, 1):
-        ex = hx + s * 0.16 * u; ey = hy - 0.17 * u - (0.06 * u if emo == "shock" else 0)
+        ex = hx + s * 0.16 * u * _ef; ey = hy - 0.17 * u - (0.06 * u if emo == "shock" else 0)
         inner_dy = {"neutral": 0, "angry": 0.05, "sad": -0.05, "firm": 0.035, "ill": -0.03, "stern": 0.02, "shock": -0.03, "worry": -0.04, "joy": -0.01}.get(emo, 0) * u
         ctx.move_to(ex + s * 0.1 * u, ey - 0.01 * u)
         ctx.line_to(ex - s * 0.08 * u, ey + inner_dy)
@@ -158,7 +163,7 @@ def face(ctx, c, hx, hy, u, mouth="X", blink=False, emo="neutral", look=0.0, tur
             ctx.set_line_width(0.035 * u * c.get("browt", 1.0)); ctx.set_line_cap(cairo.LINE_CAP_ROUND); ctx.stroke()
     lid = {"sad": 0.35, "ill": 0.6, "firm": 0.15, "angry": 0.2, "worry": 0.15}.get(emo, 0.0)
     for s in (-1, 1):
-        ex = hx + s * 0.16 * u; ey = hy - 0.04 * u
+        ex = hx + s * 0.16 * u * _ef; ey = hy - 0.04 * u
         w, h = 0.12 * u * c.get("eye", 1.0), 0.065 * u * c.get("eye", 1.0) * c.get("eyeh", 1.0)
         if turn and s * turn > 0: w *= 1 - 0.38 * min(1.0, abs(turn))
         if blink:
@@ -226,7 +231,7 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
     """arms = (l_sh, l_el, r_sh, r_el) radians from straight-down; positive -> screen right."""
     c = CHARS[cname]
     if turn is None:
-        turn = 0.8 * SIDE if (SIDE and WALK is not None) else 0.0   # side-view walkers look where they walk
+        turn = 1.0 * SIDE if (SIDE and WALK is not None) else 0.0   # side-view walkers look where they walk
     _walking = WALK is not None and pose == "stand"
     if _walking:
         if SIDE:
