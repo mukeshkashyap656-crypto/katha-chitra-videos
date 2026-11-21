@@ -27,6 +27,7 @@ Ye wo galtiyan aur sudhaar hain jo pichhle episodes (Bhag 2, 3, 4, 5) mein mile.
 - Har line ki awaaz ek barabar zor ki (Vishwamitra/Ram narrator se dheemi na ho). Lambe chup ke gap kaat do.
 - Jungle ki awaaz + dhol/whoosh/chamak ke effects (sfx/).
 - Subscribe click aur ghanti ka ting sirf aakhir mein, kathan ke upar nahi. Subscribe se pehle koi khaali second nahi: ungli aakhri shabd par aaye.
+- Har video se pehle aur baad mein saari kamiyan (awaaz balance, timing, lip sync, visual framing) khud jaanch kar turant theek karunga.
 
 ## Cover
 - Cover alag design hota hai (video ka frame nahi): bada chamakta "?", title box, Katha Chitra logo, khaas cheezein beech ke 3:4 hisse mein. Pehle 0.1 sec par lagta hai.
