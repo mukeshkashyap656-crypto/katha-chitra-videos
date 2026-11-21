@@ -49,3 +49,32 @@ Ek bhi nahi toh sudharo, phir dobara jaancho.
 - Kisi aur ki taraf dekhna ho (Ram rishi ko): sar mod do (`turn=+1/-1`) aur body usi taraf; sirf pupil mat khischo. Engine bina `turn` ke pupil ko +-0.25 se zyada hone nahi deta.
 - Dekhne wale ki taraf hi dekha jaye: dono character ek-doosre ki taraf (A→B toh B bhi A ki taraf).
 - Chalte waqt sar seedha (level) rahe, tedha nahi; chehra ghoom kar camera se na hate jab tak scene na maange.
+
+## Tutorials se seekha (walk, chehra/aankhen, bolna) — 21 Nov 2026
+Sources: Adobe walk cycle, BMCC 2D animation walk cycles, LinkedIn Learning 2D walk basics, Tuts+ head turn, Animator Island eyes, Animation Mentor blinks/eyes, Bloop eyes, Clip Studio eye angles, Pluralsight lip sync, Peachpit dialogue, RMCAD lip sync.
+(YouTube transcript tool ke credits khatam the, isliye wahi sikhaaye jaane wale tutorials likhe hue roop mein padhe.)
+
+### Chalna (walk cycle)
+- 4 mukhya pose: contact (aage ka pair pehli baar zameen par), down (sabse neeche, wazan girta hai), passing (pair ek-doosre ko paar karte hain), up (sabse upar). Fir ulta pair. Sirf pair nahi: haath, dhad aur sar bhi har pose mein hilte hain.
+- Sar down pose mein sabse neeche, up pose mein sabse upar. Contact aur down thoda zyada der rakho, passing/up kam der.
+- Mood chal se dikhta hai: udaas = haath latke (peeche-aage kam), thoda aage jhuka, uchhal kam. Khush/akad = uchhal zyada, haath zyada.
+- Alag-alag character ki chal alag (budhe dheere, bacche chhote tez kadam, yodha seena tana).
+
+### Sar ghumana aur aankhen
+- Sar ghumate waqt aakar (mass) aur sar ki oonchai wahi rahe; aankh-naak-munh ek saath sahi jagah par khisken. Sar kabhi seedhi line mein nahi ghoomta; thoda arc (neeche-upar) hota hai.
+- Aankhen aksar sar se PEHLE mudti hain, phir sar, aur palak jhapakna sar ghumne/nazar badalne ke saath hota hai.
+- 3/4 view mein door wali aankh thodi chhoti aur naak ke paas hoti hai.
+- Aankhon ki disha aur sar ki disha ka mel (sync) na ho toh matlab badal jaata hai (shak, chhup kar dekhna). Normal scene mein dono ek disha mein.
+- Der tak ek taraf dekhna ho toh aankh halki si idhar-udhar (dart) kare, par disha wahi rahe.
+- Camera/darshak ko dekhna ho toh pupil seedhe beech mein.
+
+### Bolna (lip sync / dialogue)
+- Munh ka shape sirf 10-20% asar hai; asli asar sar, body, chehre aur aankhon se aata hai. Bolte waqt sar halka jhatke (accent), bhaunh uthe, haath ishaara kare.
+- Munh jawab (awaaz) se 1-2 frame PEHLE khule taaki dikhe ki awaaz usi se aayi; band hone wale shabdon (m, b, p) par munh sach mein band ho.
+- Cartoon ke liye kam shape kaafi: band, khula, chauda, "oo" gol. Thoda badha-chadha kar (exaggerate) dikhao.
+- Mauun/ruki hui jagah par munh band, par aankhen aur saans chalti rahein.
+
+### Body/weight
+- Line of action (S ya C curve): har pose mein ek behta hua rekha; seedha khada khamba nahi.
+- Wazan: khade/chalte waqt wazan ek pair par shift ho, kandha-kamar ulte jhuken. Bhaari cheez dheemi, halki tez.
+- Drag/overlap: kapde, jata, dupatta baad mein ruken.
