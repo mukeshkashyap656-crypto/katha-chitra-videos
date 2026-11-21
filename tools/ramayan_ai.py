@@ -200,20 +200,10 @@ def _openai_style(name, url, key, models, prompt_text, want_json):
     raise Busy(f"{name}: {str(last)[:200]}")
 
 
-def groq(p, j):
-    return _openai_style("Groq", "https://api.groq.com/openai/v1/chat/completions",
-                         os.environ.get("GROQ_API_KEY", "").strip(),
-                         ["llama-3.3-70b-versatile", "qwen/qwen3-32b"], p, j)
 
 
-def cerebras(p, j):
-    return _openai_style("Cerebras", "https://api.cerebras.ai/v1/chat/completions",
-                         os.environ.get("CEREBRAS_API_KEY", "").strip(), ["llama-3.3-70b"], p, j)
 
 
-def mistral(p, j):
-    return _openai_style("Mistral", "https://api.mistral.ai/v1/chat/completions",
-                         os.environ.get("MISTRAL_API_KEY", "").strip(), ["mistral-small-latest"], p, j)
 
 
 def _extra(name, url, key_env, models, p, j):
@@ -223,9 +213,6 @@ def _extra(name, url, key_env, models, p, j):
     return _openai_style(name, url, os.environ.get(key_env, "").strip(), models, p, j)
 
 
-def nvidia(p, j):
-    return _extra("NVIDIA", "https://integrate.api.nvidia.com/v1/chat/completions", "NVIDIA_API_KEY",
-                  ["meta/llama-3.3-70b-instruct", "meta/llama-3.1-70b-instruct"], p, j)
 
 
 def cloudflare(p, j):
@@ -246,9 +233,6 @@ def huggingface(p, j):
                   ["meta-llama/Llama-3.3-70B-Instruct", "Qwen/Qwen2.5-72B-Instruct"], p, j)
 
 
-def zai(p, j):
-    return _extra("Zai", "https://api.z.ai/api/paas/v4/chat/completions", "ZAI_API_KEY",
-                  ["glm-4.5-flash", "glm-4.7-flash"], p, j)
 
 
 def ask(prompt_text, image=None, want_json=True):
@@ -258,14 +242,9 @@ def ask(prompt_text, image=None, want_json=True):
     if not imgs:   # tasveer sirf Gemini dekh sakta hai
         chain += [("OpenRouter", lambda p: openrouter(p, want_json)),
                   ("GitHub", lambda p: github_models(p, want_json)),
-                  ("Groq", lambda p: groq(p, want_json)),
-                  ("Cerebras", lambda p: cerebras(p, want_json)),
-                  ("Mistral", lambda p: mistral(p, want_json)),
-                  ("NVIDIA", lambda p: nvidia(p, want_json)),
                   ("Cloudflare", lambda p: cloudflare(p, want_json)),
                   ("Cohere", lambda p: cohere(p, want_json)),
-                  ("HuggingFace", lambda p: huggingface(p, want_json)),
-                  ("Zai", lambda p: zai(p, want_json))]
+                  ("HuggingFace", lambda p: huggingface(p, want_json))]
     prompt, errs = prompt_text, []
     for _round in range(2):                      # poori list do baar
         for name, fn in chain:
