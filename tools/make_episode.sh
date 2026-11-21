@@ -56,4 +56,6 @@ ffmpeg -v error -y -i "$OUT/$COVER.jpg" -vf "scale=540:960" /tmp/cov.png
 PSNR=$(ffmpeg -i /tmp/first.png -i /tmp/cov.png -lavfi psnr -f null - 2>&1 | grep -oE "average:[0-9.]+|average:inf" | head -1 | cut -d: -f2)
 python3 -c "p='${PSNR:-0}'; v=99.0 if p=='inf' else float(p); open('$OUT/first_frame_check.txt','w').write(('ok ' if v>25 else 'FAIL ')+str(v))"
 cat "$OUT/first_frame_check.txt"
+# sachchi ginti wali machine jaanch (kaali screen, ruka video, khamoshi, awaaz ka zor); fail hone par bhi video rukta nahi, review use padhta hai
+python3 "$R/tools/machine_checks.py" "$OUT/$NAME.mp4" "$OUT/machine_report.json" | tee "$OUT/machine_report.txt" || true
 ls -la "$OUT"

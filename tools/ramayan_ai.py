@@ -24,6 +24,8 @@ from google.genai import types
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "engine"))
 import spec as SP  # noqa: E402
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import viral_radar as VR  # noqa: E402
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(line_buffering=True)
@@ -100,13 +102,40 @@ def context_files():
 
 
 # ---------------- AI: pehle Gemini, busy ho to OpenRouter ke free model ----------------
+_LIVE = {}
+
+
+def live_gemini_models(c):
+    """Google se abhi chalte flash models ki list (naam badal jaaye ya purana hat jaaye tab bhi helper na ruke)."""
+    if "m" not in _LIVE:
+        try:
+            names = [m.name.split("/")[-1] for m in c.models.list()
+                     if "generateContent" in (getattr(m, "supported_actions", None) or ["generateContent"])]
+            fl = sorted((n for n in names if "flash" in n and not any(x in n for x in ("image", "tts", "live", "audio", "thinking-exp", "preview-0"))),
+                        reverse=True)
+            _LIVE["m"] = fl[:4]
+        except Exception as e:
+            print("Gemini model list nahi mili:", str(e)[:100])
+            _LIVE["m"] = []
+    return _LIVE["m"]
+
+
+def gemini_model_list(c):
+    out = list(MODELS)
+    for m in live_gemini_models(c):
+        if m not in out:
+            out.append(m)
+    return out
+
+
 def gemini(contents, want_json):
     c = genai.Client(api_key=os.environ["GEMINI_API_KEY"].strip(), http_options=types.HttpOptions(timeout=120000))
+    mlist = gemini_model_list(c)
     cfg = types.GenerateContentConfig(temperature=0.3, max_output_tokens=32768,
                                       response_mime_type="application/json" if want_json else None)
     last = None
-    for attempt in range(6):          # fail fast when busy; the job is queued for the quiet morning
-        m = MODELS[attempt % len(MODELS)]
+    for attempt in range(max(6, len(mlist) + 2)):          # fail fast when busy; the job is queued for the quiet morning
+        m = mlist[attempt % len(mlist)]
         try:
             txt = (c.models.generate_content(model=m, contents=contents, config=cfg).text or "").strip()
             if txt:
@@ -179,31 +208,48 @@ def github_models(prompt_text, want_json):
     raise Busy(f"GitHub Models: {str(last)[:200]}")
 
 
+PREF = re.compile(r"(gpt-oss-120b|llama-?3\.3-70b|qwen.*(235|72|32)b|deepseek-v3|mistral-(large|medium)|command-a|gemma.*(27|70)b)", re.I)
+
+
+def _discover(url, key):
+    """Provider ki apni model list se kaam ke bade models dhoondho (model ka naam badal jaaye tab bhi chale)."""
+    try:
+        base = url.rsplit("/chat/completions", 1)[0]
+        data = requests.get(base + "/models", headers={"Authorization": f"Bearer {key}"}, timeout=30).json()
+        ids = [m.get("id", "") for m in (data.get("data") if isinstance(data, dict) else data) or []]
+        return [i for i in ids if PREF.search(i) and "embed" not in i.lower() and "guard" not in i.lower()][:4]
+    except Exception:
+        return []
+
+
 def _openai_style(name, url, key, models, prompt_text, want_json):
     if not key:
         raise Busy(f"{name}: key nahi")
     last = None
-    for m in models:
-        try:
-            body = {"model": m, "temperature": 0.3, "messages": [{"role": "user", "content": prompt_text}]}
-            r = requests.post(url, timeout=300, headers={"Authorization": f"Bearer {key}"},
-                              json={**body, **({"response_format": {"type": "json_object"}} if want_json else {})})
-            if want_json and r.status_code >= 400:    # kuch jagah JSON-mode nahi hota: bina uske dobara
-                r = requests.post(url, timeout=300, headers={"Authorization": f"Bearer {key}"}, json=body)
-            txt = r.json()["choices"][0]["message"]["content"].strip()
-            if txt:
-                print(f"Jawab ({name}):", m); USED.append(f"{name} {m}")
-                return txt
-        except Exception as e:
-            last = e
-            print(f"{name} {m} nahi chala: {str(e)[:160]}")
+    tried = set()
+    for stage in range(2):                       # pehle tay naam, phir provider ki list se khud dhundhe naam
+        for m in models:
+            if m in tried:
+                continue
+            tried.add(m)
+            try:
+                body = {"model": m, "temperature": 0.3, "messages": [{"role": "user", "content": prompt_text}]}
+                r = requests.post(url, timeout=300, headers={"Authorization": f"Bearer {key}"},
+                                  json={**body, **({"response_format": {"type": "json_object"}} if want_json else {})})
+                if want_json and r.status_code >= 400:    # kuch jagah JSON-mode nahi hota: bina uske dobara
+                    r = requests.post(url, timeout=300, headers={"Authorization": f"Bearer {key}"}, json=body)
+                txt = r.json()["choices"][0]["message"]["content"].strip()
+                if txt:
+                    print(f"Jawab ({name}):", m); USED.append(f"{name} {m}")
+                    return txt
+            except Exception as e:
+                last = e
+                print(f"{name} {m} nahi chala: {str(e)[:160]}")
+        if stage == 0:
+            models = _discover(url, key)
+            if not models:
+                break
     raise Busy(f"{name}: {str(last)[:200]}")
-
-
-
-
-
-
 
 
 def _extra(name, url, key_env, models, p, j):
@@ -235,6 +281,31 @@ def huggingface(p, j):
 
 
 
+def groq(p, j):
+    return _extra("Groq", "https://api.groq.com/openai/v1/chat/completions", "GROQ_API_KEY",
+                  ["llama-3.3-70b-versatile", "openai/gpt-oss-120b"], p, j)
+
+
+def cerebras(p, j):
+    return _extra("Cerebras", "https://api.cerebras.ai/v1/chat/completions", "CEREBRAS_API_KEY",
+                  ["gpt-oss-120b", "llama-3.3-70b"], p, j)
+
+
+def mistral(p, j):
+    return _extra("Mistral", "https://api.mistral.ai/v1/chat/completions", "MISTRAL_API_KEY",
+                  ["mistral-large-latest", "mistral-small-latest"], p, j)
+
+
+def sambanova(p, j):
+    return _extra("SambaNova", "https://api.sambanova.ai/v1/chat/completions", "SAMBANOVA_API_KEY",
+                  ["Meta-Llama-3.3-70B-Instruct", "DeepSeek-V3.1"], p, j)
+
+
+def nvidia(p, j):
+    return _extra("NVIDIA", "https://integrate.api.nvidia.com/v1/chat/completions", "NVIDIA_API_KEY",
+                  ["meta/llama-3.3-70b-instruct", "qwen/qwen2.5-coder-32b-instruct"], p, j)
+
+
 def ask(prompt_text, image=None, want_json=True):
     imgs = image if isinstance(image, (list, tuple)) else ([image] if image else [])
     contents = [types.Part.from_bytes(data=i, mime_type="image/jpeg") for i in imgs] + [prompt_text] if imgs else prompt_text
@@ -243,6 +314,11 @@ def ask(prompt_text, image=None, want_json=True):
         chain += [("OpenRouter", lambda p: openrouter(p, want_json)),
                   ("GitHub", lambda p: github_models(p, want_json)),
                   ("Cloudflare", lambda p: cloudflare(p, want_json)),
+                  ("Groq", lambda p: groq(p, want_json)),
+                  ("Cerebras", lambda p: cerebras(p, want_json)),
+                  ("Mistral", lambda p: mistral(p, want_json)),
+                  ("SambaNova", lambda p: sambanova(p, want_json)),
+                  ("NVIDIA", lambda p: nvidia(p, want_json)),
                   ("Cohere", lambda p: cohere(p, want_json)),
                   ("HuggingFace", lambda p: huggingface(p, want_json))]
     prompt, errs = prompt_text, []
@@ -424,6 +500,19 @@ def autopost_brief():
         return ""
     it = queue_item(b) or {}
     text = fetch_valmiki(it.get("sargas", ""))
+    radar = {}
+    try:      # radar kabhi video nahi rokta: kuch bhi atke toh bina radar ke chalega
+        import datetime
+        today = (datetime.datetime.utcnow() + datetime.timedelta(hours=5, minutes=30)).date()
+        radar = VR.advise(ask, b, it.get("topic", "?"), it.get("sargas", "?"), today, open("VIRAL.md", encoding="utf-8").read())
+        if radar:
+            os.makedirs("plans/radar", exist_ok=True)
+            with open(f"plans/radar/bhag{b}.json", "w", encoding="utf-8") as fh:
+                json.dump(radar, fh, ensure_ascii=False, indent=1)
+            run(["git", "add", f"plans/radar/bhag{b}.json"], check=False)
+            print("Viral radar:", radar.get("question"))
+    except Exception as e:
+        print("Viral radar nahi chala (koi baat nahi):", str(e)[:150])
     st_txt = ("The Valmiki text below is the ONLY source; use nothing else:\n" + text) if text else \
              ("Valmiki's full text could not be fetched. Use only what you are SURE is in Valmiki Ramayan Bala Kanda; "
               "if unsure, leave it out. Do not add anything.")
@@ -432,7 +521,7 @@ def autopost_brief():
             "episodes/bhag{b}/episode.json (action change, render true). Episode: Bhag {b}; topic: {t}; Valmiki Bala Kanda "
             "sargas (approx.): {s}. Follow VIRAL.md (hook in the first line, QUESTION banner, scene-wise pace, ending with the "
             "next part's question + comment call) and SEEKH.md. About 35-45 seconds. Story exactly as in Valmiki, nothing added.\n"
-            ).format(b=b, t=it.get("topic", "?"), s=it.get("sargas", "?")) + st_txt
+            ).format(b=b, t=it.get("topic", "?"), s=it.get("sargas", "?")) + VR.brief_text(radar) + st_txt
 
 
 def story_check(ep_json, bhag):
@@ -583,7 +672,11 @@ def fetch_sheet(ep):
     rb = "render-" + os.path.basename(ep)
     run(["git", "fetch", "--depth", "1", "origin", f"+{rb}:refs/remotes/origin/{rb}"])
     show = lambda n: subprocess.run(["git", "show", f"origin/{rb}:{n}"], capture_output=True).stdout
-    return show("check_sheet.jpg"), show("ending_sheet.jpg"), show("first_frame_check.txt").decode("utf-8", "ignore").strip()
+    try:
+        machine = json.loads(show("machine_report.json").decode("utf-8", "ignore") or "{}")
+    except ValueError:
+        machine = {}
+    return show("check_sheet.jpg"), show("ending_sheet.jpg"), show("first_frame_check.txt").decode("utf-8", "ignore").strip(), machine
 
 
 def review_once(sheets, ep_json):
@@ -620,11 +713,91 @@ def review_once(sheets, ep_json):
     return None
 
 
-def review(sheet, ep_json):
+
+def fetch_video(ep):
+    """Render branch se asli MP4 laao (AI ko poora video dekhne-sunne ke liye). Na mile toh None."""
+    rb = "render-" + os.path.basename(ep)
+    try:
+        names = run(["git", "ls-tree", "--name-only", f"origin/{rb}"]).split()
+        mp4 = next((n for n in names if n.endswith(".mp4")), None)
+        if not mp4:
+            return None
+        data = subprocess.run(["git", "show", f"origin/{rb}:{mp4}"], capture_output=True).stdout
+        if len(data) < 100000:
+            return None
+        path = os.path.join(tempfile.gettempdir(), "watch_" + os.path.basename(mp4))
+        with open(path, "wb") as f:
+            f.write(data)
+        return path
+    except Exception as e:
+        print("video laane mein dikkat:", str(e)[:150])
+        return None
+
+
+def watch_video(path, ep_json):
+    """AI ASLI video dekhta aur sunta hai (Gemini Files API, free): awaaz, bol, subtitle ka mel, jhatke, bhaav.
+    Sirf Gemini video dekh sakta hai; koi bhi dikkat ho (busy, upload fail) toh None -> baaki jaanch chalti rehti hai."""
+    if not path or not os.environ.get("GEMINI_API_KEY", "").strip():
+        return None
+    try:
+        lines = json.loads(ep_json).get("LINES", {})
+    except ValueError:
+        lines = {}
+    script = "\n".join(f"{k}: {v[0] if isinstance(v, list) else v}" for k, v in lines.items())
+    prompt = (
+        "You are the strict director of the Katha Chitra channel. WATCH and LISTEN to this finished Hindi Ramayan Short "
+        "(vertical, about 40-60 s). Below is the narration script it was built from. Judge ONLY what you really see and hear; "
+        "never invent. Timestamps as mm:ss.\n"
+        "Check: (1) does the spoken Hindi match the script, any line skipped, repeated or mispronounced (2) do the karaoke subtitles "
+        "match the voice timing (3) is any line clearly quieter/louder than the rest (4) sudden jumps/teleporting of characters, "
+        "characters overlapping, a person cut by the edge (5) do faces and bodies show the right emotion (6) is the first 2 seconds "
+        "a hook (7) any dead/empty moment (8) is the subscribe widget (finger, button, bell) shown near the end.\n"
+        "Reply with ONLY valid JSON: "
+        '{"problems":[{"kind":"voice|sync|loudness|jump|overlap|emotion|hook|dead|widget|other","time":"mm:ss",'
+        '"confidence":"high|medium","what":"Hinglish, short","fix":"exact change to episode.json (shot/line/pause)"}],'
+        '"scores":{"hook":0-10,"pace":0-10,"emotion":0-10},"summary":"Hinglish, 1-2 lines"}. '
+        "At most 6 problems; list a problem as high only if you are sure.\n\n# SCRIPT\n" + script)
+    try:
+        c = genai.Client(api_key=os.environ["GEMINI_API_KEY"].strip(), http_options=types.HttpOptions(timeout=300000))
+        f = c.files.upload(file=path, config=types.UploadFileConfig(mime_type="video/mp4"))
+        for _ in range(40):                      # Google video ko tayyar karta hai: ACTIVE hone tak ruko
+            st = getattr(getattr(f, "state", None), "name", str(getattr(f, "state", "")))
+            if "ACTIVE" in st:
+                break
+            if "FAILED" in st:
+                raise RuntimeError("video upload fail")
+            time.sleep(6)
+            f = c.files.get(name=f.name)
+        last = None
+        mlist = gemini_model_list(c)
+        for attempt in range(max(6, len(mlist) + 2)):
+            m = mlist[attempt % len(mlist)]
+            try:
+                r = c.models.generate_content(model=m, contents=[f, prompt], config=types.GenerateContentConfig(
+                    temperature=0.2, max_output_tokens=8192, response_mime_type="application/json"))
+                mt = re.search(r"\{.*\}", r.text or "", re.DOTALL)
+                d = json.loads(mt.group(0))
+                USED.append(m + " (video dekha)")
+                try:
+                    c.files.delete(name=f.name)
+                except Exception:
+                    pass
+                return d
+            except Exception as e:
+                last = e
+                print(f"Video dekhne ki koshish {attempt + 1} ({m}): {str(e)[:150]}")
+                time.sleep(min(60, 15 * (attempt + 1)))
+        print("Video dekhna nahi ho paya:", str(last)[:150])
+    except Exception as e:
+        print("Video dekhna nahi ho paya:", str(e)[:200])
+    return None
+
+
+def review(sheet, ep_json, video_path=None):
     """Kadi PASS/FAIL jaanch. Do baar jaanchta hai: seedha FAIL tabhi jab DONO baar wahi galti (niyam number) mile;
     number dono ka ausat. Jawab samajh na aaye, sheet na mile ya cover pehla frame na ho toh PASS nahi."""
     bad = lambda why: {"pass": False, "score": 0, "hard_fails": [why], "fix_text": why, "text": f"❌ {why}", "cannot_check": []}
-    main_sheet, end_sheet, first_check = sheet if isinstance(sheet, tuple) else (sheet, b"", "")
+    main_sheet, end_sheet, first_check, machine = (tuple(sheet) + ({},))[:4] if isinstance(sheet, tuple) else (sheet, b"", "", {})
     if not main_sheet:
         return bad("check sheet nahi mili")
     sheets = [main_sheet] + ([end_sheet] if end_sheet else [])
@@ -639,10 +812,20 @@ def review(sheet, ep_json):
     hard = [v[0] for k, v in keys.items() if len(v) >= len(runs) and k not in ("8", "10")]
     if first_check.startswith("FAIL"):
         hard.append({"rule": 10, "what": "cover video ka pehla frame nahi hai (machine jaanch)", "fix": "cover ko pehle 0.1 sec par lagao"})
+    # machine ki ginti AI ki raay se upar: kaali/ruki screen = niyam 5, awaaz/khamoshi = niyam 8
+    for f in (machine or {}).get("fails", []):
+        rule = 8 if any(w in f for w in ("awaaz", "khamoshi")) else 5
+        hard.append({"rule": rule, "what": f"(machine jaanch) {f}", "fix": "us hisse ke shot/lines badlo ya chhota karo, VERSION badhao"})
     sc = {k: round(sum(r["scores"][k] for r in runs) / len(runs)) for k in SCORE_KEYS}
     total = sum(sc.values())
-    ok = (not hard) and total >= PASS_SCORE
+    watch = watch_video(video_path, ep_json)
+    watch_high = [pr for pr in ((watch or {}).get("problems") or [])[:6]
+                  if str(pr.get("confidence", "")).lower() == "high" and pr.get("what")]
+    # ek akeli "pakki" raay se video nahi rukta (free AI ghalat bhi ho sakta hai); 2 ya zyada pakki dikkatein = sudhaar zaroori
+    ok = (not hard) and total >= PASS_SCORE and len(watch_high) < 2
     weak = [w for r in runs for w in (r.get("weak") or [])][:6]
+    for pr in watch_high:
+        weak.append({"what": f"(video dekha-suna {pr.get('time', '')}, {pr.get('kind', '')}) {pr['what']}", "fix": pr.get("fix", "")})
     cant = sorted({str(c) for r in runs for c in (r.get("cannot_check") or [])})
     lines = [f"**Faisla: {'✅ PASS' if ok else '❌ FAIL'}** — number {total}/70 (chahiye {PASS_SCORE}+, {len(runs)} jaanch ka ausat): " +
              ", ".join(f"{k} {v}" for k, v in sc.items())]
@@ -653,12 +836,18 @@ def review(sheet, ep_json):
         lines.append(f"- ⚠️ (sirf ek jaanch ne kaha, isliye FAIL nahi) Niyam {h.get('rule')}: {h.get('what')}")
     for w in weak:
         lines.append(f"- ⚠️ {w.get('what')}")
+    for w in (machine or {}).get("warns", [])[:4]:
+        lines.append(f"- ⚠️ (machine) {w}")
     if cant:
         lines.append("- ℹ️ Sirf tasveer se nahi dekh paya: " + "; ".join(cant))
     if runs[0].get("summary"):
         lines.append(str(runs[0]["summary"]))
+    if watch and watch.get("summary"):
+        lines.append("🎧 Asli video dekh-sunkar: " + str(watch["summary"]))
     fixes = [f"RULE {h.get('rule')}: {h.get('what')} -> {h.get('fix')}" for h in hard] + \
             [f"WEAK: {w.get('what')} -> {w.get('fix')}" for w in weak]
+    if not hard and total >= PASS_SCORE and len(watch_high) >= 2:
+        fixes.append("The real video (watched and heard) has 2+ sure problems; fix them (see WEAK lines above).")
     if not hard and total < PASS_SCORE:
         fixes.append(f"Score {total}/70 is below {PASS_SCORE}; improve the weakest scores: " + str(sc))
     return {"pass": ok, "score": total, "hard_fails": hard, "fix_text": "\n".join(fixes), "text": "\n".join(lines),
@@ -674,7 +863,8 @@ def finish(issue, branch, st, ep, run_url):
     ep_json = open(f"{ep}/episode.json", encoding="utf-8").read()
     verdict = None
     for rv in range(MAX_REVIEW_ROUNDS + 1):
-        verdict = review(fetch_sheet(ep), ep_json)
+        sheet = fetch_sheet(ep)
+        verdict = review(sheet, ep_json, fetch_video(ep))
         bh = title_bhag() or re.sub(r"\D", "", os.path.basename(ep))
         sc_problems = story_check(ep_json, bh)
         if sc_problems:

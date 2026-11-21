@@ -30,3 +30,9 @@ Actions → "Fetch free CC0 sounds (Openverse)" → Run workflow → jo awaaz ch
 - `NIYAM.md` — Katha Chitra ke saare niyam ek jagah (kisi bhi AI ko do). Naya niyam bane toh yahan bhi jodo.
 - `tools/ramayan_ai.py` + `.github/workflows/ai_helper.yml` (main branch par bhi) — free Gemini helper: Issue/comment mein `@ai <kaam>`. Har issue ki branch `ai/issue-N`, `ai_state.json` mein us issue ka episode. Video render ka intezaar karke link + AI director check issue mein deta hai, fail ho toh 3 baar tak khud theek karta hai.
 - Katha (auto Bhakti Shorts, `auto-youtube` repo) alag channel hai — use yahan mat milao.
+
+## Naya (21 Nov 2026): zyada smart helper
+- `tools/machine_checks.py` — video par sachchi ginti (kaali screen, ruka video, lambi khamoshi, awaaz ka zor). `make_episode.sh` har video ke saath `machine_report.json/.txt` banata hai; kaali/ruki screen ya awaaz ki galti = seedha FAIL (niyam 5 / 8).
+- Review ab ASLI video dekhta-sunta hai (`watch_video`, Gemini Files API, free): bol, subtitle ka mel, dheemi line, jhatke. 2+ pakki dikkat = FAIL + khud sudhaar; sirf 1 = chetavni.
+- `tools/viral_radar.py` — episode se pehle free signals (YouTube autocomplete, Google Trends India, `stats/STATS.md`) dekhkar sabse zordaar pehla sawaal chunta hai (`plans/radar/bhagN.json`). Kahani nahi badalta. Kuch na chale toh chup-chaap chhod deta hai.
+- Free AI sahare: Gemini (model list khud dhundhta hai) -> OpenRouter -> GitHub Models -> Cloudflare -> Groq -> Cerebras -> Mistral -> SambaNova -> NVIDIA -> Cohere -> HuggingFace. Har ek ki key GitHub secret mein daaloge tabhi chalta hai (GROQ_API_KEY, CEREBRAS_API_KEY, MISTRAL_API_KEY, SAMBANOVA_API_KEY, NVIDIA_API_KEY). Model ka naam badle toh secret `<NAAM>_MODELS` ya khud-khoj.
