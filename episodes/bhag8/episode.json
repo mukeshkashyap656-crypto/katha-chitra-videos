@@ -20,7 +20,7 @@
    "+0Hz"
   ],
   "n3": [
-   "राजा ब्रह्मदत्त से उनका विवाह हुआ और पिता के आशीर्वाद से उनकी कुरूपता दूर हो गई।",
+   "राजा ब्रह्मदत्त से उनका विवाह हुआ और उनके स्पर्श से उनकी कुरूपता दूर हो गई।",
    "+0%",
    "+0Hz"
   ],
@@ -116,24 +116,22 @@
    "tilak": true,
    "jewel": true
   },
-  "brahma": {
-   "name": "ब्रह्मा जी",
+  "brahmadatta": {
+   "name": "राजा ब्रह्मदत्त",
    "kind": "m",
-   "big": true,
-   "glow": "gold",
-   "skin": "#f0c890",
-   "hair": "#f6f0e2",
-   "tunic": "#f2c230",
-   "sash": "#fff0a0",
+   "skin": "#c68642",
+   "hair": "#1a1a1a",
+   "tunic": "#1f6a4a",
+   "sash": "#f2c230",
    "upper": "#f6f0e2",
-   "lower": "#f2c230",
-   "hem": "#fff0a0",
+   "lower": "#1f6a4a",
+   "hem": "#f2c230",
    "crown": true,
    "jewel": true,
-   "beard": "#f6f0e2",
+   "beard": "#1a1a1a",
    "bare": true,
    "skirt": 1.5,
-   "mous": "#f6f0e2"
+   "build": 1.1
   }
  },
  "SHOTS": [
@@ -159,14 +157,14 @@
    "cast": [
     {
      "who": "kushanabh",
-     "x": 350,
+     "x": 300,
      "pose": "stand",
      "face": "neutral",
      "look": "front"
     },
     {
      "who": "kanya",
-     "x": 1010,
+     "x": 1060,
      "pose": "stand",
      "face": "smile",
      "look": "front"
@@ -181,14 +179,14 @@
    "cast": [
     {
      "who": "rishi1",
-     "x": 350,
+     "x": 300,
      "pose": "angry",
      "face": "angry",
      "look": "right"
     },
     {
      "who": "kanya",
-     "x": 1010,
+     "x": 1060,
      "pose": "stand",
      "face": "shock",
      "look": "left"
@@ -197,23 +195,23 @@
   },
   {
    "line": "n3",
-   "bg": "divine",
+   "bg": "palace",
    "mood": "wonder",
-   "chip": "ब्रह्मा जी का वरदान",
+   "chip": "ब्रह्मदत्त का स्पर्श",
    "cast": [
     {
-     "who": "brahma",
-     "x": 680,
+     "who": "brahmadatta",
+     "x": 320,
      "pose": "bless",
      "face": "smile",
-     "look": "left"
+     "look": "right"
     },
     {
-     "who": "gadhi",
-     "x": 280,
+     "who": "kanya",
+     "x": 1020,
      "pose": "namaste",
-     "face": "worry",
-     "look": "right"
+     "face": "joy",
+     "look": "left"
     }
    ]
   },
@@ -225,14 +223,14 @@
    "cast": [
     {
      "who": "gadhi",
-     "x": 350,
+     "x": 300,
      "pose": "namaste",
      "face": "smile",
      "look": "right"
     },
     {
      "who": "rishi2",
-     "x": 1010,
+     "x": 1060,
      "pose": "bless",
      "face": "smile",
      "look": "left"
@@ -261,7 +259,7 @@
    "cast": [
     {
      "who": "vishwamitra",
-     "x": 240,
+     "x": 220,
      "pose": "stand",
      "face": "firm",
      "look": "right"
@@ -275,7 +273,7 @@
     },
     {
      "who": "lakshman",
-     "x": 1120,
+     "x": 1140,
      "pose": "stand",
      "face": "neutral",
      "look": "right"
@@ -296,5 +294,5 @@
    }
   ]
  },
- "VERSION": 2
+ "VERSION": 3
 }
