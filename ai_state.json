@@ -1,0 +1,9 @@
+{
+ "issue": 24,
+ "base": "0dc91cb05c8a70c82d3599484031fb744ddcbb60",
+ "code_files": [
+  "SEEKH.md",
+  "tools/make_promo.py"
+ ],
+ "fix_rounds": 0
+}
