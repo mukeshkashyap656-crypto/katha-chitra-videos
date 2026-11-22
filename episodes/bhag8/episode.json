@@ -15,17 +15,17 @@
    "-16Hz"
   ],
   "n2": [
-   "एक दिन उन्होंने एक ऋषि का मजाक उड़ाया। ऋषि ने उन्हें श्राप दिया—'तुम सब कुरूप हो जाओगी। शशि और वायु के प्रकोप से वे दुखी हो गईं।сии'",
+   "एक दिन वायु देवता के प्रस्ताव को ठुकराने पर उन्होंने श्राप दिया—'तुम सब कुरूप हो जाओगी।'",
    "+0%",
    "+0Hz"
   ],
   "n3": [
-   "तब राजा Brahmadatta ने उन सबकी सहायता की और उनसे विवाह किया, जिससे उनका श्राप और कुरूपता दूर हो गई।",
+   "तब राजा Brahmadatta से उनका विवाह हुआ और पिता के आशीर्वाद से उनकी कुरूपता दूर हो गई।",
    "+0%",
    "+0Hz"
   ],
   "n4": [
-   "गाधि ने अपनी बहनों के बाद यज्ञ किया और एक महान पुत्र पाया—विश्वामित्र।",
+   "कुशनाभ ने पुत्रेष्टि यज्ञ किया और गाधि नामक पुत्र पाया—जो विश्वामित्र के पिता बने।",
    "+0%",
    "+0Hz"
   ],
@@ -62,6 +62,7 @@
    "विवाह"
   ],
   "n4": [
+   "कुशनाभ",
    "विश्वामित्र"
   ],
   "vm2": [
@@ -116,20 +117,24 @@
    "tilak": true,
    "jewel": true
   },
-  "brahmadatta": {
-   "name": "राजा ब्रह्मदत्त",
+  "brahma": {
+   "name": "ब्रह्मा जी",
    "kind": "m",
-   "skin": "#c68642",
-   "hair": "#1a1a1a",
-   "tunic": "#2a7541",
-   "sash": "#f2c230",
+   "big": true,
+   "glow": "gold",
+   "skin": "#f0c890",
+   "hair": "#f6f0e2",
+   "tunic": "#f2c230",
+   "sash": "#fff0a0",
    "upper": "#f6f0e2",
-   "lower": "#2a7541",
-   "hem": "#f2c230",
+   "lower": "#f2c230",
+   "hem": "#fff0a0",
    "crown": true,
    "jewel": true,
+   "beard": "#f6f0e2",
    "bare": true,
-   "skirt": 1.5
+   "skirt": 1.5,
+   "mous": "#f6f0e2"
   }
  },
  "SHOTS": [
@@ -155,14 +160,14 @@
    "cast": [
     {
      "who": "kushanabh",
-     "x": 380,
+     "x": 400,
      "pose": "stand",
      "face": "neutral",
      "look": "front"
     },
     {
      "who": "kanya",
-     "x": 920,
+     "x": 900,
      "pose": "stand",
      "face": "smile",
      "look": "front"
@@ -173,18 +178,18 @@
    "line": "n2",
    "bg": "ghorvan",
    "mood": "fear",
-   "chip": "ऋषि का श्राप",
+   "chip": "वायु देवता का श्राप",
    "cast": [
     {
      "who": "rishi1",
-     "x": 380,
+     "x": 400,
      "pose": "angry",
      "face": "angry",
      "look": "right"
     },
     {
      "who": "kanya",
-     "x": 920,
+     "x": 900,
      "pose": "stand",
      "face": "shock",
      "look": "left"
@@ -193,23 +198,23 @@
   },
   {
    "line": "n3",
-   "bg": "palace",
+   "bg": "divine",
    "mood": "wonder",
-   "chip": "राजा ब्रह्मदत्त",
+   "chip": "विवाह और समाधान",
    "cast": [
     {
-     "who": "brahmadatta",
-     "x": 380,
+     "who": "brahma",
+     "x": 680,
      "pose": "bless",
      "face": "smile",
-     "look": "right"
+     "look": "left"
     },
     {
-     "who": "kanya",
-     "x": 920,
+     "who": "gadhi",
+     "x": 300,
      "pose": "namaste",
-     "face": "smile",
-     "look": "left"
+     "face": "worry",
+     "look": "right"
     }
    ]
   },
@@ -217,18 +222,18 @@
    "line": "n4",
    "bg": "ashram",
    "mood": "joy",
-   "chip": "विश्वामित्र का जन्म",
+   "chip": "पुत्रेष्टि यज्ञ",
    "cast": [
     {
      "who": "gadhi",
-     "x": 380,
+     "x": 400,
      "pose": "namaste",
      "face": "smile",
      "look": "right"
     },
     {
      "who": "rishi2",
-     "x": 920,
+     "x": 900,
      "pose": "bless",
      "face": "smile",
      "look": "left"
@@ -257,7 +262,7 @@
    "cast": [
     {
      "who": "vishwamitra",
-     "x": 280,
+     "x": 300,
      "pose": "stand",
      "face": "firm",
      "look": "right"
@@ -271,7 +276,7 @@
     },
     {
      "who": "lakshman",
-     "x": 1080,
+     "x": 1060,
      "pose": "stand",
      "face": "neutral",
      "look": "right"
