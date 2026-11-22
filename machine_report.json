@@ -1,0 +1,25 @@
+{
+ "ok": true,
+ "fails": [],
+ "warns": [
+  "lambai 62.9 sec (Short ke liye 20-62 sec theek)"
+ ],
+ "facts": {
+  "w": 1080,
+  "h": 1920,
+  "fps": 30.0,
+  "dur": 62.905333,
+  "has_audio": true,
+  "black": [],
+  "frozen": [],
+  "silence": [],
+  "lufs": -14.8,
+  "lufs_parts": [
+   -14.8,
+   -14.5,
+   -14.8,
+   -14.8
+  ]
+ },
+ "text": "Machine jaanch: ✅ theek\n- ⚠️ lambai 62.9 sec (Short ke liye 20-62 sec theek)\n- ℹ️ 1080x1920, 30.0 fps, 62.9 sec, zor -14.8 LUFS"
+}

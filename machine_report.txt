@@ -1,0 +1,3 @@
+Machine jaanch: ✅ theek
+- ⚠️ lambai 62.9 sec (Short ke liye 20-62 sec theek)
+- ℹ️ 1080x1920, 30.0 fps, 62.9 sec, zor -14.8 LUFS
