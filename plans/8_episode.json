@@ -1,0 +1,300 @@
+{
+ "NAME": "Ramayan_Bhag8_Sau_Putriyon_Ka_Shrap",
+ "COVER_NAME": "Ramayan_Bhag8_Cover",
+ "BHAG": 8,
+ "QUESTION": "सौ पुत्रियों का श्राप कैसे टूटा?",
+ "LINES": {
+  "n1": [
+   "विश्वामित्र का वंश... जिसमें सौ पुत्रियों का राज़ छिपा था!",
+   "+0%",
+   "+0Hz"
+  ],
+  "vm1": [
+   "राम, मेरे पूर्वज कुशनाभ के सौ पुत्रियाँ थीं। वे अपनी सुंदरता पर बहुत घमंड करती थीं।",
+   "-12%",
+   "-16Hz"
+  ],
+  "n2": [
+   "एक दिन उन्होंने एक ऋषि का मजाक उड़ाया। ऋषि ने उन्हें श्राप दिया—'तुम सब कुरूप हो जाओगी।'",
+   "+0%",
+   "+0Hz"
+  ],
+  "n3": [
+   "उनके भाई गाधि ने ब्रह्मा जी की तपस्या की। ब्रह्मा जी ने कहा—'ऋषियों से विवाह कराओ, श्राप टूट जाएगा।'",
+   "+0%",
+   "+0Hz"
+  ],
+  "n4": [
+   "गाधि ने अपनी बहनों का विवाह ऋषियों से कराया। फिर उन्होंने यज्ञ किया और एक पुत्र पाया—विश्वामित्र।",
+   "+0%",
+   "+0Hz"
+  ],
+  "vm2": [
+   "इस प्रकार मेरा वंश कुशनाभ और गाधि से चला। कौशेकी नदी के किनारे हमारा आश्रम था।",
+   "-12%",
+   "-16Hz"
+  ],
+  "n5": [
+   "अब विश्वामित्र राम और लक्ष्मण को आगे ले चले... जहाँ एक और रहस्य इंतज़ार कर रहा था। अगले भाग में! कमेंट में लिखिए: जय श्री राम",
+   "+0%",
+   "+0Hz"
+  ]
+ },
+ "SPEAKER": {
+  "vm1": "vishwamitra",
+  "vm2": "vishwamitra"
+ },
+ "KEYWORDS": {
+  "n1": [
+   "वंश",
+   "राज़"
+  ],
+  "vm1": [
+   "कुशनाभ",
+   "सौ"
+  ],
+  "n2": [
+   "श्राप"
+  ],
+  "n3": [
+   "गाधि",
+   "ब्रह्मा"
+  ],
+  "n4": [
+   "विवाह",
+   "विश्वामित्र"
+  ],
+  "vm2": [
+   "कौशेकी"
+  ],
+  "n5": [
+   "अगले"
+  ]
+ },
+ "NEW_CHARS": {
+  "kushanabh": {
+   "name": "राजा कुशनाभ",
+   "kind": "m",
+   "skin": "#c68642",
+   "hair": "#1a1a1a",
+   "tunic": "#7a1f1f",
+   "sash": "#f2c230",
+   "upper": "#f6f0e2",
+   "lower": "#7a1f1f",
+   "hem": "#f2c230",
+   "crown": true,
+   "jewel": true,
+   "beard": "#e0e0e0",
+   "bare": true,
+   "skirt": 1.5,
+   "build": 1.1
+  },
+  "gadhi": {
+   "name": "राजकुमार गाधि",
+   "kind": "m",
+   "skin": "#c68642",
+   "hair": "#1a1a1a",
+   "tunic": "#2f6b9a",
+   "sash": "#f2c230",
+   "upper": "#f6f0e2",
+   "lower": "#2f6b9a",
+   "hem": "#f2c230",
+   "crown": true,
+   "jewel": true,
+   "bare": true,
+   "skirt": 1.5,
+   "mous": null
+  },
+  "kanya": {
+   "name": "कुशनाभ की पुत्री",
+   "kind": "f",
+   "saree": "#d9342b",
+   "blouse": "#f2c230",
+   "border": "#f6f0e2",
+   "skin": "#c68642",
+   "hair": "#1a1a1a",
+   "tilak": true,
+   "jewel": true
+  },
+  "brahma": {
+   "name": "ब्रह्मा जी",
+   "kind": "m",
+   "big": true,
+   "glow": "gold",
+   "skin": "#f0c890",
+   "hair": "#f6f0e2",
+   "tunic": "#f2c230",
+   "sash": "#fff0a0",
+   "upper": "#f6f0e2",
+   "lower": "#f2c230",
+   "hem": "#fff0a0",
+   "crown": true,
+   "jewel": true,
+   "beard": "#f6f0e2",
+   "bare": true,
+   "skirt": 1.5,
+   "mous": "#f6f0e2"
+  }
+ },
+ "SHOTS": [
+  {
+   "line": "n1",
+   "bg": "cloudvan",
+   "mood": "wonder",
+   "chip": "वंश का राज़",
+   "cast": [
+    {
+     "who": "vishwamitra",
+     "x": 680,
+     "pose": "talk",
+     "face": "neutral",
+     "look": "front"
+    }
+   ]
+  },
+  {
+   "line": "vm1",
+   "bg": "palace",
+   "chip": "कुशनाभ की सौ पुत्रियाँ",
+   "cast": [
+    {
+     "who": "kushanabh",
+     "x": 400,
+     "pose": "stand",
+     "face": "neutral",
+     "look": "front"
+    },
+    {
+     "who": "kanya",
+     "x": 900,
+     "pose": "stand",
+     "face": "smile",
+     "look": "front"
+    }
+   ]
+  },
+  {
+   "line": "n2",
+   "bg": "ghorvan",
+   "mood": "fear",
+   "chip": "ऋषि का श्राप",
+   "cast": [
+    {
+     "who": "rishi1",
+     "x": 400,
+     "pose": "angry",
+     "face": "angry",
+     "look": "right"
+    },
+    {
+     "who": "kanya",
+     "x": 900,
+     "pose": "stand",
+     "face": "shock",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "n3",
+   "bg": "divine",
+   "mood": "wonder",
+   "chip": "ब्रह्मा जी का वरदान",
+   "cast": [
+    {
+     "who": "brahma",
+     "x": 680,
+     "pose": "bless",
+     "face": "smile",
+     "look": "left"
+    },
+    {
+     "who": "gadhi",
+     "x": 300,
+     "pose": "namaste",
+     "face": "worry",
+     "look": "right"
+    }
+   ]
+  },
+  {
+   "line": "n4",
+   "bg": "ashram",
+   "mood": "joy",
+   "chip": "विवाह और यज्ञ",
+   "cast": [
+    {
+     "who": "gadhi",
+     "x": 400,
+     "pose": "namaste",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "rishi2",
+     "x": 900,
+     "pose": "bless",
+     "face": "smile",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "vm2",
+   "bg": "river",
+   "chip": "कौशेकी नदी",
+   "cast": [
+    {
+     "who": "vishwamitra",
+     "x": 680,
+     "pose": "talk",
+     "face": "smile",
+     "look": "front"
+    }
+   ]
+  },
+  {
+   "line": "n5",
+   "bg": "cloudvan",
+   "mood": "wonder",
+   "chip": "अगला रहस्य",
+   "cast": [
+    {
+     "who": "vishwamitra",
+     "x": 300,
+     "pose": "stand",
+     "face": "firm",
+     "look": "right"
+    },
+    {
+     "who": "ram",
+     "x": 680,
+     "pose": "stand",
+     "face": "neutral",
+     "look": "right"
+    },
+    {
+     "who": "lakshman",
+     "x": 1060,
+     "pose": "stand",
+     "face": "neutral",
+     "look": "right"
+    }
+   ]
+  }
+ ],
+ "COVER": {
+  "bg": "divine",
+  "tag": "सौ पुत्रियों का श्राप!",
+  "cast": [
+   {
+    "who": "kanya",
+    "x": 680,
+    "pose": "stand",
+    "face": "shock",
+    "look": "front"
+   }
+  ]
+ },
+ "VERSION": 1
+}
