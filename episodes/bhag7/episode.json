@@ -1,0 +1,338 @@
+{
+ "NAME": "Ramayan_Bhag7_Yagya_Raksha_aur_Maricha_Subahu",
+ "COVER_NAME": "Ramayan_Bhag7_Cover",
+ "BHAG": 7,
+ "QUESTION": "राम ने यज्ञ की रक्षा कैसे की?",
+ "LINES": {
+  "n1": [
+   "सिद्धाश्रम में विश्वामित्र का यज्ञ शुरू हुआ... और राम-लक्ष्मण पाँच दिन और पाँच रात बिना सोए पहरा देते रहे!",
+   "+0%",
+   "+0Hz"
+  ],
+  "vm1": [
+   "राम, आज छठा दिन है। आज का दिन बहुत सावधानी का है।",
+   "-12%",
+   "-16Hz"
+  ],
+  "n2": [
+   "अचानक आसमान में काले बादल छा गए... और यज्ञ कुंड पर खून की बारिश होने लगी!",
+   "+0%",
+   "+0Hz"
+  ],
+  "mar": [
+   "हा हा हा! इस यज्ञ को हम पूरा नहीं होने देंगे!",
+   "-10%",
+   "-30Hz"
+  ],
+  "n3": [
+   "राक्षस मारीच और सुबाहु आसमान से यज्ञ को अपवित्र करने आए!",
+   "+0%",
+   "+0Hz"
+  ],
+  "ram1": [
+   "लक्ष्मण, देखो! बिना जान लिए भी मैं इस राक्षस को दूर फेंक दूँगा!",
+   "+2%",
+   "+10Hz"
+  ],
+  "n4": [
+   "राम ने मानवास्त्र चलाया... और मारीच सौ योजन दूर समुद्र में जा गिरा!",
+   "+0%",
+   "+0Hz"
+  ],
+  "n5": [
+   "फिर राम ने आग्नेयास्त्र से सुबाहु का वध किया और पूरे वन को राक्षसों से मुक्त कर दिया!",
+   "+0%",
+   "+0Hz"
+  ],
+  "vm2": [
+   "शाबाश राम! तुमने यज्ञ पूरा करा दिया।",
+   "-12%",
+   "-16Hz"
+  ],
+  "n6": [
+   "यज्ञ पूरा होने के बाद विश्वामित्र राम और लक्ष्मण को कहाँ ले गए? अगले भाग में! कमेंट में लिखिए: जय श्री राम",
+   "+0%",
+   "+0Hz"
+  ]
+ },
+ "SPEAKER": {
+  "vm1": "vishwamitra",
+  "mar": "maricha",
+  "ram1": "ram",
+  "vm2": "vishwamitra"
+ },
+ "KEYWORDS": {
+  "n1": [
+   "पाँच",
+   "पहरा"
+  ],
+  "vm1": [
+   "छठा"
+  ],
+  "n2": [
+   "खून",
+   "बारिश"
+  ],
+  "mar": [
+   "यज्ञ"
+  ],
+  "n3": [
+   "मारीच",
+   "सुबाहु"
+  ],
+  "ram1": [
+   "लक्ष्मण"
+  ],
+  "n4": [
+   "मानवास्त्र",
+   "समुद्र"
+  ],
+  "n5": [
+   "सुबाहु",
+   "वध"
+  ],
+  "vm2": [
+   "शाबाश"
+  ],
+  "n6": [
+   "अगले"
+  ]
+ },
+ "SHOTS": [
+  {
+   "line": "n1",
+   "bg": "ashram",
+   "chip": "सिद्धाश्रम यज्ञ",
+   "cast": [
+    {
+     "who": "lakshman",
+     "x": 200,
+     "pose": "stand"
+    },
+    {
+     "who": "ram",
+     "x": 480,
+     "pose": "stand"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 960,
+     "pose": "sit",
+     "face": "firm"
+    }
+   ]
+  },
+  {
+   "line": "vm1",
+   "bg": "ashram",
+   "cam": "speaker",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 480,
+     "pose": "stand"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 960,
+     "pose": "talk",
+     "face": "firm"
+    }
+   ]
+  },
+  {
+   "line": "n2",
+   "bg": "ashram",
+   "mood": "fear",
+   "fx": [
+    {
+     "type": "rain",
+     "color": "#b0101a"
+    }
+   ],
+   "chip": "रक्त वर्षा",
+   "cast": [
+    {
+     "who": "lakshman",
+     "x": 240,
+     "pose": "stand",
+     "face": "stern"
+    },
+    {
+     "who": "ram",
+     "x": 560,
+     "pose": "stand",
+     "face": "firm"
+    }
+   ]
+  },
+  {
+   "line": "mar",
+   "bg": "ashram",
+   "mood": "fear",
+   "chip": "मारीच का हमला",
+   "cast": [
+    {
+     "who": "maricha",
+     "x": 680,
+     "lift": 200,
+     "pose": "angry",
+     "face": "angry",
+     "shadow": true
+    }
+   ]
+  },
+  {
+   "line": "n3",
+   "bg": "ashram",
+   "mood": "fear",
+   "cast": [
+    {
+     "who": "maricha",
+     "x": 400,
+     "lift": 200,
+     "pose": "angry",
+     "face": "angry"
+    },
+    {
+     "who": "subahu",
+     "x": 880,
+     "lift": 200,
+     "pose": "angry",
+     "face": "angry"
+    }
+   ]
+  },
+  {
+   "line": "ram1",
+   "bg": "ashram",
+   "cam": "speaker",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 480,
+     "pose": "raise",
+     "face": "firm"
+    }
+   ]
+  },
+  {
+   "line": "n4",
+   "bg": "ashram",
+   "cam": "wide",
+   "mood": "wonder",
+   "chip": "मानवास्त्र",
+   "fx": [
+    {
+     "type": "astra",
+     "from": "ram",
+     "to": "maricha",
+     "at_word": "मानवास्त्र",
+     "color": "#9fe0ff",
+     "result": "thrown"
+    }
+   ],
+   "cast": [
+    {
+     "who": "ram",
+     "x": 240,
+     "pose": "raise",
+     "face": "firm"
+    },
+    {
+     "who": "maricha",
+     "x": 720,
+     "lift": 180,
+     "pose": "angry",
+     "face": "angry"
+    }
+   ]
+  },
+  {
+   "line": "n5",
+   "bg": "ashram",
+   "cam": "wide",
+   "chip": "सुबाहु वध",
+   "fx": [
+    {
+     "type": "astra",
+     "from": "ram",
+     "to": "subahu",
+     "at_word": "आग्नेयास्त्र",
+     "color": "#ff6600",
+     "result": "fall"
+    }
+   ],
+   "cast": [
+    {
+     "who": "ram",
+     "x": 240,
+     "pose": "raise",
+     "face": "firm"
+    },
+    {
+     "who": "subahu",
+     "x": 720,
+     "lift": 180,
+     "pose": "angry",
+     "face": "angry"
+    }
+   ]
+  },
+  {
+   "line": "vm2",
+   "bg": "ashram",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 460,
+     "pose": "namaste",
+     "face": "smile"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 880,
+     "pose": "bless",
+     "face": "smile"
+    }
+   ]
+  },
+  {
+   "line": "n6",
+   "bg": "ashram",
+   "cast": [
+    {
+     "who": "lakshman",
+     "x": 240,
+     "pose": "stand",
+     "face": "smile"
+    },
+    {
+     "who": "ram",
+     "x": 560,
+     "pose": "stand",
+     "face": "smile"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 920,
+     "pose": "stand",
+     "face": "smile"
+    }
+   ]
+  }
+ ],
+ "COVER": {
+  "bg": "ashram",
+  "tag": "राम का मानवास्त्र और सुबाहु वध!",
+  "cast": [
+   {
+    "who": "ram",
+    "x": 480,
+    "pose": "raise",
+    "face": "firm"
+   }
+  ]
+ },
+ "VERSION": 1
+}
