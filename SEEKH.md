@@ -12,6 +12,9 @@ Ye wo galtiyan aur sudhaar hain jo pichhle episodes (Bhag 2, 3, 4, 5) mein mile.
 - Ram shaant aur nidar; sawaal poochte waqt bhi dara hua nahi.
 - Kahani ki zaroori cheez saaf dikhaao (divya purush dhakkan khol kar kheer dikhaye, phir band kare).
 
+- (24 Nov 2026) Chalna ab engine mein: asli mocap ke 12 frame, side-view, dono haath jhoolte, raftaar se paer match, pahunch ke ruko, phir sar samne. Detail BODY.md "Abhi baaki". Purane episodes ko dobara mat banao.
+- Seekh: ARMS list chalte waqt haath dabaa deti thi (haath body se chipak gaye) -> chalte waqt arms=None. Dheemi raftaar + tez chakkar = paer phisalte dikhte hain -> raftaar 3.2*u/sec hi rakho.
+
 ## Jagah (background)
 - "Ghor van" sach mein andhera aur ghana: bel, ullu, panchhi, kisi jaanwar ki chamakti aankhein; koi chamakdaar phal ke dot nahi. Rakshas ka naam aate hi laal-kaala ho jaaye.
 - Peechhe ki cheezein (jaise ullu) poori frame ke andar, kinare par aadhi kati nahi.
