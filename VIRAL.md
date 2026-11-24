@@ -68,3 +68,12 @@ FAIL par: AI har galti ke liye exact sudhaar likhe, episode.json theek ho, dobar
 
 ## 7. Seekh ka loop
 Har video ke views, reach, likes, comments, shares `stats/STATS.md` mein roz judte hain. Har hafte: top aur neeche ke bhaag dekho (hook ka tarah, sawaal, shuruaat, posting time) aur section 1-4 mein jo seekha wo likho. Sirf ek-do video ke aadhaar par pakka nahi bolna.
+
+## 8. Dusre Ramayan Shorts se seekha (24 Nov 2026) — pareeksha, pakka nahi
+Source: YouTube par Hindi/English Ramayan Shorts (pichhle 3 mahine, "sabse zyada views" kram) ke title aur pehli line dekhi. Dhyan: us din YouTube ka quota khatam tha aur vidIQ ke credit 0 (11 Dec tak), isliye ASLI views/length nahi mil paaye; neeche ki baatein title/dhaanche ki hain, pakki ginti nahi. Credit wapas aate hi `vidiq_outliers` (keyword "रामायण", contentType short, language hi) se asli views ke saath dobara jaancho.
+- **"Asli Valmiki mein kya likha hai" wala dhaancha baar-baar dikha**: "लक्ष्मण रेखा असली रामायण में है ही नहीं!", "What Valmiki actually wrote about Sita's abduction", "Why is Valmiki's Ramayana so brutal?", "Ram never told Sita to walk into the fire", "Valmiki's first verse was a curse...". Hum pehle se sirf Valmiki par chalte hain, to ye hamara sabse apna hook hai: "TV mein jo dikhaya woh Valmiki mein nahi".
+- Naam wale chhote chaunkane wale dawe: "Ravan ke 9 adhoore sapne", "Ram ko maut tak nahi chhu saki kyunki Hanuman darwaze par the", "jis dhanush se Ravan mara wo Ram ke bête par taana gaya tha". Ek hi baat, ek hi line mein, jawab video mein.
+- Kam kaam ke: film/actor/trailer wale (hum nahi karenge), mitti ki murti banane wale.
+- Seedhe sawaal waale hook ("kya aap jaante hain...") bhi chale (hamara 472 views wala), lekin "dawa/khulasa + ?" zyada tez lagta hai.
+- Aam Shorts-niyam (vidIQ, Opus aur dusre guide, koi aadhikarik seema nahi): 1 hook trigger chuno, chitra mein payoff pehli frame se dikhao, 5-10 shabd mein bolo, hafte mein 3 alag hook test karo, "Viewed vs Swiped" 70%+ ko achha maanein (har channel ka alag hota hai, apna aadhaar 30.2%); aakhri frame pehli frame mein sahaj mud jaye to log 2-3 baar dekhte hain.
+- **Hook ka test (Bhag 8, 9, 10):** teeno mein alag trigger aazmao: (A) myth-todna "X Valmiki mein hai hi nahi", (B) chhota khulasa-dawa "Sirf 3 kadam mein 3 lok?", (C) seedha sawaal. Har ek ka "Stayed to watch" `stats/STATS.md` mein likho aur Bhag 11 mein jeetne wala tareeka rakho. Kahani Valmiki se ek shabd bhi na badle — sirf kaun si baat pehle bolni hai ye badalta hai.
