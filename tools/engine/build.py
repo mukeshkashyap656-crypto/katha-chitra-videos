@@ -3,7 +3,7 @@ Run (make_episode.sh does it): EP=/tmp/ep EPDIR=episodes/bhagN python3 tools/eng
 Camera follows the film rules in NIYAM.md: headroom over the crown, eyes near the upper third,
 speaker close-ups keep neighbours fully out of frame, wide shots keep everyone fully in.
 """
-import json, html, os, re, sys
+import json, html, os, re, sys, math, random, zlib
 HERE = os.path.dirname(os.path.abspath(__file__)); sys.path.insert(0, HERE)
 import spec as SP
 
@@ -64,6 +64,58 @@ for i, sh in enumerate(SHOTS):
     starts.append(max(st, (starts[-1] + 0.6) if starts else 0))
 ends = starts[1:] + [END]
 
+
+# ---------- arms as separate pieces: shoulder + elbow rotate smoothly (real cut-out animation) ----------
+PIVOTS = json.load(open(f"{P}/assets/pivots.json")) if os.path.exists(f"{P}/assets/pivots.json") else {}
+POSE_ARMS = {"stand": (0.10, 0.40, -0.10, -0.40), "talk": (0.10, 0.40, 0.55, -0.95), "bless": (0.10, 0.40, 0.55, -0.95),
+             "point": (0.10, 0.40, 1.25, 0.25), "raise": (0.10, 0.40, 2.45, 0.25), "namaste": (-0.1, 2.18, 0.1, -2.18),
+             "angry": (0.6, 0.9, -0.6, -0.9)}
+# talking gestures: (left a1,a2) / (right a1,a2); None = stay at rest
+GESTURES = [(None, (0.60, -0.95)), ((0.30, 0.60), (0.95, -0.55)), (None, (1.05, -1.30)), ((-0.45, 0.85), (0.45, -0.85)),
+            (None, (0.35, -1.35)), ((0.15, 1.0), (0.2, -1.0))]
+def deg(a): return -a * 180 / math.pi
+
+def arm_js(cid, e, t0, t1, speak, rest_style):
+    """GSAP for the 4 joints of one person: gentle idle sway + (while speaking) hand gestures with a smooth go / hold / return."""
+    pose = e.get("pose", "stand"); rest = list(POSE_ARMS[pose]); rnd = random.Random(zlib.crc32(cid.encode()))
+    joints = ["uL", "fL", "uR", "fR"]; amp = {"u": 0.03, "f": 0.055}
+    if pose == "namaste": amp = {"u": 0.006, "f": 0.008}
+    wp = {j: [(t0, rest[i])] for i, j in enumerate(joints)}      # waypoints (time, angle) per joint
+    gest = []                                                      # (start, end) windows
+    if speak and pose in ("stand", "talk", "bless") and speak[1] - speak[0] > 1.0:
+        g = speak[0] + 0.25 + rnd.random() * 0.3; n = 0
+        while g + 1.35 < speak[1]:
+            gl, gr = GESTURES[(n + zlib.crc32(cid.encode())) % len(GESTURES)]; n += 1
+            for (tgt, j1, j2, ri) in ((gl, "uL", "fL", 0), (gr, "uR", "fR", 2)):
+                if tgt is None: continue
+                a1, a2 = tgt
+                wp[j1] += [(g, rest[ri]), (g + 0.38, a1), (g + 0.80, a1 + 0.10), (g + 1.25, rest[ri])]
+                wp[j2] += [(g, rest[ri + 1]), (g + 0.38, a2), (g + 0.80, a2 - 0.10), (g + 1.25, rest[ri + 1])]
+            gest.append((g, g + 1.25))
+            g += 1.25 + 0.35 + rnd.random() * 0.55
+    out = []
+    for i, j in enumerate(joints):
+        pts = wp[j]; a = amp[j[0]]
+        # idle sway waypoints outside the gesture windows
+        t = t0 + 0.8 + rnd.random() * 0.8; idle = []
+        while t < t1:
+            if not any(gs - 0.5 <= t <= ge + 0.2 for gs, ge in gest): idle.append((t, rest[i] + (rnd.random() * 2 - 1) * a))
+            t += 1.3 + rnd.random() * 0.8
+        allp = sorted([q for q in pts[1:] if q[1] is not None] + idle, key=lambda q: q[0])
+        el = f"#{cid}{j}"; cur_t, cur_v = t0, rest[i]
+        out.append(f'tl.set("{el}",{{rotation:{deg(rest[i]):.2f}}},0);')
+        for (tt, vv) in allp:
+            if tt <= cur_t + 0.05: continue
+            ease = "power2.inOut" if any(gs - 0.01 <= tt <= ge + 0.01 for gs, ge in gest) else "sine.inOut"
+            out.append(f'tl.to("{el}",{{rotation:{deg(vv):.2f},duration:{tt - cur_t:.2f},ease:"{ease}",immediateRender:false}},{cur_t:.3f});')
+            cur_t, cur_v = tt, vv
+    for (gs, ge) in gest:                                           # open hand while gesturing, relaxed otherwise
+        if rest_style != "open":
+            for sd in ("L", "R"):
+                out.append(f'tl.set("#{cid}f{sd}-{rest_style}",{{opacity:0}},{gs + 0.1:.3f});tl.set("#{cid}f{sd}-open",{{opacity:1}},{gs + 0.1:.3f});')
+                out.append(f'tl.set("#{cid}f{sd}-open",{{opacity:0}},{ge - 0.2:.3f});tl.set("#{cid}f{sd}-{rest_style}",{{opacity:1}},{ge - 0.2:.3f});')
+    return out
+
 # ---------- characters ----------
 DW, DH, DTOP = 689, 935, 582          # human picture size + top (feet stand on y=1480)
 BW, BH, BTOP = 837, 1107, 409         # big (devta/rakshasa) picture
@@ -92,7 +144,18 @@ for si, sh in enumerate(SHOTS):
         top -= e.get("lift", 0)
         first = state(t0)
         imgs = "".join(f'<img id="{cid}-{kk}" class="ci" src="assets/{kk}.png" style="width:{w_}px;height:{h_}px;opacity:{1 if kk == first else 0}">' for kk in keys)
-        html_c.append(f'<div class="char" id="{cid}" style="left:{e["x"] - w_ / 2:.0f}px;top:{top}px;width:{w_}px;height:{h_}px"><div id="{cid}i" style="position:absolute;left:0;top:0;width:{w_}px;height:{h_}px;transform-origin:50% 96%">{imgs}</div></div>')
+        arms_html = ""
+        if SP.layered(e, sh) and p["who"] in PIVOTS:
+            kit = p["who"]; pv = PIVOTS[kit]; fs = w_ / pv["cw"]; rs = SP.HAND_BY_POSE.get(e.get("pose", "stand"), "relaxed")
+            for sd, ix in (("L", 0), ("R", 1)):
+                sx, sy, ex, ey = [v * fs for v in pv["piv"][ix]]
+                fimgs = "".join(f'<img id="{cid}f{sd}-{st}" class="ci" src="assets/arm_{kit}_f{sd}_{st}.png" style="width:{w_}px;height:{h_}px;opacity:{1 if st == rs else 0}">' for st in SP.hand_styles(e))
+                arms_html += (f'<div id="{cid}u{sd}" style="position:absolute;left:0;top:0;width:{w_}px;height:{h_}px;transform-origin:{sx:.1f}px {sy:.1f}px">'
+                              f'<img class="ci" src="assets/arm_{kit}_u{sd}.png" style="width:{w_}px;height:{h_}px">'
+                              f'<div id="{cid}f{sd}" style="position:absolute;left:0;top:0;width:{w_}px;height:{h_}px;transform-origin:{ex:.1f}px {ey:.1f}px">{fimgs}</div></div>')
+            _spk = (max(t0, T[k]), min(t1, E[k])) if sp == e["who"] else None
+            moves.extend(arm_js(cid, e, t0, t1, _spk, rs))
+        html_c.append(f'<div class="char" id="{cid}" style="left:{e["x"] - w_ / 2:.0f}px;top:{top}px;width:{w_}px;height:{h_}px"><div id="{cid}i" style="position:absolute;left:0;top:0;width:{w_}px;height:{h_}px;transform-origin:50% 96%">{imgs}{arms_html}</div></div>')
         # ---- life (puppet fix): breathing, slow weight sway, and a small nod on every beat while this person speaks ----
         _dur = max(0.4, t1 - t0)
         _pb = 1.9 + 0.35 * ((ci + si) % 3)                      # each person breathes at his own pace
@@ -103,7 +166,7 @@ for si, sh in enumerate(SHOTS):
             _s0, _s1 = max(t0, T[k]), min(t1, E[k])
             if _s1 - _s0 > 0.6:
                 _per = 0.62
-                moves.append(f'tl.fromTo("#{cid}i",{{y:0}},{{y:-5,duration:{_per / 2:.2f},ease:"sine.inOut",yoyo:true,repeat:{max(1, int((_s1 - _s0) / (_per / 2)))},immediateRender:false}},{_s0:.3f});')
+                moves.append(f'tl.fromTo("#{cid}i",{{y:0}},{{y:-3,duration:{_per / 2:.2f},ease:"sine.inOut",yoyo:true,repeat:{max(1, int((_s1 - _s0) / (_per / 2)))},immediateRender:false}},{_s0:.3f});')
         prev = first
         for f in range(int(t0 * FPS) + 1, int(t1 * FPS) + 1):
             s_ = state(f / FPS)

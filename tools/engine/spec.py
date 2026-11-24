@@ -88,10 +88,36 @@ def look_value(entry, shot, epi):
     return 0.8 if tgt["x"] > entry["x"] else -0.8
 
 
+LAYER_POSES = ("stand", "talk", "bless", "point", "raise", "namaste", "angry")   # arms are separate pieces (rotate smoothly)
+HAND_BY_POSE = {"stand": "relaxed", "talk": "relaxed", "bless": "relaxed", "point": "point", "raise": "open", "namaste": "join", "angry": "fist"}
+
+
+def layered(entry, shot):
+    """True if this person is drawn as body + separately rotating arms (not for walking, sitting, bowing, shadows, cover)."""
+    return (entry.get("pose", "stand") in LAYER_POSES and not entry.get("shadow") and shot.get("line") != "_cover")
+
+
+def hand_styles(entry):
+    return sorted({"relaxed", "open", HAND_BY_POSE.get(entry.get("pose", "stand"), "relaxed")})
+
+
+def arm_states(entry, shot, epi):
+    """Picture keys for the arm pieces of a layered person -> drawing params."""
+    kit = kit_name(entry["who"]); out = {}
+    if not layered(entry, shot): return out
+    for sd in ("L", "R"):
+        out[f"arm_{kit}_u{sd}"] = {"who": kit, "part": "u" + sd}
+        for st in hand_styles(entry):
+            out[f"arm_{kit}_f{sd}_{st}"] = {"who": kit, "part": "f" + sd, "hstyle": st}
+    return out
+
+
 def state_base(entry, shot, epi):
     """Parameters that define one look of one character in one shot."""
     p = {"who": kit_name(entry["who"]), "pose": entry.get("pose", "stand"), "face": entry.get("face", "neutral"),
          "look": look_value(entry, shot, epi), "shadow": bool(entry.get("shadow", False))}
+    if layered(entry, shot):
+        p["pose"] = "stand"; p["part"] = "body"        # the arms are drawn separately (arm_states); same body for every layered pose
     h = hashlib.md5(json.dumps(p, sort_keys=True).encode()).hexdigest()[:6]
     return f"{entry['who']}_{h}", p
 
@@ -112,7 +138,7 @@ def shot_states(entry, shot, epi):
 def all_states(epi):
     out = {}
     for sh in epi["SHOTS"]:
-        for e in sh.get("cast", []): out.update(shot_states(e, sh, epi))
+        for e in sh.get("cast", []): out.update(shot_states(e, sh, epi)); out.update(arm_states(e, sh, epi))
     for e in epi["COVER"]["cast"]:
         out.update(shot_states(e, {"line": "_cover", "cast": epi["COVER"]["cast"]}, epi))
     return out

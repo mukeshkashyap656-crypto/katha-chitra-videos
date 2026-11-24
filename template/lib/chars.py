@@ -315,9 +315,15 @@ def face(ctx, c, hx, hy, u, mouth="X", blink=False, emo="neutral", look=0.0, tur
 
 
 def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=False, emo="neutral",
-           look=0.0, bow=0.0, prop=None, t=0.0, turn=None, bend=0.0, fixarms=False, hand=None):
+           look=0.0, bow=0.0, prop=None, t=0.0, turn=None, bend=0.0, fixarms=False, hand=None, part="all"):
     """arms = (l_sh, l_el, r_sh, r_el) radians from straight-down; positive -> screen right."""
     c = CHARS[cname]
+    # part: "all" (whole picture) | "body" (everything but the arms) | "uL","uR" (upper arm, hanging straight) | "fL","fR" (forearm+hand, hanging straight).
+    # Arm pieces are drawn hanging down so the engine can rotate them smoothly (shoulder / elbow pivots) = real cut-out animation.
+    _real = ctx
+    _dummy = cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 4, 4))
+    if part not in ("all", "body"):
+        ctx = _dummy
     if turn is None:
         turn = 1.0 * SIDE if (SIDE and WALK is not None) else 0.0   # side-view walkers look where they walk
     _walking = WALK is not None and pose == "stand"
@@ -584,6 +590,12 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
         if not SIDE: ctx.translate(x, waist_y); ctx.rotate(-0.05 * math.sin(WALK)); ctx.translate(-x, -waist_y)
     # ---- arms ----
     la, le, ra, re = arms
+    _piv = []
+    if part != "all":
+        la = le = ra = re = 0.0
+        arms = (0.0, 0.0, 0.0, 0.0)
+    if part == "body":
+        ctx = _dummy
     sleeve = {"f": c.get("blouse"), "m": c.get("tunic"), "b": c.get("coat")}[kind]
     L1, L2 = 0.75 * u, 0.7 * u
     hands = []
@@ -599,11 +611,16 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
             sy -= 0.05 * u * max(0.0, _sv)
         ex, ey = sx + math.sin(a1) * L1 * _f1, sy + math.cos(a1) * L1 * _f1
         hx2, hy2 = ex + math.sin(a1 + a2) * L2 * _f2, ey + math.cos(a1 + a2) * L2 * _f2
+        _piv.append((sx, sy, ex, ey))
+        _side = "L" if s < 0 else "R"
+        if part not in ("all", "body"): ctx = _real if part == "u" + _side else _dummy
+        elif part == "all": ctx = _real
         limb(ctx, [(sx, sy), (ex, ey)], 0.24 * u, _skn if c.get("bare") else _sl)
         if c.get("bare"):
             mx_, my_ = (sx + ex) / 2, (sy + ey) / 2
             ctx.move_to(mx_ - math.cos(a1) * 0.13 * u, my_ + math.sin(a1) * 0.13 * u); ctx.line_to(mx_ + math.cos(a1) * 0.13 * u, my_ - math.sin(a1) * 0.13 * u)
             ctx.set_source_rgb(*hexc(c.get("bandcol", "#f2c230"))); ctx.set_line_width(0.07 * u); ctx.stroke()
+        if part not in ("all", "body"): ctx = _real if part == "f" + _side else _dummy
         limb(ctx, [(ex, ey), (hx2, hy2)], 0.2 * u if kind != "f" else 0.15 * u, _sl if kind == "b" else _skn)
         if kind == "f" or c.get("bare"):
             bx, by = ex + math.sin(a1 + a2) * L2 * 0.8, ey + math.cos(a1 + a2) * L2 * 0.8
@@ -615,6 +632,8 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
         else:
             ctx.arc(hx2, hy2, 0.11 * u, 0, 6.3); fill_stroke(ctx, _skn, 4)
         hands.append((hx2, hy2))
+    if part not in ("all", "body"): ctx = _real if part == "fL" else _dummy
+    elif part == "body": ctx = _dummy
     if c.get("kamandalu") and prop != "none":
         kx, ky = hands[0]
         ky += 0.18 * u
@@ -624,10 +643,11 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
         ctx.set_source_rgb(*OL); ctx.set_line_width(0.06 * u + 5); ctx.stroke_preserve(); ctx.set_source_rgb(*hexc("#5a3a1e")); ctx.set_line_width(0.06 * u); ctx.stroke()
         ctx.arc(kx, ky - 0.06 * u, 0.14 * u, math.pi, 0); ctx.set_source_rgb(*OL); ctx.set_line_width(4); ctx.stroke()
         ctx.arc(kx, ky - 0.18 * u, 0.11 * u, 0, 6.3); fill_stroke(ctx, c["skin"], 4)
+    ctx = _real
     if _walking: ctx.restore()
     if bend: ctx.restore()
     if _walking: ctx.restore()
-    return dict(head=(hx, hy), u=u, hands=hands, top=top - 0.3 * u)
+    return dict(head=(hx, hy), u=u, hands=hands, top=top - 0.3 * u, pivots=_piv)
 
 
 def turn_seq(p):

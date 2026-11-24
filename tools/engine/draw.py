@@ -75,22 +75,27 @@ def glow(c, x, hy, u, kind):
         g.add_color_stop_rgba(0, 0.55, 0.05, 0.05, 0.6); g.add_color_stop_rgba(1, 0.1, 0, 0, 0); c.set_source(g); c.paint()
 
 
-def draw_state(file, who, pose="stand", face="neutral", look=0.0, mouth="X", blink=False, shadow=False, walk=None, big=False):
+PIV = {}
+
+
+def draw_state(file, who, pose="stand", face="neutral", look=0.0, mouth="X", blink=False, shadow=False, walk=None, big=False, part="all", hstyle="relaxed"):
     meta = SP.char_meta(who, EPI)
     big = big or meta.get("big", False)
     CW, CH, HS = (680, 900, 650) if big else (560, 760, 520)
     s = cairo.ImageSurface(cairo.FORMAT_ARGB32, int(CW * KS), int(CH * KS)); c = cairo.Context(s); c.scale(KS, KS)
     x, feet = CW / 2, CH - 30
     H = HS * C.CHARS[who].get("tall", 1.0); u = H / 5.0; top = feet - H
-    if not shadow and meta.get("glow"):
+    if not shadow and meta.get("glow") and part in ("all", "body"):
         glow(c, x, top + 0.5 * u, u, meta["glow"])
-    if who in ("ram", "lakshman"):
+    if who in ("ram", "lakshman") and part in ("all", "body"):
         bglib.bow_back(c, x, feet - HS, HS / 5); bglib.quiver(c, x, feet - HS, HS / 5)
     C.WALK = walk
-    person(c, who, x, feet, HS, pose="sit" if pose == "sit" else "stand", arms=ARMS.get(pose, ARMS["stand"]), mouth=mouth,
-           blink=blink, emo=face, look=look, bow=1.0 if pose == "bow" else 0.0, hand=HANDS.get(pose, ("relaxed", "relaxed")))
+    info = person(c, who, x, feet, HS, pose="sit" if pose == "sit" else "stand", arms=ARMS.get(pose, ARMS["stand"]), mouth=mouth,
+           blink=blink, emo=face, look=look, bow=1.0 if pose == "bow" else 0.0,
+           hand=(hstyle, hstyle) if part not in ("all", "body") else HANDS.get(pose, ("relaxed", "relaxed")), part=part)
+    PIV[who] = {"scale": (1.0), "cw": CW, "piv": [list(map(float, t)) for t in info["pivots"]]}
     C.WALK = None
-    if meta.get("rakshas"):
+    if meta.get("rakshas") and part in ("all", "body"):
         horns_fangs(c, x, top, u)
     if shadow:   # first entry of a rakshasa: black shadow with glowing red eyes
         c.set_operator(cairo.OPERATOR_ATOP); c.set_source_rgb(0.03, 0.01, 0.01); c.paint(); c.set_operator(cairo.OPERATOR_OVER)
@@ -203,6 +208,7 @@ done = set()
 for key, st in SP.all_states(EPI).items():
     if key in done: continue
     draw_state(key, **st); done.add(key)
+json.dump(PIV, open(f"{OUT}/pivots.json", "w"))
 print("characters:", len(done), "pictures")
 
 def surf(w, h): s = cairo.ImageSurface(cairo.FORMAT_ARGB32, w, h); return s, cairo.Context(s)
