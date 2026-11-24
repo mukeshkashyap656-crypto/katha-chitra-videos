@@ -64,6 +64,13 @@ def seeds_from_topic(topic):
 
 def stats_text(path="stats/STATS.md"):
     """Apne asli views: local file, warna main branch se (wahan roz ki workflow likhti hai)."""
+    try:  # pehle taza views (RSS/API/Composio), phir file
+        import yt_stats
+        n, rows = yt_stats.fetch()
+        if n:
+            return "\n".join(f"{d} views={v} like={l} {t[:70]}" for d, v, l, t in rows)[-3000:]
+    except Exception:
+        pass
     try:
         with open(path, encoding="utf-8") as f:
             return f.read()[-3000:]
