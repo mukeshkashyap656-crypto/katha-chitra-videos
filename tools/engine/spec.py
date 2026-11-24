@@ -186,6 +186,19 @@ def check(epi):
         if cv.get("bg") not in BGS: P.append("COVER.bg galat")
         for e in cv.get("cast", []):
             if e.get("who") not in known: P.append(f"COVER: '{e.get('who')}' koi character nahi")
+    # Hook rule (24 Nov 2026, VIRAL.md section 1): log pehle ~6 sec mein swipe kar rahe the, isliye
+    # Bhag 8 se pehli line chhoti ho. Purane episodes (Bhag 7 tak) par ye jaanch nahi lagti.
+    try:
+        bhag = int(epi.get("BHAG", 0))
+    except (TypeError, ValueError):
+        bhag = 0
+    if bhag >= 8:
+        first = order[0]; words = len(lines[first][0].split())
+        if words > 12:
+            P.append(f"HOOK: pehli line '{first}' {words} shabd ki hai; 12 shabd se chhoti karo — chaunkane wali baat ya sawaal "
+                     f"pehle shabdon mein (jaise 'Sirf 3 kadam mein tinon lok naap liye? Kisne?'), peechhe ki baat baad mein")
+        if len(order) > 1 and len(lines[first][0]) > 0 and not any(c in lines[first][0] for c in "?!…"):
+            P.append(f"HOOK: pehli line '{first}' mein sawaal ya chaunkane wala nishaan (? ya !) nahi; use sawaal/khulasa banao")
     return P
 
 
