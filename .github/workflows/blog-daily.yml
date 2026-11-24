@@ -1,9 +1,10 @@
 name: Blog daily (mobile gaming news, Hindi)
-# Roz subah 7:30 IST: aaj ki mobile gaming khabar -> verify -> apne shabdon mein post -> Blogger.
+# Roz 2 baar (subah 7:30 aur shaam 6:30 IST), har baar 1 post: aaj ki mobile gaming khabar -> verify -> apne shabdon mein post -> Blogger.
 # Pehle DRAFT mode (MODE=draft). Aap dekhkar manual run mein mode=live karo ya repo variable BLOG_MODE=live set karo.
 on:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 2 * * *'    # subah 7:30 IST: pehli post
+    - cron: '0 13 * * *'   # shaam 6:30 IST: doosri post
   workflow_dispatch:
     inputs:
       mode:
@@ -34,6 +35,7 @@ jobs:
           BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
           MODE: ${{ github.event.inputs.mode || vars.BLOG_MODE || 'draft' }}
           DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}
+          N_POSTS: '1'
         run: |
           # Backup: poora kaam 3 baar tak dobara (beech mein ruk ke)
           for TRY in 1 2 3; do
