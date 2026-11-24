@@ -168,3 +168,10 @@ Ye khaas hamare kaam ka hai kyunki wo cut-out/puppet rig ki walk hai (humari eng
 - Haath: hatheli + 4 alag ungliyan + angootha (relaxed/open/point/fist/join). Paon: chappal ka talwa + paon + 5 ungliyan, thoda bahar ki taraf mude, ek pair par wazan (thoda asymmetric).
 - Sir: jo kisi aur ki taraf dekh raha ho (look |0.4| se zyada) uska chehra 3/4 mudta hai (engine `turn`), sirf putli nahi.
 - Aaram ke haath ek jaise nahi: 3 tareeke (latke, aage dheele, ek haath thoda aage) character ke hisaab se.
+
+## Insaan kaise bolta hai (24 Nov 2026, padhai se) — har video par lagta hai
+- Bolte waqt haath neeche latakte nahi: forearm belly/chest tak UTHTE hain (bolne se pehle uthte, aakhri shabd ke baad utarte). `STYLES[...]["talkel"]` = kitna uthe (Lakshman zyada, Vasishtha kam).
+- Gesture ke 5 prakaar (McNeill): iconic (cheez dikhana), metaphoric (vichaar), deictic (ishara/pointing), pragmatic (baat dena/rokna), beat (shabdon ke zor par chhoti jhatak). Beat sabse aam hai: ek forearm ki chhoti flick, dono haath baari-baari.
+- Animation niyam: anticipation (harkat se pehle halka peeche/neeche), follow-through + overlapping (sharir pehle, haath, phir sir, kuch der se), slow-in/slow-out, arcs. Sir har baat par alag se thoda jhukta hai (`head_js`).
+- Koi cheez ek saath nahi rukti; dono haath ek jaise nahi hilte; har character ki apni matra (`nod`, `talkel`, `gs`).
+- Jod (kohni) par ring/outline nahi: `tlimb(..., open_start=True)`; haath chehre jitna lamba (draw_hand scale 1.28).

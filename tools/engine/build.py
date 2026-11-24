@@ -79,16 +79,16 @@ def deg(a): return -a * 180 / math.pi
 #   rest = (la, le, ra, re); gest = GESTURES ke index; gap = ishare ke beech ka samay (sec); gs = ishare ki badai;
 #   sway = hilna; tempo = saans ki gati (bada = dheema); lean = degree mein tirchha khada hona
 STYLES = {
-    "vishwamitra": dict(rest=(0.10, 0.22, -0.09, -0.10), gest=(0, 2), gap=2.4, gs=1.0, sway=0.5, tempo=1.3, lean=0.0, nod=0.6),   # kathor, kam ishare, kamandalu baayein haath mein
-    "ram":         dict(rest=(0.10, 0.34, -0.10, -0.34), gest=(0, 4), gap=2.9, gs=0.7, sway=0.6, tempo=1.2, lean=0.0, nod=0.7),    # shaant, sanyat, haath dheele aage
-    "lakshman":    dict(rest=(0.13, 0.10, -0.13, -0.10), gest=(0, 1, 3, 2), gap=1.2, gs=1.2, sway=1.4, tempo=0.8, lean=0.0, nod=1.4),  # tez, chaukanna
-    "vasishtha":   dict(rest=(0.09, 0.16, -0.10, -0.18), gest=(0, 2), gap=3.2, gs=0.8, sway=0.4, tempo=1.6, lean=0.0, nod=0.5),   # buzurg, dheere
-    "dasharatha":  dict(rest=(0.12, 0.28, -0.12, -0.28), gest=(1, 3), gap=2.6, gs=1.1, sway=0.5, tempo=1.4, lean=0.0, nod=0.8),    # raja, bhaari
-    "_female":     dict(rest=(0.08, 0.40, -0.08, -0.40), gest=(4, 5, 0), gap=2.2, gs=0.8, sway=1.0, tempo=1.0, lean=0.0, nod=1.0),  # komal, haath aage
-    "_devta":      dict(rest=(0.18, 0.08, -0.18, -0.08), gest=(3, 2, 0), gap=2.0, gs=1.25, sway=0.4, tempo=1.5, lean=0.0, nod=0.6), # bhavya, khule haath
-    "_rakshas":    dict(rest=(0.30, 0.22, -0.30, -0.22), gest=(2, 1), gap=1.4, gs=1.3, sway=1.2, tempo=0.9, lean=0.0, nod=1.3),      # bhaari
-    "_elder":      dict(rest=(0.09, 0.16, -0.10, -0.18), gest=(0, 2), gap=3.0, gs=0.8, sway=0.5, tempo=1.5, lean=0.0, nod=0.6),
-    "_man":        dict(rest=(0.10, 0.12, -0.10, -0.12), gest=(0, 1, 2), gap=1.9, gs=1.0, sway=1.0, tempo=1.0, lean=0.0, nod=1.0),
+    "vishwamitra": dict(rest=(0.10, 0.22, -0.09, -0.10), gest=(0, 2), gap=2.4, gs=1.0, sway=0.5, tempo=1.3, lean=0.0, talkel=0.55, nod=0.6),   # kathor, kam ishare, kamandalu baayein haath mein
+    "ram":         dict(rest=(0.10, 0.34, -0.10, -0.34), gest=(0, 4), gap=2.9, gs=0.7, sway=0.6, tempo=1.2, lean=0.0, talkel=0.6, nod=0.7),    # shaant, sanyat, haath dheele aage
+    "lakshman":    dict(rest=(0.13, 0.10, -0.13, -0.10), gest=(0, 1, 3, 2), gap=1.2, gs=1.2, sway=1.4, tempo=0.8, lean=0.0, talkel=1.0, nod=1.4),  # tez, chaukanna
+    "vasishtha":   dict(rest=(0.09, 0.16, -0.10, -0.18), gest=(0, 2), gap=3.2, gs=0.8, sway=0.4, tempo=1.6, lean=0.0, talkel=0.45, nod=0.5),   # buzurg, dheere
+    "dasharatha":  dict(rest=(0.12, 0.28, -0.12, -0.28), gest=(1, 3), gap=2.6, gs=1.1, sway=0.5, tempo=1.4, lean=0.0, talkel=0.6, nod=0.8),    # raja, bhaari
+    "_female":     dict(rest=(0.08, 0.40, -0.08, -0.40), gest=(4, 5, 0), gap=2.2, gs=0.8, sway=1.0, tempo=1.0, lean=0.0, talkel=0.85, nod=1.0),  # komal, haath aage
+    "_devta":      dict(rest=(0.18, 0.08, -0.18, -0.08), gest=(3, 2, 0), gap=2.0, gs=1.25, sway=0.4, tempo=1.5, lean=0.0, talkel=0.4, nod=0.6), # bhavya, khule haath
+    "_rakshas":    dict(rest=(0.30, 0.22, -0.30, -0.22), gest=(2, 1), gap=1.4, gs=1.3, sway=1.2, tempo=0.9, lean=0.0, talkel=0.7, nod=1.3),      # bhaari
+    "_elder":      dict(rest=(0.09, 0.16, -0.10, -0.18), gest=(0, 2), gap=3.0, gs=0.8, sway=0.5, tempo=1.5, lean=0.0, talkel=0.5, nod=0.6),
+    "_man":        dict(rest=(0.10, 0.12, -0.10, -0.12), gest=(0, 1, 2), gap=1.9, gs=1.0, sway=1.0, tempo=1.0, lean=0.0, talkel=0.7, nod=1.0),
 }
 def body_style(e, meta):
     who = e["who"]
@@ -113,16 +113,32 @@ def arm_js(cid, e, t0, t1, speak, rest_style, style=None):
     if pose == "namaste": amp = {"u": 0.006, "f": 0.008}
     wp = {j: [(t0, rest[i])] for i, j in enumerate(joints)}      # waypoints (time, angle) per joint
     gest = []                                                      # (start, end) windows
-    if speak and pose in ("stand", "talk", "bless") and speak[1] - speak[0] > 1.0:
-        g = speak[0] + 0.25 + rnd.random() * 0.3; n = 0
+    base_ = rest; talking = bool(speak and pose in ("stand", "talk", "bless") and speak[1] - speak[0] > 1.0)
+    if talking:
+        # HUMAN RULE: while talking, forearms come UP to belly / chest height (hands hanging down = a doll). Lift before the first word,
+        # keep it while speaking, lower after the last word.
+        el = st.get("talkel", 0.7)
+        base_ = [rest[0] + 0.04, max(rest[1], el), rest[2] - 0.04, min(rest[3], -el)]
+        a_, b_ = max(t0 + 0.05, speak[0] - 0.12), speak[0] + 0.30
+        for i, j in enumerate(joints): wp[j] += [(a_, rest[i]), (b_, base_[i])]
+        c_, d_ = speak[1], min(t1 - 0.02, speak[1] + 0.55)
+        if d_ > c_ + 0.1:
+            for i, j in enumerate(joints): wp[j] += [(c_, base_[i]), (d_, rest[i])]
+        t = b_ + 0.45; k = 0                                       # BEATS: small flick of one forearm on the stress of the words, hands take turns
+        while t < c_ - 0.4:
+            jb = ("fL", "fR")[(k + zlib.crc32(cid.encode())) % 2]; ib = joints.index(jb); sgn = 1 if ib == 1 else -1
+            wp[jb] += [(t, base_[ib]), (t + 0.11, base_[ib] + sgn * 0.20), (t + 0.34, base_[ib])]
+            t += 0.55 + rnd.random() * 0.6; k += 1
+    if talking:
+        g = speak[0] + 0.7 + rnd.random() * 0.3; n = 0
         while g + 1.35 < speak[1]:
             gl, gr = GESTURES[st["gest"][(n + zlib.crc32(cid.encode())) % len(st["gest"])]]; n += 1
             gsc = st["gs"]
             for (tgt, j1, j2, ri) in ((gl, "uL", "fL", 0), (gr, "uR", "fR", 2)):
                 if tgt is None: continue
-                a1 = rest[ri] + (tgt[0] - rest[ri]) * gsc; a2 = rest[ri + 1] + (tgt[1] - rest[ri + 1]) * gsc
-                wp[j1] += [(g, rest[ri]), (g + 0.38, a1), (g + 0.80, a1 + 0.10), (g + 1.25, rest[ri])]
-                wp[j2] += [(g, rest[ri + 1]), (g + 0.38, a2), (g + 0.80, a2 - 0.10), (g + 1.25, rest[ri + 1])]
+                a1 = base_[ri] + (tgt[0] - base_[ri]) * gsc; a2 = base_[ri + 1] + (tgt[1] - base_[ri + 1]) * gsc
+                wp[j1] += [(g, base_[ri]), (g + 0.38, a1), (g + 0.80, a1 + 0.10), (g + 1.25, base_[ri])]
+                wp[j2] += [(g, base_[ri + 1]), (g + 0.38, a2), (g + 0.80, a2 - 0.10), (g + 1.25, base_[ri + 1])]
             gest.append((g, g + 1.25))
             g += 1.25 + st["gap"] * (0.7 + 0.6 * rnd.random())
     arm_js.last_gest = gest
@@ -131,7 +147,7 @@ def arm_js(cid, e, t0, t1, speak, rest_style, style=None):
         pts = wp[j]; a = amp[j[0]]
         t = t0 + 0.8 + rnd.random() * 0.8; idle = []
         while t < t1:
-            if not any(gs - 0.5 <= t <= ge + 0.2 for gs, ge in gest): idle.append((t, rest[i] + (rnd.random() * 2 - 1) * a))
+            if not any(gs - 0.5 <= t <= ge + 0.2 for gs, ge in gest) and not (talking and speak[0] - 0.3 <= t <= speak[1] + 0.6): idle.append((t, rest[i] + (rnd.random() * 2 - 1) * a))
             t += 1.3 + rnd.random() * 0.8
         allp = sorted([q for q in pts[1:] if q[1] is not None] + idle, key=lambda q: q[0])
         el = f"#{cid}{j}"; cur_t, cur_v = t0, rest[i]

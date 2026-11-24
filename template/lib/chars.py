@@ -76,7 +76,7 @@ def limb(ctx, pts, w, col):
     ctx.set_source_rgb(*hexc(col)); ctx.set_line_width(w); ctx.stroke()
 
 
-def tlimb(ctx, pts, ws, col, lw=None, bulge=0.0):
+def tlimb(ctx, pts, ws, col, lw=None, bulge=0.0, open_start=False):
     """Tapered, organic limb along the polyline pts: width ws[i] at pts[i] (+ a soft muscle bulge between joints), round ends, one clean outline."""
     lw = LW if lw is None else lw
     cl, wd = [], []
@@ -98,10 +98,16 @@ def tlimb(ctx, pts, ws, col, lw=None, bulge=0.0):
     ctx.arc_negative(ex_, ey_, wd[-1] / 2, ph + math.pi / 2, ph - math.pi / 2)
     for q in reversed(R): ctx.line_to(*q)
     ph0 = dirang(0, 1); sx_, sy_ = cl[0]
+    ctx.set_line_join(cairo.LINE_JOIN_ROUND)
+    if open_start:                       # joint end has NO outline (elbow merges into the piece before it: no puppet seam)
+        ctx.set_source_rgb(*OL); ctx.set_line_width(2 * lw); ctx.stroke_preserve()
+        ctx.set_source_rgb(*hexc(col)); ctx.fill()
+        ctx.arc(sx_, sy_, max(1.0, wd[0] / 2 - 1.6 * lw), 0, 6.3); ctx.set_source_rgb(*hexc(col)); ctx.fill()      # soft elbow: fill only, no ring
+        return
     ctx.arc_negative(sx_, sy_, wd[0] / 2, ph0 - math.pi / 2, ph0 - 3 * math.pi / 2)
     ctx.close_path()
-    ctx.set_line_join(cairo.LINE_JOIN_ROUND)
-    ctx.set_source_rgb(*OL); ctx.set_line_width(2 * lw); ctx.stroke_preserve()
+    ctx.set_source_rgb(*OL); ctx.set_line_width(2 * lw)
+    ctx.stroke_preserve()
     ctx.set_source_rgb(*hexc(col)); ctx.fill()
 
 
@@ -124,10 +130,10 @@ def draw_foot(ctx, x, y, u, skin, rot=0.0, side=0):
 def draw_hand(ctx, x, y, ang, u, skin, style, side):
     """Human-looking hand at the wrist point (x, y). ang = forearm direction (radians from straight down, + = screen right).
     style: relaxed | open | point | fist | join.  side: -1 left arm / +1 right arm (thumb toward the body)."""
-    ctx.save(); ctx.translate(x, y); ctx.rotate(-ang)
+    ctx.save(); ctx.translate(x, y); ctx.rotate(-ang); ctx.scale(1.28, 1.28)     # a real hand is about as long as the face: bigger than a cartoon mitten
     th = -side
     FL = 2.4                                                                          # thin outline for fingers
-    def fing(x0, y0, ln, a=0.0, curl=0.0, w=0.056):
+    def fing(x0, y0, ln, a=0.0, curl=0.0, w=0.066):
         pts = [(x0 * u, y0 * u)]; ca = a
         for k in range(3):
             ca += curl * (0.6 + 0.4 * k)
@@ -667,7 +673,7 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
             ctx.move_to(mx_ - math.cos(a1) * 0.13 * u, my_ + math.sin(a1) * 0.13 * u); ctx.line_to(mx_ + math.cos(a1) * 0.13 * u, my_ - math.sin(a1) * 0.13 * u)
             ctx.set_source_rgb(*hexc(c.get("bandcol", "#f2c230"))); ctx.set_line_width(0.07 * u); ctx.stroke()
         if part not in ("all", "body"): ctx = _real if part == "f" + _side else _dummy
-        tlimb(ctx, [(ex, ey), (hx2, hy2)], [0.23 * u, 0.15 * u] if kind != "f" else [0.18 * u, 0.115 * u], _sl if kind == "b" else _skn, bulge=0.015 * u)
+        tlimb(ctx, [(ex, ey), (hx2, hy2)], [0.23 * u, 0.15 * u] if kind != "f" else [0.18 * u, 0.115 * u], _sl if kind == "b" else _skn, bulge=0.015 * u, open_start=True)
         if kind == "f" or c.get("bare"):
             bx, by = ex + math.sin(a1 + a2) * L2 * 0.8, ey + math.cos(a1 + a2) * L2 * 0.8
             col = c.get("bandcol") or ("#e8b730" if (c.get("jewel") or c.get("bare")) else "#d9cfb8")
