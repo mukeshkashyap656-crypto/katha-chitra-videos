@@ -1328,6 +1328,7 @@ def mode_report():
     import datetime as _dt
     now = _dt.datetime.now(_dt.timezone.utc).replace(tzinfo=None)
     since = (now - _dt.timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    need = []   # owner ko jo karna hai (khali = report chup rahega)
     lines = [f"## 📊 Katha Chitra roz ka report — {now + _dt.timedelta(hours=5, minutes=30):%d %b %Y}", ""]
     try:
         runs = json.loads(run(["gh", "api", f"repos/{REPO}/actions/runs?per_page=100"]))["workflow_runs"]
@@ -1337,6 +1338,8 @@ def mode_report():
                 k = r["name"]; rc.setdefault(k, [0, 0]); rc[k][0 if r["conclusion"] == "success" else 1] += 1
         lines.append("**Pichhle 24 ghante ke kaam** (theek / kharab):")
         lines += [f"- {k}: {a} / {b}" for k, (a, b) in sorted(rc.items())] or ["- kuch nahi chala"]
+        if sum(b for a, b in rc.values()):
+            need.append("kuch kaam kharab hue")
     except Exception as e:
         lines.append(f"- (runs nahi mile: {str(e)[:80]})")
     try:
@@ -1351,12 +1354,17 @@ def mode_report():
         pass
     try:
         q = json.loads(run(["gh", "api", f"repos/{REPO}/issues?labels={QUEUE}&state=open", "-q", "[.[].number]"]) or "[]")
+        if q:
+            need.append("queue mein kaam atke hain")
         lines.append(f"**'Baad-mein' queue mein:** {len(q)} kaam" + (f" ({', '.join('#' + str(n) for n in q)})" if q else ""))
     except Exception:
         pass
     try:
         import tool_check as _tc
-        lines += ["", _tc.text()]
+        miss = _tc.important_missing()
+        if miss:
+            need.append("zaroori key kam hai")
+            lines += ["", "**Ye jodna zaroori hai:**"] + miss
     except Exception:
         pass
     st = VR.stats_text()
@@ -1374,6 +1382,12 @@ def mode_report():
     if not num:
         num = run(["gh", "api", "-X", "POST", f"repos/{REPO}/issues", "-f", f"title={title}",
                    "-f", "body=Helper roz yahan apna report likhta hai. Yahan @ai mat likhna; kaam ke liye naya issue banao.", "-q", ".number"]).strip()
+    sunday = (now + _dt.timedelta(hours=5, minutes=30)).weekday() == 6
+    if not need and not sunday:
+        print("Sab theek, koi kaam nahi: report nahi bheja (sirf Ravivaar ko hafte ka saar aata hai).")
+        return
+    if need:
+        lines.insert(1, "**Aapko dekhna hai:** " + ", ".join(need))
     comment(num, "\n".join(lines))
 
 

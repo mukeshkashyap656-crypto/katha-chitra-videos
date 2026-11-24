@@ -137,3 +137,6 @@ Ramayan ke saath tyohar/mausam/har bhagwan ke extra Shorts bhi bante hain. Poore
 
 ## 15. Issue ki safai (24 Nov 2026, owner ka hukm)
 AI ke issue-comment har hafte saaf hote hain (workflow `weekly-cleanup`, Ravivaar subah 9 IST, main branch par): sirf "<sub>AI:" wale aur "roz ka report" wale, 7 din se purane. Owner ke apne comment, issue ki body aur taaza comment nahi chhute. Kuch zaroori baat issue mein rakhni ho toh uski body mein likho, comment mein nahi.
+
+## 16. Sirf kaam ke message (24 Nov 2026, owner ka hukm: "jo mere kaam ke hain unke message aane chahiye, faltu nahi")
+Helper issue mein tabhi likhe jab owner ko kuch karna/dekhna ho: video taiyar, kaam fail hua, queue atki, zaroori key kam, ya sawaal jiska jawab chahiye. Roz ka report: sab theek ho toh chup; sirf tab bhejo jab kaam kharab hue / queue atki / AI key nahi, aur Ravivaar ko hafte ka ek saar. Beech ke halke update ("shuru kiya", "soch raha hoon", sab theek hai) mat likho.

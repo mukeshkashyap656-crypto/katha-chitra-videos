@@ -34,6 +34,14 @@ def check():
             web.append((n, False))
     return rows, miss, web
 
+def important_missing():
+    """Sirf wo jo na ho toh kaam rukta hai: koi bhi AI key. (ElevenLabs yahan nahi: report wale computer ko wo key milti hi nahi.) Baaki (YouTube views, Instagram) main branch ke Composio se chalte hain."""
+    out = []
+    ai = ["GEMINI_API_KEY", "OPENROUTER_API_KEY", "GROQ_API_KEY", "CEREBRAS_API_KEY", "MISTRAL_API_KEY", "SAMBANOVA_API_KEY", "NVIDIA_API_KEY", "COHERE_API_KEY", "HF_TOKEN"]
+    if not any(os.environ.get(k) for k in ai):
+        out.append("- Koi bhi free AI key nahi mili (GEMINI_API_KEY jodo, aistudio.google.com/apikey).")
+    return out
+
 def text():
     rows, miss, web = check()
     out = ["**Kaun sa app/tool juda hai:**"] + [f"- {'✅' if ok else '❌'} {n}" for n, ok in rows]
