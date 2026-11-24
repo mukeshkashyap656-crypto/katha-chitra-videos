@@ -66,8 +66,9 @@ Khabar: {title}  (srot: {source})
 Niyam (zaroori):
 - Google Search se 2-3 bharosemand srot dekhkar tathya verify karo. Jo verify na ho wo mat likho.
 - Post tumhare apne shabdon mein ho, kisi lekh ka text copy nahi. Aaj ki saaf bolchaal wali Hindi.
-- Dhaancha: chhota parichay (kya hua) -> <h2> "Iska matlab kya hai" -> <h2> "Aapke liye kya" -> <h2> "Aage kya dhyan rakhein".
-- 450-700 shabd. Sirf HTML (<h2>, <p>, <ul><li>), <h1> nahi.
+- Pehli 2 line mein hi sabse kaam ki baat (hook): kya naya hai aur player ke liye abhi kya zaroori hai. "Namaskar/aaj hum baat karenge" jaise shuruaat mana.
+- Dhaancha: hook -> <h2> "Kya-kya naya aaya" (chhoti bullet list) -> <h2> "Tareekhein" (<table> mein: tareekh | kya) -> <h2> "Aaj hi karne wale kaam" (2-4 bullet, deadline wali baat sabse upar) -> <h2> "Aksar puchhe sawaal" (2-3 sawaal-jawab, jaise "update nahi dikh raha to?").
+- Gamer wali seedhi bolchaal (tum/aap), chhote vaakya, ek paragraph mein 2-3 line se zyada nahi. Bhari-bharkam shabd mana.
 - Heading seedhi aur sachchi, clickbait nahi.
 - Daam/tareekh/spec/update ki details sirf tab jab srot mein ho.
 - KABHI mat likho: cheat, hack, mod APK, pirated/crack game, free diamond/UC/redeem code ke jhoothe daave, ya account becha-kharida. Sirf khabar, update, review, tips jo game ke niyam ke andar hon.
