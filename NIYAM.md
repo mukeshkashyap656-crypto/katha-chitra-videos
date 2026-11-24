@@ -130,3 +130,7 @@ Ye file kisi bhi AI (Gemini, DeepSeek, ChatGPT, Claude...) ko do aur bolo:
 - Har shot mein `show` likho (tools/engine/README.md): ek line mein kya dikhega + kaunsa bhaav. `spec.py` Bhag 9 se `show` na ho, aadhe se zyada chehre neutral hon, ya lagatar 3 shot mein wahi pose+chehra ho to FAIL.
 - Director check mein har shot par poochho: "is line ko bina awaaz ke sirf dekhkar samajh sakte hain?" Nahi to dobara banao.
 
+
+
+## 14. Tyohar, mausam aur sab bhagwan (24 Nov 2026, owner ka hukm)
+Ramayan ke saath tyohar/mausam/har bhagwan ke extra Shorts bhi bante hain. Poore niyam, data aur calendar: FESTIVAL.md. Tyohar ka Short tyohar se 1-2 din pehle post, kahani asli granth se, aakhir mein 'aaj kya karein'.

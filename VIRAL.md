@@ -90,3 +90,7 @@ Source (24 Nov 2026): vidIQ `vidiq_outliers` (contentType short, keyword "Valmik
 
 ## 9. Asli research (24 Nov 2026)
 Poora data aur nateeja `RESEARCH_24NOV.md` mein. Mukhya: title mein "भाग X"/"Valmiki Ramayan" nahi (seedha sawaal), top Shorts ka median 75 sec (lambai se zyada zaroori pehle 3 sec), bade naam (Ravan, Hanuman, Sita, Ganga...) par zordaar hook.
+
+
+## 10. Tyohar / bhagwan Shorts (24 Nov 2026)
+Asli data ke saath: FESTIVAL.md. Tyohar ke din ke Shorts sabse zyada chalte hain (Ganesh Chaturthi ~10 crore); hum us din chhoot rahe the.
