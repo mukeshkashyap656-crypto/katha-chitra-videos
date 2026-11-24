@@ -24,6 +24,55 @@ PIPER_VOICES = ["rohan", "pratham"]   # Hindi male voices in rhasspy/piper-voice
 HF = "https://huggingface.co/rhasspy/piper-voices/resolve/main/hi/hi_IN/{v}/medium/hi_IN-{v}-medium.onnx"
 
 
+# ---- ElevenLabs (mashhoor awaazein): ELEVENLABS_API_KEY (GitHub secret) ho to sabse pehle yahi; na chale to neeche ki free awaazein ----
+import base64, urllib.error
+ELEVEN = {   # kirdaar -> (naam, voice_id): ElevenLabs ki premade (mashhoor) awaazein
+    "narrator": ("Adam", "pNInz6obpgDQGcFmaJgB"),
+    "vishwamitra": ("George", "JBFqnCBsd6RMkjVDRZzb"), "ram": ("Liam", "TX3LPaxmHKxFdv7VOQHJ"),
+    "lakshman": ("Josh", "TxGEqnHWrfWFTfGW9XjX"), "vasishtha": ("Daniel", "onwK4e9ZLuTAKqWW03F9"),
+    "dasharatha": ("Brian", "nPczCjzI2devNBz1zQrb"),
+    "_devta": ("Arnold", "VR6AewLTigWG4xSOukaG"), "_rakshas": ("Charlie", "IKne3meq5aSn9XLyUdCD"),
+}
+ELEVEN_FEMALE = [("Sarah", "EXAVITQu4vr4xnSDxMaL"), ("Matilda", "XrExE9yKIg1WjnnlVkGX"), ("Jessica", "cgSgspJ2msm6clMCkdW9")]
+ELEVEN_MALE = [("Antoni", "ErXwobaYiN019PkySvjV"), ("Sam", "yoZ06aMxZJJ28mfd3POQ"), ("Callum", "N2lVS1w4EtoT3dr4eOWO"), ("Eric", "cjVigY5qzO86Huf0OWal")]
+
+
+def eleven_pick(role, who, epi):
+    over = epi.get("ELEVEN_VOICES", {})
+    if who and over.get(who): return over[who] if isinstance(over[who], list) else ("custom", over[who])
+    if role == "narrator": return ELEVEN["narrator"]
+    if who in ELEVEN: return ELEVEN[who]
+    nc = epi.get("NEW_CHARS", {}).get(who or "", {})
+    if nc.get("rakshas"): return ELEVEN["_rakshas"]
+    if nc.get("big"): return ELEVEN["_devta"]
+    pool = ELEVEN_FEMALE if role == "female" else ELEVEN_MALE
+    return pool[sum(map(ord, who or "x")) % len(pool)]
+
+
+def gen_eleven(path, text, rate, vid):
+    import json as _j
+    key = os.environ["ELEVENLABS_API_KEY"]
+    spd = max(0.7, min(1.2, 1 + int(rate.rstrip("%")) / 100.0))
+    body = {"text": text, "model_id": "eleven_multilingual_v2",
+            "voice_settings": {"stability": 0.5, "similarity_boost": 0.8, "style": 0.25, "use_speaker_boost": True, "speed": spd}}
+    req = urllib.request.Request(f"https://api.elevenlabs.io/v1/text-to-speech/{vid}/with-timestamps?output_format=mp3_44100_128",
+                                 data=_j.dumps(body).encode(), headers={"xi-api-key": key, "Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=120) as r: d = _j.load(r)
+    open(path, "wb").write(base64.b64decode(d["audio_base64"]))
+    al = d.get("normalized_alignment") or d["alignment"]
+    ch, st, en = al["characters"], al["character_start_times_seconds"], al["character_end_times_seconds"]
+    words, cur, t0, t1 = [], "", None, 0
+    for c, a, b in zip(ch, st, en):
+        if c.isspace():
+            if cur: words.append([cur, t0, t1 - t0]); cur = ""; t0 = None
+        else:
+            if t0 is None: t0 = a
+            cur += c; t1 = b
+    if cur: words.append([cur, t0, t1 - t0])
+    if os.path.getsize(path) < 2000 or not words: raise RuntimeError("ElevenLabs se awaaz nahi aayi")
+    return words
+
+
 def _estimate_words(path, text):
     """Kuch awaazon se shabd-samay nahi aata: mp3 ki lambai ko shabdon ki lambai ke hisaab se baant do."""
     dur = float(subprocess.run(["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", path],
@@ -110,7 +159,19 @@ async def main(cfg_path, out_zip):
         try:
             for k, (text, rate, pitch) in lines.items():
                 role, vlist = voices_for(k, epi); done = False
-                for vi, vname in enumerate(vlist):
+                if os.environ.get("ELEVENLABS_API_KEY"):
+                    _who = SP.speaker(k, epi) if SP else None
+                    nm, vid = eleven_pick(role, _who, epi)
+                    for attempt in range(3):
+                        try:
+                            res[k] = gen_eleven(f"{tmp}/{k}.mp3", text, rate, vid); used[k] = f"{role}: ElevenLabs {nm}"; done = True; break
+                        except urllib.error.HTTPError as e:
+                            print(k, "ElevenLabs", nm, "koshish", attempt + 1, "HTTP", e.code, e.read()[:150])
+                            if e.code in (401, 402, 403, 429) and attempt >= 1: break      # key/limit ka masla: free awaaz par jao
+                            await asyncio.sleep(3)
+                        except Exception as e:
+                            print(k, "ElevenLabs", nm, "koshish", attempt + 1, "nahi chali:", e); await asyncio.sleep(3)
+                for vi, vname in enumerate([] if done else vlist):
                     tries = 8 if vname == FALLBACK else 3          # pasandida awaaz par 3 koshish, phir agli; Madhur par 8
                     for attempt in range(tries):
                         try:

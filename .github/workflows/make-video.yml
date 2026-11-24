@@ -61,6 +61,7 @@ jobs:
           exit 1
         env:
           VOICE_ENGINE: ${{ github.event.inputs.voice || 'madhur' }}
+          ELEVENLABS_API_KEY: ${{ secrets.ELEVENLABS_API_KEY }}
       - name: Save the video
         if: always() && steps.ep.outputs.episode != ''
         uses: actions/upload-artifact@v4

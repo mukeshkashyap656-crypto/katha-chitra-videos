@@ -481,7 +481,7 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
                             hh = math.sqrt(max(seg * seg - (d / 2) ** 2, 0.0))
                             _bd = SIDE if SIDE else 1
                             knee = (hip[0] + vx * d / 2 + vy * hh * _bd, hip[1] + vy * d / 2 - vx * hh * _bd)
-                        tlimb(ctx, [hip, knee, foot], [0.36 * u, 0.27 * u, 0.19 * u], _dk(c["lower"]) if (SIDE and s < 0) else c["lower"], bulge=0.03 * u)
+                        tlimb(ctx, [hip, knee, foot], [0.36 * u, 0.27 * u, 0.19 * u], _dk(c["lower"]) if (SIDE and s < 0) else c["lower"], bulge=0.015 * u)
                         draw_foot(ctx, foot[0] + 0.05 * u * (SIDE or 1), foot[1] + 0.01 * u, u, c["skin"], rot=toe * (SIDE or 1), side=SIDE)
                         continue
                     lift = dx = 0.0
@@ -489,7 +489,7 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
                     _hipp = (x + s * 0.2 * u, waist_y + 0.6 * u)
                     _ank = (x + s * (0.26 if s > 0 else 0.30) * u + dx, fy - 0.07 * u)          # a little asymmetric: weight on one leg
                     _kn = (_hipp[0] + (_ank[0] - _hipp[0]) * 0.5 + s * (0.015 if s > 0 else 0.05) * u, _hipp[1] + (_ank[1] - _hipp[1]) * 0.5)
-                    tlimb(ctx, [_hipp, _kn, _ank], [0.38 * u, 0.28 * u, 0.19 * u], c["lower"], bulge=0.03 * u)
+                    tlimb(ctx, [_hipp, _kn, _ank], [0.38 * u, 0.28 * u, 0.19 * u], c["lower"], bulge=0.015 * u)
                     draw_foot(ctx, _ank[0] + s * 0.02 * u, fy - 0.03 * u, u, c["skin"], rot=s * (0.16 if s > 0 else 0.26))
                 sk = c.get("skirt", 1.0) * (0.84 if (SIDE and WALK is not None) else 1.0)
                 _sway = 0.05 * u * math.sin(WALK) if (WALK is not None and not SIDE) else 0.0
@@ -659,13 +659,13 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
         _side = "L" if s < 0 else "R"
         if part not in ("all", "body"): ctx = _real if part == "u" + _side else _dummy
         elif part == "all": ctx = _real
-        tlimb(ctx, [(sx, sy), (ex, ey)], [0.31 * u, 0.24 * u], _skn if c.get("bare") else _sl, bulge=0.025 * u)
+        tlimb(ctx, [(sx, sy), (ex, ey)], [0.31 * u, 0.24 * u], _skn if c.get("bare") else _sl, bulge=0.012 * u)
         if c.get("bare"):
             mx_, my_ = (sx + ex) / 2, (sy + ey) / 2
             ctx.move_to(mx_ - math.cos(a1) * 0.13 * u, my_ + math.sin(a1) * 0.13 * u); ctx.line_to(mx_ + math.cos(a1) * 0.13 * u, my_ - math.sin(a1) * 0.13 * u)
             ctx.set_source_rgb(*hexc(c.get("bandcol", "#f2c230"))); ctx.set_line_width(0.07 * u); ctx.stroke()
         if part not in ("all", "body"): ctx = _real if part == "f" + _side else _dummy
-        tlimb(ctx, [(ex, ey), (hx2, hy2)], [0.23 * u, 0.15 * u] if kind != "f" else [0.18 * u, 0.115 * u], _sl if kind == "b" else _skn, bulge=0.03 * u)
+        tlimb(ctx, [(ex, ey), (hx2, hy2)], [0.23 * u, 0.15 * u] if kind != "f" else [0.18 * u, 0.115 * u], _sl if kind == "b" else _skn, bulge=0.015 * u)
         if kind == "f" or c.get("bare"):
             bx, by = ex + math.sin(a1 + a2) * L2 * 0.8, ey + math.cos(a1 + a2) * L2 * 0.8
             col = c.get("bandcol") or ("#e8b730" if (c.get("jewel") or c.get("bare")) else "#d9cfb8")

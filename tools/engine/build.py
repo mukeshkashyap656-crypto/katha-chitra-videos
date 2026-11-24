@@ -79,16 +79,16 @@ def deg(a): return -a * 180 / math.pi
 #   rest = (la, le, ra, re); gest = GESTURES ke index; gap = ishare ke beech ka samay (sec); gs = ishare ki badai;
 #   sway = hilna; tempo = saans ki gati (bada = dheema); lean = degree mein tirchha khada hona
 STYLES = {
-    "vishwamitra": dict(rest=(0.12, 0.30, -0.10, -0.22), gest=(0, 2), gap=2.4, gs=1.0, sway=0.5, tempo=1.3, lean=-0.7),   # kathor, kam ishare, kamandalu baayein haath mein
-    "ram":         dict(rest=(0.12, 0.55, -0.12, -0.55), gest=(0, 4), gap=2.9, gs=0.7, sway=0.6, tempo=1.2, lean=0.0),    # shaant, sanyat, haath dheele jude
-    "lakshman":    dict(rest=(0.16, 0.12, -0.16, -0.12), gest=(0, 1, 3, 2), gap=1.2, gs=1.2, sway=1.5, tempo=0.8, lean=0.8),  # tez, chaukanna, haath thode door
-    "vasishtha":   dict(rest=(0.10, 0.20, -0.12, -0.25), gest=(0, 2), gap=3.2, gs=0.8, sway=0.4, tempo=1.6, lean=-1.0),   # buzurg, dheere
-    "dasharatha":  dict(rest=(0.14, 0.40, -0.14, -0.40), gest=(1, 3), gap=2.6, gs=1.1, sway=0.5, tempo=1.4, lean=0.0),    # raja, bhaari
-    "_female":     dict(rest=(0.10, 0.62, -0.10, -0.62), gest=(4, 5, 0), gap=2.2, gs=0.8, sway=1.0, tempo=1.0, lean=0.6),  # komal, haath aage jude
-    "_devta":      dict(rest=(0.22, 0.10, -0.22, -0.10), gest=(3, 2, 0), gap=2.0, gs=1.25, sway=0.4, tempo=1.5, lean=0.0), # bhavya, khule haath
-    "_rakshas":    dict(rest=(0.38, 0.30, -0.38, -0.30), gest=(2, 1), gap=1.4, gs=1.3, sway=1.2, tempo=0.9, lean=1.2),      # bhaari, akadu
-    "_elder":      dict(rest=(0.10, 0.22, -0.12, -0.26), gest=(0, 2), gap=3.0, gs=0.8, sway=0.5, tempo=1.5, lean=-0.8),
-    "_man":        dict(rest=(0.12, 0.14, -0.12, -0.14), gest=(0, 1, 2), gap=1.9, gs=1.0, sway=1.0, tempo=1.0, lean=0.0),
+    "vishwamitra": dict(rest=(0.10, 0.22, -0.09, -0.10), gest=(0, 2), gap=2.4, gs=1.0, sway=0.5, tempo=1.3, lean=0.0),   # kathor, kam ishare, kamandalu baayein haath mein
+    "ram":         dict(rest=(0.10, 0.34, -0.10, -0.34), gest=(0, 4), gap=2.9, gs=0.7, sway=0.6, tempo=1.2, lean=0.0),    # shaant, sanyat, haath dheele aage
+    "lakshman":    dict(rest=(0.13, 0.10, -0.13, -0.10), gest=(0, 1, 3, 2), gap=1.2, gs=1.2, sway=1.4, tempo=0.8, lean=0.0),  # tez, chaukanna
+    "vasishtha":   dict(rest=(0.09, 0.16, -0.10, -0.18), gest=(0, 2), gap=3.2, gs=0.8, sway=0.4, tempo=1.6, lean=0.0),   # buzurg, dheere
+    "dasharatha":  dict(rest=(0.12, 0.28, -0.12, -0.28), gest=(1, 3), gap=2.6, gs=1.1, sway=0.5, tempo=1.4, lean=0.0),    # raja, bhaari
+    "_female":     dict(rest=(0.08, 0.40, -0.08, -0.40), gest=(4, 5, 0), gap=2.2, gs=0.8, sway=1.0, tempo=1.0, lean=0.0),  # komal, haath aage
+    "_devta":      dict(rest=(0.18, 0.08, -0.18, -0.08), gest=(3, 2, 0), gap=2.0, gs=1.25, sway=0.4, tempo=1.5, lean=0.0), # bhavya, khule haath
+    "_rakshas":    dict(rest=(0.30, 0.22, -0.30, -0.22), gest=(2, 1), gap=1.4, gs=1.3, sway=1.2, tempo=0.9, lean=0.0),      # bhaari
+    "_elder":      dict(rest=(0.09, 0.16, -0.10, -0.18), gest=(0, 2), gap=3.0, gs=0.8, sway=0.5, tempo=1.5, lean=0.0),
+    "_man":        dict(rest=(0.10, 0.12, -0.10, -0.12), gest=(0, 1, 2), gap=1.9, gs=1.0, sway=1.0, tempo=1.0, lean=0.0),
 }
 def body_style(e, meta):
     who = e["who"]
@@ -191,7 +191,7 @@ for si, sh in enumerate(SHOTS):
         _dur = max(0.4, t1 - t0); _bs = body_style(e, SP.char_meta(p["who"], EPI) | SP.char_meta(e["who"], EPI))
         _pb = (1.9 + 0.35 * ((ci + si) % 3)) * _bs["tempo"]     # each person breathes at his own pace
         moves.append(f'tl.to("#{cid}i",{{scaleY:1.016,scaleX:0.997,duration:{_pb / 2:.2f},ease:"sine.inOut",yoyo:true,repeat:{max(1, int(_dur / (_pb / 2)))},immediateRender:false}},{t0:.3f});')
-        _ps = 3.2 + 0.5 * ((ci * 2 + si) % 3); _sg = 1 if (ci + si) % 2 else -1; _ln = _bs["lean"]; _am = 0.5 * _bs["sway"]
+        _ps = 3.2 + 0.5 * ((ci * 2 + si) % 3); _sg = 1 if (ci + si) % 2 else -1; _ln = _bs["lean"]; _am = 0.18 * _bs["sway"]
         moves.append(f'tl.fromTo("#{cid}i",{{rotation:{_ln - _am * _sg:.2f}}},{{rotation:{_ln + _am * _sg:.2f},duration:{_ps / 2:.2f},ease:"sine.inOut",yoyo:true,repeat:{max(1, int(_dur / (_ps / 2)))},immediateRender:false}},{t0:.3f});')
         if sp == e["who"] and not p["shadow"] and p["pose"] != "walk":
             _s0, _s1 = max(t0, T[k]), min(t1, E[k])
