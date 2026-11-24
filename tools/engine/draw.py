@@ -84,7 +84,7 @@ def draw_state(file, who, pose="stand", face="neutral", look=0.0, mouth="X", bli
     if who in ("ram", "lakshman"):
         bglib.bow_back(c, x, feet - HS, HS / 5); bglib.quiver(c, x, feet - HS, HS / 5)
     C.WALK = walk; C.SIDE = side if walk is not None else 0
-    person(c, who, x, feet, HS, pose="sit" if pose == "sit" else "stand", arms=ARMS.get(pose, ARMS["stand"]), mouth=mouth,
+    person(c, who, x, feet, HS, pose="sit" if pose == "sit" else "stand", arms=(None if walk is not None else ARMS.get(pose, ARMS["stand"])), mouth=mouth,
            blink=blink, emo=face, look=look, bow=1.0 if pose == "bow" else 0.0)
     C.WALK = None; C.SIDE = 0
     if meta.get("rakshas"):

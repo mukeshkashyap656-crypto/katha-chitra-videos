@@ -1,0 +1,170 @@
+{
+ "NAME": "TEST_move",
+ "COVER_NAME": "TEST_move_cover",
+ "BHAG": 6,
+ "QUESTION": "भगवान ने कहाँ तप किया था?",
+ "LINES": {
+  "n1": [
+   "इस आश्रम में खुद भगवान विष्णु ने तप किया था... और यहीं से उन्होंने तीन कदम में तीनों लोक नाप लिए!",
+   "+0%",
+   "+0Hz"
+  ],
+  "vm1": [
+   "राम, ये सिद्धाश्रम है। यहाँ भगवान विष्णु ने बहुत समय तक तप किया था।",
+   "-12%",
+   "-16Hz"
+  ]
+ },
+ "SPEAKER": {
+  "vm1": "vishwamitra"
+ },
+ "KEYWORDS": {
+  "n1": [
+   "विष्णु",
+   "तीन"
+  ],
+  "vm1": [
+   "सिद्धाश्रम"
+  ]
+ },
+ "NEW_CHARS": {
+  "vaman": {
+   "name": "वामन",
+   "kind": "m",
+   "child": true,
+   "skin": "#3a5aa0",
+   "hair": "#140c08",
+   "tunic": "#f2c230",
+   "sash": "#f6f0e2",
+   "upper": "#f2c230",
+   "lower": "#f2c230",
+   "hem": "#e8902a",
+   "bare": true,
+   "skirt": 1.3,
+   "mous": null,
+   "kamandalu": true,
+   "tilak": true,
+   "glow": "gold"
+  },
+  "bali": {
+   "name": "असुर राजा बलि",
+   "kind": "m",
+   "big": true,
+   "glow": "dark",
+   "fw": 1.1,
+   "build": 1.25,
+   "skin": "#4a3a6a",
+   "hair": "#0c0b10",
+   "tunic": "#8e1b1b",
+   "sash": "#1a1a1e",
+   "upper": "#1a1a1e",
+   "lower": "#8e1b1b",
+   "hem": "#1a1a1e",
+   "crown": true,
+   "jewel": true,
+   "bare": true,
+   "skirt": 1.5,
+   "mous": "#0c0b10",
+   "browt": 1.5
+  },
+  "devta1": {
+   "name": "देवता",
+   "kind": "m",
+   "big": true,
+   "glow": "gold",
+   "skin": "#f0c890",
+   "hair": "#1a0f0a",
+   "tunic": "#d9342b",
+   "sash": "#fff0a0",
+   "upper": "#f6f0e2",
+   "lower": "#d9342b",
+   "hem": "#fff0a0",
+   "crown": true,
+   "jewel": true,
+   "bare": true,
+   "skirt": 1.5,
+   "mous": null
+  },
+  "devta2": {
+   "name": "देवता",
+   "kind": "m",
+   "big": true,
+   "glow": "gold",
+   "fw": 0.95,
+   "skin": "#e0a878",
+   "hair": "#1a0f0a",
+   "tunic": "#2f6b9a",
+   "sash": "#f2c230",
+   "upper": "#f6f0e2",
+   "lower": "#2f6b9a",
+   "hem": "#f2c230",
+   "crown": true,
+   "jewel": true,
+   "bare": true,
+   "skirt": 1.5,
+   "mous": "#1a0f0a"
+  }
+ },
+ "SHOTS": [
+  {
+   "line": "n1",
+   "bg": "morning",
+   "mood": "none",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 500,
+     "to_x": 1050,
+     "pose": "walk",
+     "face": "neutral",
+     "look": "auto"
+    },
+    {
+     "who": "lakshman",
+     "x": 150,
+     "to_x": 700,
+     "pose": "walk",
+     "face": "neutral",
+     "look": "auto"
+    }
+   ]
+  },
+  {
+   "line": "vm1",
+   "bg": "ashram",
+   "mood": "none",
+   "cast": [
+    {
+     "who": "vishwamitra",
+     "x": 1200,
+     "to_x": 650,
+     "pose": "walk",
+     "face": "stern",
+     "look": "auto"
+    },
+    {
+     "who": "rishi1",
+     "x": 900,
+     "to_x": 380,
+     "pose": "walk",
+     "face": "neutral",
+     "look": "auto"
+    }
+   ]
+  }
+ ],
+ "COVER": {
+  "bg": "divine",
+  "tag": "वामन अवतार का रहस्य!",
+  "cast": [
+   {
+    "who": "vaman",
+    "x": 680,
+    "pose": "raise",
+    "face": "smile",
+    "look": "front"
+   }
+  ]
+ },
+ "VERSION": 1
+}
