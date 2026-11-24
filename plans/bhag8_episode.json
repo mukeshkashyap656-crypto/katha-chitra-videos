@@ -239,13 +239,13 @@
    "cast": [
     {
      "who": "kanya1",
-     "x": 330,
+     "x": 300,
      "pose": "stand",
      "face": "worry"
     },
     {
      "who": "vayu",
-     "x": 900,
+     "x": 760,
      "pose": "point",
      "face": "smile"
     }
