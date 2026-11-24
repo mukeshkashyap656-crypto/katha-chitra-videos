@@ -121,3 +121,12 @@ Ye file kisi bhi AI (Gemini, DeepSeek, ChatGPT, Claude...) ko do aur bolo:
 - **Kathavachak sirf zarurat par:** kahani jahan tak ho sake kirdaaron ke sanvaad se chale; kathavachak sirf hook, jodne wali baat aur agle bhaag ke sawaal par.
 - **ElevenLabs (mashhoor awaazein):** GitHub secret `ELEVENLABS_API_KEY` ho to `make_voice.py` pehle ElevenLabs use karta hai (narrator Adam, Vishwamitra George, Ram Liam, Lakshman Josh, Vasishtha Daniel, Dasharatha Brian, devta Arnold, mahilayein Sarah/Matilda/Jessica, baaki Antoni/Sam/Callum/Eric). Key na ho ya limit khatam ho to free awaazein (Andrew narrator, Swara, Madhur). Badalne ke liye episode.json mein `"ELEVEN_VOICES": {"kirdaar": ["Naam", "voice_id"]}`.
 - **Body seedhi rahe:** koi character tirchha/jhuka hua khada na ho (lean 0); haath ka mod halka, "( )" jaise bowed nahi.
+
+## 13. Scene = awaaz (24 Nov 2026, owner ka hukm — har video par)
+- **Jo line mein bola ja raha hai ya hona chahiye, wahi screen par dikhe.** Pehle har line ke liye likho: kaun kya kar raha hai, kaunsi cheez/jagah, har character ka bhaav (chehra + sharir), camera kahan. Phir banao. Sirf khade-khade bolna nahi.
+  - Line mein "hairaan/dar gaye/gussa/rone lage/khush" ho to us pal par chehra aur sharir wahi dikhaye (face: shock/worry/angry/sad/joy; pose + body language) — peeche ke characters ka bhi. Bhaav cheez banakar nahi (aag, taare) — chehre aur sharir se.
+  - Line mein koi kaam ho (tir chalana, pranam, uthana, dikhana, aana-jaana) to wo kaam dikhe, sirf subtitle mein nahi. Naam pukaara jaaye to us chehre par cut.
+  - Jis cheez ka zikr hai (astra, kheer, nadi, ashram) wo frame mein saaf dikhe.
+- Har shot mein `show` likho (tools/engine/README.md): ek line mein kya dikhega + kaunsa bhaav. `spec.py` Bhag 9 se `show` na ho, aadhe se zyada chehre neutral hon, ya lagatar 3 shot mein wahi pose+chehra ho to FAIL.
+- Director check mein har shot par poochho: "is line ko bina awaaz ke sirf dekhkar samajh sakte hain?" Nahi to dobara banao.
+

@@ -27,6 +27,7 @@ Poora udaharan: `episodes/bhag6/episode.json`.
 - `cam`: `auto` (khud tay karega) | `wide` (sab poore) | `speaker` (bolne wale ka close-up, padosi poora bahar) | `two` (bolne wala + paas wala).
 - `mood` (rang se bhaav): `none, joy, sorrow, anger, fear, wonder, night`. anger/fear par dhol, wonder par chamak ki awaaz apne aap.
 - `chip`: hisse ki chhoti Hindi heading (optional).
+- `show`: (Bhag 9 se zaroori) ek line mein: is line mein jo bola ja raha hai wo screen par kya dikhega — kaun kya kar raha hai + chehre/sharir ka bhaav. Jo line mein hai wahi dikhna chahiye (NIYAM.md section 13).
 - `cast`: 0-4 log: `{"who": "ram", "x": 620, "pose": "stand", "face": "neutral", "look": "auto"}`
   - `x`: 150-1210 (beech 680). Do logon mein kam se kam 260 ka faasla (bade devta/rakshas ke saath 330) — koi kisi par na chadhe.
   - `pose`: `stand, namaste, talk, bless, point, raise, walk (+ "to_x"), sit, bow, angry`.

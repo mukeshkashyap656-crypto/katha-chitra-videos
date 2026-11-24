@@ -229,6 +229,22 @@ def check(epi):
         if words > 12:
             P.append(f"HOOK: pehli line '{first}' {words} shabd ki hai; 12 shabd se chhoti karo — chaunkane wali baat ya sawaal "
                      f"pehle shabdon mein (jaise 'Sirf 3 kadam mein tinon lok naap liye? Kisne?'), peechhe ki baat baad mein")
+    # Scene = awaaz niyam (24 Nov 2026, owner ka hukm): jo line mein bola/hona hai wahi dikhe, bhaav ke saath.
+    # Bhag 9 se. Bhag 8 (alag chat mein ban raha hai) par ye jaanch nahi lagti.
+    if bhag >= 9:
+        entries = 0; neutral = 0; sigs = []
+        for i, sh in enumerate(shots, 1):
+            if len(str(sh.get("show", "")).strip()) < 8:
+                P.append(f"shot {i}: 'show' likho — is line mein jo bola ja raha hai/ho raha hai wo screen par kya dikhega "
+                         f"(kaun kya kar raha hai, chehre/sharir ka bhaav, kaunsi cheez) — scene awaaz se mele, sirf khade-khade nahi")
+            sig = tuple(sorted((e.get("who"), e.get("pose", "stand"), e.get("face", "neutral")) for e in sh.get("cast", [])))
+            sigs.append(sig)
+            for e in sh.get("cast", []):
+                entries += 1; neutral += e.get("face", "neutral") == "neutral"
+            if i >= 3 and sig and sig == sigs[-2] == sigs[-3]:
+                P.append(f"shot {i}: lagatar 3 shot mein wahi pose+chehra — kahani ke hisaab se action/bhaav badlo")
+        if entries and neutral / entries > 0.5:
+            P.append(f"BHAAV: {neutral}/{entries} jagah chehra 'neutral' hai; har pal ka bhaav chehre aur sharir se dikhao (dar, gussa, dukh, khushi, hairani)")
     return P
 
 
