@@ -36,6 +36,7 @@ jobs:
           MODE: ${{ github.event.inputs.mode || vars.BLOG_MODE || 'draft' }}
           DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}
           N_POSTS: '1'
+          BLOG_IMG_TOKEN: ${{ secrets.BLOG_IMG_TOKEN }}
         run: |
           # Backup: poora kaam 3 baar tak dobara (beech mein ruk ke)
           for TRY in 1 2 3; do

@@ -73,7 +73,7 @@ Niyam (zaroori):
 - Daam/tareekh/spec/update ki details sirf tab jab srot mein ho.
 - KABHI mat likho: cheat, hack, mod APK, pirated/crack game, free diamond/UC/redeem code ke jhoothe daave, ya account becha-kharida. Sirf khabar, update, review, tips jo game ke niyam ke andar hon.
 - Game ke screenshot/logo ki baat sirf shabdon mein; tasveer tum nahi doge.
-Sirf ek JSON do: {{"title": "...", "description": "150 akshar ka saar", "labels": ["Mobile Gaming","Gaming News"], "image_query": "english 2-3 words, generic (jaise smartphone gaming)", "official_video_url": "is event/update ka OFFICIAL YouTube trailer ka link (game company ke apne channel ka), na mile to khaali", "body_html": "..."}}"""
+Sirf ek JSON do: {{"title": "...", "description": "150 akshar ka saar", "labels": ["Mobile Gaming","Gaming News"], "image_query": "english 2-3 words, generic (jaise smartphone gaming)", "banner_title": "English, max 4 shabd, jaise BGMI 4.7 UPDATE", "banner_sub": "English, max 6 shabd", "chips": ["English, 3 tak: 24 NOV: GALA REGISTRATION ENDS"], "official_video_url": "is event/update ka OFFICIAL YouTube trailer ka link (game company ke apne channel ka), na mile to khaali", "body_html": "..."}}"""
 
 
 def gemini_models(client):
@@ -170,6 +170,81 @@ def find_image(q):
     return None
 
 
+FONTS = ["/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf", "/usr/share/fonts/dejavu/DejaVuSans-Bold.ttf",
+         "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"]
+
+
+def _font(size):
+    from PIL import ImageFont
+    for f in FONTS:
+        if os.path.exists(f):
+            return ImageFont.truetype(f, size)
+    return ImageFont.load_default()
+
+
+def make_banner(post, path):
+    """Apni khud ki (original) 1280x720 gaming-style tasveer: gradient + shapes + chhota English text. Hindi text nahi (shaping ka dar)."""
+    from PIL import Image, ImageDraw
+    import hashlib, random
+    W, H = 1280, 720
+    seed = int(hashlib.md5(post["title"].encode()).hexdigest()[:8], 16)
+    rnd = random.Random(seed)
+    palettes = [((8, 12, 40), (0, 200, 255)), ((25, 8, 40), (255, 60, 150)), ((6, 30, 30), (60, 255, 170)), ((35, 15, 5), (255, 170, 30))]
+    bg, ac = palettes[seed % len(palettes)]
+    im = Image.new("RGB", (W, H), bg)
+    d = ImageDraw.Draw(im, "RGBA")
+    for y in range(H):   # tirchhi gradient
+        t = y / H
+        d.line([(0, y), (W, y)], fill=(int(bg[0] + (ac[0] - bg[0]) * t * .35), int(bg[1] + (ac[1] - bg[1]) * t * .35), int(bg[2] + (ac[2] - bg[2]) * t * .35), 255))
+    for _ in range(14):  # neon tirchhi patti
+        x = rnd.randint(-200, W); w = rnd.randint(8, 60)
+        d.polygon([(x, H), (x + w, H), (x + w + 360, 0), (x + 360, 0)], fill=ac + (rnd.randint(18, 55),))
+    d.rectangle([60, 60, 70, H - 60], fill=ac + (255,))
+    title = (post.get("banner_title") or "GAMING NEWS").upper()[:34]
+    sub = (post.get("banner_sub") or "").upper()[:48]
+    size = 110 if len(title) < 16 else 84 if len(title) < 26 else 66
+    f = _font(size)
+    words, lines, cur = title.split(), [], ""
+    for w_ in words:
+        if d.textlength((cur + " " + w_).strip(), font=f) > W - 220 and cur: lines.append(cur); cur = w_
+        else: cur = (cur + " " + w_).strip()
+    lines.append(cur)
+    y = 150
+    for ln in lines[:3]:
+        d.text((104, y + 4), ln, font=f, fill=(0, 0, 0, 160)); d.text((100, y), ln, font=f, fill=(255, 255, 255)); y += size + 10
+    if sub: d.text((100, y + 10), sub, font=_font(38), fill=ac + (255,)); y += 70
+    cy = max(y + 30, 430)
+    for chip in (post.get("chips") or [])[:3]:
+        txt = str(chip).upper()[:40]; fw = d.textlength(txt, font=_font(30))
+        d.rounded_rectangle([100, cy, 100 + fw + 50, cy + 56], radius=28, fill=ac + (70,), outline=ac + (255,), width=3)
+        d.text((125, cy + 9), txt, font=_font(30), fill=(255, 255, 255)); cy += 68
+    d.text((W - 380, H - 70), "GAMING NEWS · HINDI", font=_font(26), fill=(255, 255, 255, 170))
+    im.save(path, "JPEG", quality=90)
+    return path
+
+
+def host_image(path):
+    """Tasveer ko public jagah chadhao taaki post mein URL lag sake: public repo (GitHub Pages / jsDelivr) par.
+    Env: BLOG_IMG_TOKEN (us repo mein Contents write), BLOG_IMG_REPO (default mukeshkashyap656-crypto/katha-chitra-voice)."""
+    tok = os.environ.get("BLOG_IMG_TOKEN")
+    if not tok: return None
+    import base64
+    repo = os.environ.get("BLOG_IMG_REPO", "mukeshkashyap656-crypto/katha-chitra-voice")
+    name = "blog-img/" + os.path.basename(path)
+    for attempt in range(3):
+        try:
+            r = requests.put(f"https://api.github.com/repos/{repo}/contents/{name}", timeout=60,
+                             headers={"Authorization": "Bearer " + tok, "Accept": "application/vnd.github+json"},
+                             json={"message": "blog image", "content": base64.b64encode(open(path, "rb").read()).decode()})
+            if r.status_code in (200, 201):
+                return f"https://cdn.jsdelivr.net/gh/{repo}@main/{name}"
+            log("image upload", r.status_code, r.text[:100])
+        except Exception as e:
+            log("image upload fail:", e)
+        time.sleep(5)
+    return None
+
+
 OFFICIAL = [x.strip().lower() for x in os.environ.get(
     "OFFICIAL_CHANNELS", "battlegrounds mobile india,bgmi,krafton,free fire,garena,pubg mobile,supercell,activision,riot games,epic games").split(",")]
 
@@ -191,14 +266,16 @@ def official_video(url):
     return None
 
 
-def build_html(post, srcs, item, img):
+def build_html(post, srcs, item, img, banner_url=None):
     parts = []
+    if banner_url:
+        parts.append(f'<p><img src="{html.escape(banner_url)}" alt="{html.escape(post["title"])}" style="width:100%;height:auto"/></p>')
     vid = official_video(post.get("official_video_url"))
     if vid:
         parts.append(f'<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden"><iframe src="https://www.youtube.com/embed/{vid["id"]}" '
                      f'title="{html.escape(vid["title"])}" style="position:absolute;top:0;left:0;width:100%;height:100%" frameborder="0" allowfullscreen></iframe></div>'
                      f'<p><small>Official video: {html.escape(vid["author"])} (YouTube)</small></p>')
-    if img and not vid:
+    if img and not vid and not banner_url:
         parts.append(f'<p><img src="{html.escape(img["url"])}" alt="{html.escape(post["title"])}" style="width:100%;height:auto"/>'
                      f'<br/><small>Tasveer: <a href="{html.escape(img["page"])}" rel="nofollow">{html.escape(img["title"])}</a> (CC0/Public Domain)</small></p>')
     parts.append(post["body_html"])
@@ -255,9 +332,15 @@ def main():
             if not bad: break
             log("quality fail:", bad, "-", item["title"][:60])
         if bad: continue
-        img = find_image(post.get("image_query") or "smartphone gaming")
-        content = build_html(post, srcs, item, img)
-        slug = re.sub(r"\W+", "-", post["title"])[:40]
+        slug = re.sub(r"\W+", "-", post["title"])[:40] or "post"
+        bpath = os.path.join(OUT, f"{time.strftime('%Y%m%d')}-{abs(hash(post['title'])) % 10**6}.jpg")
+        banner_url = None
+        try:
+            make_banner(post, bpath); banner_url = host_image(bpath)
+        except Exception as e:
+            log("banner nahi bana:", e)
+        img = None if banner_url else find_image(post.get("image_query") or "smartphone gaming")
+        content = build_html(post, srcs, item, img, banner_url)
         open(os.path.join(OUT, f"{time.strftime('%Y%m%d')}-{slug}.html"), "w", encoding="utf-8").write(content)
         url = publish(post["title"], content, post.get("labels") or ["Mobile Gaming"])
         st["posted"].append({"title": item["title"], "blog_title": post["title"], "date": time.strftime("%Y-%m-%d"), "url": url, "mode": MODE})
