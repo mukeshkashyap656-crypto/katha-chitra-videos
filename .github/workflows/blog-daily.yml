@@ -36,6 +36,9 @@ jobs:
           MODE: ${{ github.event.inputs.mode || vars.BLOG_MODE || 'draft' }}
           DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}
           N_POSTS: '1'
+          BLOGGER_MAIL_TO: ${{ secrets.BLOGGER_MAIL_TO }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
           BLOG_IMG_TOKEN: ${{ secrets.BLOG_IMG_TOKEN }}
         run: |
           # Backup: poora kaam 3 baar tak dobara (beech mein ruk ke)

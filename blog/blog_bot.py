@@ -308,7 +308,29 @@ def access_token():
     return r.json()["access_token"]
 
 
+def publish_mail(title, content):
+    """Raasta 2 (bina Google Cloud): Blogger ka khufiya email pata (Settings > Email). Draft ya publish, Blogger ki apni setting se tay hota hai.
+    Env: BLOGGER_MAIL_TO (jaise naam.secret@blogger.com), SMTP_USER (Gmail), SMTP_APP_PASSWORD (Gmail app password)."""
+    import smtplib
+    from email.mime.text import MIMEText
+    from email.header import Header
+    msg = MIMEText(content, "html", "utf-8")
+    msg["Subject"] = Header(title, "utf-8"); msg["From"] = os.environ["SMTP_USER"]; msg["To"] = os.environ["BLOGGER_MAIL_TO"]
+    last = None
+    for attempt in range(4):
+        try:
+            with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=60) as sm:
+                sm.login(os.environ["SMTP_USER"], os.environ["SMTP_APP_PASSWORD"])
+                sm.sendmail(os.environ["SMTP_USER"], [os.environ["BLOGGER_MAIL_TO"]], msg.as_string())
+            return "email-bheji"
+        except Exception as e:
+            last = e; log("email koshish", attempt + 1, "fail:", str(e)[:150]); time.sleep(10 * (attempt + 1))
+    raise RuntimeError(f"email nahi gayi: {last}")
+
+
 def publish(title, content, labels):
+    if os.environ.get("DRY_RUN") != "1" and os.environ.get("BLOGGER_MAIL_TO") and os.environ.get("SMTP_APP_PASSWORD") and not os.environ.get("BLOGGER_REFRESH_TOKEN"):
+        return publish_mail(title, content)
     if os.environ.get("DRY_RUN") == "1" or not os.environ.get("BLOGGER_REFRESH_TOKEN"):
         log("DRY_RUN / Blogger key nahi: post sirf blog/out/ mein rakhi")
         return "dry-run"
