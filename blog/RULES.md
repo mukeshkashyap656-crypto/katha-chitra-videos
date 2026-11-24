@@ -12,5 +12,5 @@ Ye blog "mobile gaming ki khabar (BGMI, Free Fire, naye mobile game, gaming phon
 8. Ek jaisi/duplicate khabar nahi (posted.json se milaan).
 9. Mukhya ruk-jaane waali galti (kam shabd, srot nahi, ginti fail) = post nahi, agle din dobara.
 10. Mobile gaming ke khaas niyam: hack, cheat, mod APK, pirated game, free diamond/UC/redeem code ke daave, account becha-kharida, ya game ke niyam todne ka tareeka KABHI nahi (Google AdSense aur game company dono ke niyam ke khilaaf). Code mein ye shabd mile to post apne aap ruk jaati hai.
-11. Game ke screenshot, logo, character ki tasveer nahi (copyright). Sirf CC0 tasveer ya bina tasveer.
+11. Asli event dikhane ke liye: game company ke OFFICIAL YouTube trailer ka embed (channel ka naam jaanch ke). Dusri sites ya press ki photo/screenshot utha ke nahi (copyright). Owner apne gameplay screenshot haath se daal sakta hai. Video na mile to CC0 tasveer ya bina tasveer.
 12. Bachchon wale khel hon to jua/paise ka laalach nahi dikhana. Khabar seedhi aur sachchi.

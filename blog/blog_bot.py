@@ -73,7 +73,7 @@ Niyam (zaroori):
 - Daam/tareekh/spec/update ki details sirf tab jab srot mein ho.
 - KABHI mat likho: cheat, hack, mod APK, pirated/crack game, free diamond/UC/redeem code ke jhoothe daave, ya account becha-kharida. Sirf khabar, update, review, tips jo game ke niyam ke andar hon.
 - Game ke screenshot/logo ki baat sirf shabdon mein; tasveer tum nahi doge.
-Sirf ek JSON do: {{"title": "...", "description": "150 akshar ka saar", "labels": ["Mobile Gaming","Gaming News"], "image_query": "english 2-3 words, generic (jaise smartphone gaming)", "body_html": "..."}}"""
+Sirf ek JSON do: {{"title": "...", "description": "150 akshar ka saar", "labels": ["Mobile Gaming","Gaming News"], "image_query": "english 2-3 words, generic (jaise smartphone gaming)", "official_video_url": "is event/update ka OFFICIAL YouTube trailer ka link (game company ke apne channel ka), na mile to khaali", "body_html": "..."}}"""
 
 
 def gemini_models(client):
@@ -170,9 +170,35 @@ def find_image(q):
     return None
 
 
+OFFICIAL = [x.strip().lower() for x in os.environ.get(
+    "OFFICIAL_CHANNELS", "battlegrounds mobile india,bgmi,krafton,free fire,garena,pubg mobile,supercell,activision,riot games,epic games").split(",")]
+
+
+def official_video(url):
+    """Sirf game company ke apne YouTube channel ka video (oEmbed se channel ka naam jaanch ke). Embed karna allowed hai, copy nahi."""
+    m = re.search(r"(?:youtu\.be/|v=|/embed/|/shorts/)([A-Za-z0-9_-]{11})", url or "")
+    if not m: return None
+    try:
+        r = requests.get("https://www.youtube.com/oembed", timeout=20,
+                         params={"url": "https://www.youtube.com/watch?v=" + m.group(1), "format": "json"})
+        r.raise_for_status()
+        author = r.json().get("author_name", "").lower()
+        if any(o in author for o in OFFICIAL):
+            return {"id": m.group(1), "title": r.json().get("title", ""), "author": r.json().get("author_name", "")}
+        log("video official channel ka nahi:", author)
+    except Exception as e:
+        log("video jaanch fail:", e)
+    return None
+
+
 def build_html(post, srcs, item, img):
     parts = []
-    if img:
+    vid = official_video(post.get("official_video_url"))
+    if vid:
+        parts.append(f'<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden"><iframe src="https://www.youtube.com/embed/{vid["id"]}" '
+                     f'title="{html.escape(vid["title"])}" style="position:absolute;top:0;left:0;width:100%;height:100%" frameborder="0" allowfullscreen></iframe></div>'
+                     f'<p><small>Official video: {html.escape(vid["author"])} (YouTube)</small></p>')
+    if img and not vid:
         parts.append(f'<p><img src="{html.escape(img["url"])}" alt="{html.escape(post["title"])}" style="width:100%;height:auto"/>'
                      f'<br/><small>Tasveer: <a href="{html.escape(img["page"])}" rel="nofollow">{html.escape(img["title"])}</a> (CC0/Public Domain)</small></p>')
     parts.append(post["body_html"])
