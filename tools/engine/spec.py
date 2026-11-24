@@ -107,6 +107,8 @@ def shot_states(entry, shot, epi):
     if p["pose"] == "walk":
         for i in range(WALK_N):   # 12 real-mocap walk phases (BODY.md: 12 frames per cycle, not 4)
             out[f"{base}_walk{i}"] = dict(p, walk=2 * math.pi * i / WALK_N)
+        for k, tv in enumerate((0.7, 0.4, 0.15)):   # arriving: the head eases back from the walking side to the front (no sudden pop)
+            out[f"{base}_turn{k}"] = dict(p, pose="stand", side=0, turn=p["side"] * tv)
         out[base] = dict(p, pose="stand", side=0)    # standing picture: after the walk ends the legs must stop too
         return out
     out[base] = dict(p); out[f"{base}_blink"] = dict(p, blink=True)

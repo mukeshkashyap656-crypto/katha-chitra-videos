@@ -94,7 +94,8 @@ for si, sh in enumerate(SHOTS):
             cyc = max(0.5, cyc); walk_end = t0 + dur_; woff = sum(map(ord, e["who"])) % SP.WALK_N
         def state(t, e=e, base=base, p=p, keys=keys, off=off, walk_end=walk_end, cyc=cyc, woff=woff):
             if p["pose"] == "walk":
-                if t >= walk_end: return base     # arrived: legs stop with the body
+                if t >= walk_end:     # arrived: legs stop with the body, then the head turns back to the front in 3 small steps
+                    k_ = int((t - walk_end) / 0.1); return f"{base}_turn{k_}" if k_ < 3 else base
                 return f"{base}_walk{(int((t - t0) / cyc * SP.WALK_N) + woff) % SP.WALK_N}"
             if sp == e["who"] and T[k] - LIP_LEAD / FPS <= t < E[k] and not p["shadow"]:
                 m = mouth(k, t); return base if m == "X" else f"{base}_{m}"
