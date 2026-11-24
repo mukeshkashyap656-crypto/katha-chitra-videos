@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Daily Hindi mobile-gaming news blog bot (Blogger).
+"""Daily Hindi news blog bot (gaming, tech, AI, khel, film, desh-duniya; sensitive vishay band) (Blogger).
 Roz: Google News se aaj ki khabar -> Gemini (Google Search grounding) se verify + apne shabdon mein post
 -> quality jaanch -> Blogger par DRAFT (ya MODE=live par publish).
 Env: GEMINI_API_KEY (+ optional OPENROUTER_API_KEY), BLOG_ID, BLOGGER_CLIENT_ID, BLOGGER_CLIENT_SECRET,
@@ -12,7 +12,16 @@ import requests
 HERE = os.path.dirname(os.path.abspath(__file__))
 STATE = os.path.join(HERE, "posted.json")
 OUT = os.path.join(HERE, "out")
-QUERIES = ["मोबाइल गेमिंग न्यूज़", "BGMI Free Fire नया अपडेट", "गेमिंग स्मार्टफोन लॉन्च भारत", "नया मोबाइल गेम लॉन्च"]
+CATS = {   # label -> Google News sawaal. Bot baari-baari se vishay badalta hai.
+    "Mobile Gaming": ["मोबाइल गेमिंग न्यूज़", "BGMI Free Fire नया अपडेट", "नया मोबाइल गेम लॉन्च"],
+    "Mobile & Tech": ["नया स्मार्टफोन लॉन्च भारत", "टेक न्यूज़ भारत", "मोबाइल अपडेट एंड्रॉयड आईफोन"],
+    "AI & Apps": ["AI नया टूल", "नया ऐप लॉन्च भारत", "ChatGPT Gemini नया फीचर"],
+    "Cricket & Khel": ["क्रिकेट न्यूज़ आज", "IPL न्यूज़", "भारत खेल समाचार"],
+    "Film & OTT": ["नई फिल्म रिलीज़", "OTT नई वेब सीरीज़", "बॉलीवुड न्यूज़"],
+    "Desh Duniya": ["भारत सरकार नई योजना", "आज की बड़ी खबर भारत", "विज्ञान अंतरिक्ष ISRO न्यूज़"],
+}
+# In vishayon par bot kabhi post nahi banata (galti se nuksaan / sensitive): sehat-ilaaj, paisa-share-nivesh, chunaav-rajneeti, hatya-balatkar-hadsa, dharm-vivaad
+BLOCKED = re.compile(r"(?i)(हत्या|मौत|मृत|रेप|बलात्कार|हादसा|आत्महत्या|चुनाव|वोट|पार्टी|भाजपा|कांग्रेस|शेयर|सेंसेक्स|निवेश|क्रिप्टो|बिटकॉइन|इलाज|दवा|बीमारी|कैंसर|टीका|वैक्सीन|दंगा|धर्म|मंदिर|मस्जिद|murder|rape|election|stock|sensex|invest|crypto|bitcoin|cancer|vaccine|riot)")
 MODE = os.environ.get("MODE", "draft")
 N = int(os.environ.get("N_POSTS", "2"))
 MIN_WORDS = 350
@@ -34,9 +43,9 @@ def save_state(st):
     json.dump(st, open(STATE, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 
 
-def news_items():
+def news_items(queries):
     items, seen = [], set()
-    for q in QUERIES:
+    for q in queries:
         url = "https://news.google.com/rss/search?" + urllib.parse.urlencode(
             {"q": q + " when:1d", "hl": "hi", "gl": "IN", "ceid": "IN:hi"})
         for attempt in range(3):
@@ -45,7 +54,7 @@ def news_items():
                 r.raise_for_status()
                 for it in ET.fromstring(r.content).iter("item"):
                     t = (it.findtext("title") or "").strip()
-                    if t and t not in seen:
+                    if t and t not in seen and not BLOCKED.search(t):
                         seen.add(t)
                         items.append({"title": t, "link": it.findtext("link"),
                                       "source": (it.findtext("source") or "").strip()})
@@ -60,7 +69,7 @@ def similar(a, b):
     return difflib.SequenceMatcher(None, a, b).ratio() > 0.6
 
 
-PROMPT = """Tum ek imaandaar Hindi mobile-gaming patrakar ho. Aaj ki is khabar par ek apni post likho:
+PROMPT = """Tum ek imaandaar Hindi khabar-patrakar ho (vishay: {cat}). Aaj ki is khabar par ek apni post likho:
 Khabar: {title}  (srot: {source})
 
 Niyam (zaroori):
@@ -71,9 +80,10 @@ Niyam (zaroori):
 - Gamer wali seedhi bolchaal (tum/aap), chhote vaakya, ek paragraph mein 2-3 line se zyada nahi. Bhari-bharkam shabd mana.
 - Heading seedhi aur sachchi, clickbait nahi.
 - Daam/tareekh/spec/update ki details sirf tab jab srot mein ho.
-- KABHI mat likho: cheat, hack, mod APK, pirated/crack game, free diamond/UC/redeem code ke jhoothe daave, ya account becha-kharida. Sirf khabar, update, review, tips jo game ke niyam ke andar hon.
+- Sehat/ilaaj, paisa/share/nivesh, chunaav/rajneeti, hatya/hadsa, dharm-vivaad par kuch mat likho. Aisi khabar aaye to {{"skip": true}} do.
+- Gaming mein KABHI mat likho: cheat, hack, mod APK, pirated/crack game, free diamond/UC/redeem code ke jhoothe daave, ya account becha-kharida. Sirf khabar, update, review, tips jo game ke niyam ke andar hon.
 - Game ke screenshot/logo ki baat sirf shabdon mein; tasveer tum nahi doge.
-Sirf ek JSON do: {{"title": "...", "description": "150 akshar ka saar", "labels": ["Mobile Gaming","Gaming News"], "image_query": "english 2-3 words, generic (jaise smartphone gaming)", "banner_title": "English, max 4 shabd, jaise BGMI 4.7 UPDATE", "banner_sub": "English, max 6 shabd", "chips": ["English, 3 tak: 24 NOV: GALA REGISTRATION ENDS"], "official_video_url": "is event/update ka OFFICIAL YouTube trailer ka link (game company ke apne channel ka), na mile to khaali", "body_html": "..."}}"""
+Sirf ek JSON do: {{"title": "...", "description": "150 akshar ka saar", "labels": ["...", "..."], "image_query": "english 2-3 words, generic (jaise smartphone gaming)", "banner_title": "English, max 4 shabd, jaise BGMI 4.7 UPDATE", "banner_sub": "English, max 6 shabd", "chips": ["English, 3 tak: 24 NOV: GALA REGISTRATION ENDS"], "official_video_url": "is event/update ka OFFICIAL YouTube trailer ka link (game company ke apne channel ka), na mile to khaali", "body_html": "..."}}"""
 
 
 def gemini_models(client):
@@ -321,31 +331,39 @@ def main():
     os.makedirs(OUT, exist_ok=True)
     st = load_state()
     done_titles = [p["title"] for p in st["posted"]]
-    items = [i for i in news_items() if not any(similar(i["title"], t) for t in done_titles)]
-    log("naye khabar:", len(items))
+    cats = list(CATS)
+    start = len(st["posted"]) % len(cats)
+    order = cats[start:] + cats[:start]
     made = 0
-    for item in items:
+    for cat in order:
         if made >= N: break
-        for attempt in range(2):
-            post, srcs = write_post(item)
-            bad = quality_ok(post, srcs, item)
-            if not bad: break
-            log("quality fail:", bad, "-", item["title"][:60])
-        if bad: continue
-        slug = re.sub(r"\W+", "-", post["title"])[:40] or "post"
-        bpath = os.path.join(OUT, f"{time.strftime('%Y%m%d')}-{abs(hash(post['title'])) % 10**6}.jpg")
-        banner_url = None
-        try:
-            make_banner(post, bpath); banner_url = host_image(bpath)
-        except Exception as e:
-            log("banner nahi bana:", e)
-        img = None if banner_url else find_image(post.get("image_query") or "smartphone gaming")
-        content = build_html(post, srcs, item, img, banner_url)
-        open(os.path.join(OUT, f"{time.strftime('%Y%m%d')}-{slug}.html"), "w", encoding="utf-8").write(content)
-        url = publish(post["title"], content, post.get("labels") or ["Mobile Gaming"])
-        st["posted"].append({"title": item["title"], "blog_title": post["title"], "date": time.strftime("%Y-%m-%d"), "url": url, "mode": MODE})
-        save_state(st); made += 1
-        log("POST:", post["title"], "->", url, "(", MODE, ")")
+        items = [i for i in news_items(CATS[cat]) if not any(similar(i["title"], t) for t in done_titles)]
+        log(cat, "- naye khabar:", len(items))
+        for item in items[:6]:
+            item["cat"] = cat
+            for attempt in range(2):
+                post, srcs = write_post(item)
+                if post and post.get("skip"): bad = ["skip: sensitive vishay"]; break
+                bad = quality_ok(post, srcs, item)
+                if not bad: break
+                log("quality fail:", bad, "-", item["title"][:60])
+            if bad: continue
+            post["labels"] = [cat] + [l for l in (post.get("labels") or []) if l not in ("...", cat)][:2]
+            slug = re.sub(r"\W+", "-", post["title"])[:40] or "post"
+            bpath = os.path.join(OUT, f"{time.strftime('%Y%m%d')}-{abs(hash(post['title'])) % 10**6}.jpg")
+            banner_url = None
+            try:
+                make_banner(post, bpath); banner_url = host_image(bpath)
+            except Exception as e:
+                log("banner nahi bana:", e)
+            img = None if banner_url else find_image(post.get("image_query") or "news")
+            content = build_html(post, srcs, item, img, banner_url)
+            open(os.path.join(OUT, f"{time.strftime('%Y%m%d')}-{slug}.html"), "w", encoding="utf-8").write(content)
+            url = publish(post["title"], content, post["labels"])
+            st["posted"].append({"title": item["title"], "blog_title": post["title"], "cat": cat, "date": time.strftime("%Y-%m-%d"), "url": url, "mode": MODE})
+            done_titles.append(item["title"]); save_state(st); made += 1
+            log("POST:", post["title"], "->", url, "(", MODE, ")")
+            break
     log(f"aaj {made} post bani")
     return 0
 
