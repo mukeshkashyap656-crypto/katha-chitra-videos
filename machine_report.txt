@@ -1,0 +1,3 @@
+Machine jaanch: ✅ theek
+- ⚠️ lambai 17.1 sec (bahut chhoti, 40-60 sec ideal)
+- ℹ️ 1080x1920, 30.0 fps, 17.1 sec, zor -14.6 LUFS
