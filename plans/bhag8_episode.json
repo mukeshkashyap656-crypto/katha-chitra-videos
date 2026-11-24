@@ -1,0 +1,393 @@
+{
+ "NAME": "Ramayan_Bhag8_Kushanabh_ki_Sau_Betiyan",
+ "COVER_NAME": "Ramayan_Bhag8_Cover",
+ "BHAG": 8,
+ "VERSION": 1,
+ "QUESTION": "देवता ने सौ राजकुमारियों के साथ क्या किया?",
+ "LINES": {
+  "n1": [
+   "एक देवता ने सौ राजकुमारियों के साथ क्या किया?",
+   "+0%",
+   "+0Hz"
+  ],
+  "vm1": [
+   "राम, मेरे दादा राजा कुशनाभ की सौ बेटियाँ थीं। सब बहुत सुंदर।",
+   "-12%",
+   "-16Hz"
+  ],
+  "vayu": [
+   "मुझसे विवाह कर लो। तुम सब सदा जवान रहोगी।",
+   "-15%",
+   "-25Hz"
+  ],
+  "k1": [
+   "हे वायु देव, हमारे पिता ही हमारे स्वामी हैं। उनकी आज्ञा के बिना हम किसी को नहीं चुनेंगी।",
+   "+0%",
+   "+8Hz"
+  ],
+  "n2": [
+   "वायु देव को क्रोध आ गया। उन्होंने सबके शरीर टेढ़े कर दिए।",
+   "+0%",
+   "+0Hz"
+  ],
+  "kush": [
+   "बेटियों, क्षमा सबसे बड़ा गहना है। तुमने धैर्य रखा, यही सही था।",
+   "-8%",
+   "-10Hz"
+  ],
+  "n3": [
+   "फिर राजा ने सौ बेटियाँ ब्रह्मदत्त को दीं। उनके हाथ छूते ही सब ठीक हो गईं।",
+   "+0%",
+   "+0Hz"
+  ],
+  "vm2": [
+   "कुशनाभ के बेटे गाधि हुए, और गाधि का बेटा मैं हूँ।",
+   "-12%",
+   "-16Hz"
+  ],
+  "n4": [
+   "तो गंगा किसकी बेटी थीं? अगले भाग में! कमेंट में लिखिए: जय श्री राम",
+   "+0%",
+   "+0Hz"
+  ]
+ },
+ "SPEAKER": {
+  "vm1": "vishwamitra",
+  "vayu": "vayu",
+  "k1": "kanya1",
+  "kush": "kushanabh",
+  "vm2": "vishwamitra"
+ },
+ "KEYWORDS": {
+  "n1": [
+   "देवता",
+   "सौ"
+  ],
+  "vm1": [
+   "कुशनाभ"
+  ],
+  "vayu": [
+   "विवाह"
+  ],
+  "k1": [
+   "पिता"
+  ],
+  "n2": [
+   "क्रोध"
+  ],
+  "kush": [
+   "क्षमा"
+  ],
+  "n3": [
+   "ब्रह्मदत्त"
+  ],
+  "vm2": [
+   "गाधि"
+  ],
+  "n4": [
+   "गंगा"
+  ]
+ },
+ "NEW_CHARS": {
+  "kushanabh": {
+   "name": "राजा कुशनाभ",
+   "kind": "m",
+   "crown": true,
+   "jewel": true,
+   "beard": true,
+   "bare": true,
+   "skin": "#e0a878",
+   "hair": "#2a1a10",
+   "tunic": "#8e1b1b",
+   "sash": "#f2c230",
+   "upper": "#f6f0e2",
+   "lower": "#8e1b1b",
+   "hem": "#f2c230",
+   "skirt": 1.4,
+   "age": 0.5
+  },
+  "vayu": {
+   "name": "वायु देव",
+   "kind": "m",
+   "big": true,
+   "glow": "gold",
+   "crown": true,
+   "jewel": true,
+   "bare": true,
+   "skin": "#9ec8e0",
+   "hair": "#1a0f0a",
+   "tunic": "#e8f0f6",
+   "sash": "#6aa6d8",
+   "upper": "#e8f0f6",
+   "lower": "#e8f0f6",
+   "hem": "#6aa6d8",
+   "skirt": 1.5
+  },
+  "brahmadatta": {
+   "name": "ब्रह्मदत्त",
+   "kind": "m",
+   "crown": true,
+   "jewel": true,
+   "bare": true,
+   "skin": "#e8b887",
+   "hair": "#140c08",
+   "tunic": "#2f6b9a",
+   "sash": "#f2c230",
+   "upper": "#f6f0e2",
+   "lower": "#2f6b9a",
+   "hem": "#f2c230",
+   "skirt": 1.4,
+   "mous": "#140c08"
+  },
+  "kanya1": {
+   "name": "कुशनाभ की बेटी",
+   "kind": "f",
+   "skin": "#e8b887",
+   "hair": "#140c08",
+   "saree": "#d9342b",
+   "blouse": "#f2c230",
+   "border": "#f2c230",
+   "jewel": true
+  },
+  "kanya2": {
+   "name": "कुशनाभ की बेटी",
+   "kind": "f",
+   "skin": "#e8b887",
+   "hair": "#140c08",
+   "saree": "#2f9a6b",
+   "blouse": "#f6f0e2",
+   "border": "#f2c230",
+   "jewel": true
+  },
+  "kanya3": {
+   "name": "कुशनाभ की बेटी",
+   "kind": "f",
+   "skin": "#e8b887",
+   "hair": "#140c08",
+   "saree": "#7a3aa0",
+   "blouse": "#f2c230",
+   "border": "#f6f0e2",
+   "jewel": true
+  }
+ },
+ "SHOTS": [
+  {
+   "line": "n1",
+   "bg": "divine",
+   "mood": "wonder",
+   "chip": "सौ बेटियाँ",
+   "cast": [
+    {
+     "who": "vayu",
+     "x": 680,
+     "pose": "point",
+     "face": "stern",
+     "look": "front"
+    }
+   ]
+  },
+  {
+   "line": "vm1",
+   "bg": "morning",
+   "cam": "speaker",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 300,
+     "pose": "stand",
+     "face": "neutral"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 700,
+     "pose": "talk",
+     "face": "smile"
+    }
+   ]
+  },
+  {
+   "line": "vm1",
+   "at_word": "सुंदर",
+   "bg": "palace",
+   "cam": "wide",
+   "mood": "joy",
+   "cast": [
+    {
+     "who": "kanya1",
+     "x": 300,
+     "pose": "stand",
+     "face": "smile"
+    },
+    {
+     "who": "kanya2",
+     "x": 680,
+     "pose": "stand",
+     "face": "joy"
+    },
+    {
+     "who": "kanya3",
+     "x": 1060,
+     "pose": "stand",
+     "face": "smile"
+    }
+   ]
+  },
+  {
+   "line": "vayu",
+   "bg": "palace",
+   "cam": "two",
+   "cast": [
+    {
+     "who": "kanya1",
+     "x": 330,
+     "pose": "stand",
+     "face": "worry"
+    },
+    {
+     "who": "vayu",
+     "x": 900,
+     "pose": "point",
+     "face": "smile"
+    }
+   ]
+  },
+  {
+   "line": "k1",
+   "bg": "palace",
+   "cam": "speaker",
+   "cast": [
+    {
+     "who": "kanya1",
+     "x": 380,
+     "pose": "namaste",
+     "face": "firm"
+    },
+    {
+     "who": "vayu",
+     "x": 960,
+     "pose": "stand",
+     "face": "shock"
+    }
+   ]
+  },
+  {
+   "line": "n2",
+   "bg": "palace",
+   "mood": "anger",
+   "cast": [
+    {
+     "who": "kanya1",
+     "x": 300,
+     "pose": "stand",
+     "face": "sad"
+    },
+    {
+     "who": "kanya2",
+     "x": 680,
+     "pose": "stand",
+     "face": "sad"
+    },
+    {
+     "who": "vayu",
+     "x": 1070,
+     "pose": "angry",
+     "face": "angry"
+    }
+   ]
+  },
+  {
+   "line": "kush",
+   "bg": "palace",
+   "cam": "two",
+   "mood": "sorrow",
+   "cast": [
+    {
+     "who": "kanya1",
+     "x": 300,
+     "pose": "stand",
+     "face": "sad"
+    },
+    {
+     "who": "kushanabh",
+     "x": 820,
+     "pose": "bless",
+     "face": "stern"
+    }
+   ]
+  },
+  {
+   "line": "n3",
+   "bg": "river",
+   "mood": "joy",
+   "cast": [
+    {
+     "who": "brahmadatta",
+     "x": 520,
+     "pose": "bless",
+     "face": "smile"
+    },
+    {
+     "who": "kanya1",
+     "x": 900,
+     "pose": "stand",
+     "face": "joy"
+    }
+   ]
+  },
+  {
+   "line": "vm2",
+   "bg": "cloudvan",
+   "cam": "speaker",
+   "cast": [
+    {
+     "who": "lakshman",
+     "x": 300,
+     "pose": "stand"
+    },
+    {
+     "who": "ram",
+     "x": 620,
+     "pose": "stand"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 1020,
+     "pose": "talk",
+     "face": "smile"
+    }
+   ]
+  },
+  {
+   "line": "n4",
+   "bg": "river",
+   "mood": "wonder",
+   "chip": "अगला भाग",
+   "cast": [
+    {
+     "who": "vishwamitra",
+     "x": 680,
+     "pose": "point",
+     "face": "smile"
+    }
+   ]
+  }
+ ],
+ "COVER": {
+  "bg": "palace",
+  "tag": "सौ बेटियों का रहस्य!",
+  "cast": [
+   {
+    "who": "kanya1",
+    "x": 420,
+    "pose": "stand",
+    "face": "worry"
+   },
+   {
+    "who": "vayu",
+    "x": 960,
+    "pose": "point",
+    "face": "stern"
+   }
+  ]
+ }
+}
