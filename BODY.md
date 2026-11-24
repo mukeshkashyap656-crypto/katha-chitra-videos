@@ -64,10 +64,15 @@ Pehle NIYAM.md aur SEEKH.md padho, phir ye. Naya sudhaar mile toh SEEKH.md mein 
 4. Pair zameen par phislein nahi. Body kabhi bilkul sthir nahi.
 5. Har insaan/umar/mizaaj ki apni chaal (Ram shaant, boodhe dheere, bachche chhote kadam).
 
-## Abhi baaki (21 Nov 2026 tak): ye kaam helper bhi kar sakta hai
-- Ho chuka: asli data se chalna + rukna, chehra disha mein, pranam (bend), dhanush kandhe par, saans.
-- Baaki: mudna (CMU 16_17 se), baithna-uthna (CMU 13_01), jude haath aur aashirvaad ka khula haath, tunic ka halka jhoolna, Lakshman/rishi/aurat/bachche/boodhe ki alag chaal, samne ya door chalna.
-- Sabse zaroori: episode ke build mein naya chalna lagana (4 ki jagah 12 walk frame, har chakkar mein body 3.2*u aage, ruk-ne ke liye stop=..., chehra scene ki disha mein) aur phir poora video dekhkar jaanch.
+## Abhi baaki (24 Nov 2026 ko badla)
+- Ho chuka (pehle): asli data se chalna + rukna, chehra disha mein, pranam (bend), dhanush kandhe par, saans.
+- Ho chuka (24 Nov, branch `ai-fix-movement`, test episode `episodes/test_move` se jaancha): engine mein side-view chalna lag gaya.
+  - spec.py: `WALK_N=12`; walk shot ke liye `<base>_walk0..11` ki 12 tasveerein + khade ki `<base>` + 3 `<base>_turn0..2` (aate hi sar dheere samne). `side` = chalne ki disha (to_x >= x -> +1, warna -1).
+  - draw.py: `draw_state(..., walk, side, turn)`; chalte waqt `arms=None` (dono haath mocap se jhoolte, ARMS list nahi), chalte waqt side-view, baad mein C.WALK/C.SIDE reset.
+  - build.py: chaal ki raftaar asli = body har 1.0 sec ke chakkar mein 3.2*u aage (u = oonchai/5; U_H=128, U_B=160). Doori/raftaar se chalne ka samay; samay kam ho toh chakkar tez (cyc), par shot ke 90% se zyada nahi. Pahunchte hi legs ruk kar khade, 0.1 sec ke 3 kadam mein sar samne. Har character ka chaal ka shuru alag (`woff`) taaki do log ek jaise kadam par na chalein. Movement tween `ease:"none"` (seedhi raftaar).
+  - Jaanch ke niyam: do chalne wale ke beech 260 px se kam jagah nahi; ek doosre ko paar (overtake) karne wale na hon.
+- Baaki: mudna (CMU 16_17 se), baithna-uthna (CMU 13_01), jude haath aur aashirvaad ka khula haath, tunic ka halka jhoolna, Lakshman/rishi/aurat/bachche/boodhe ki alag chaal, samne ya door chalna (front/away walk), phir `test_move` ka v3 render dekhna aur tabhi `auto-video` mein merge.
+- Naya chalna sirf NAYE episodes mein lagta hai. Purane bane episodes (Bhag 2-6) dobara nahi bante; unko chhodo (user ka hukm, 24 Nov 2026).
 
 - NAZAR: samne chalte/dekhte/bolte character ke pupil beech mein (look=0); kisi aur ko dekhna ho toh `turn` se sar modo. Details ANIMATION.md.
 

@@ -107,3 +107,10 @@ Ye file kisi bhi AI (Gemini, DeepSeek, ChatGPT, Claude...) ko do aur bolo:
 
 ## 13. Kharcha
 - Hamesha free tools pehle. Paisa lagne wali cheez bina poochhe nahi. API key kabhi kisi ko mat dikhao.
+
+
+## 14. Purane episode aur harkat ka kaam (24 Nov 2026, owner ka hukm)
+- Jo episode pehle ban chuke (Bhag 2-6) unhe **chhod do**, dobara mat banao. Naye niyam sirf aane wale naye episodes par.
+- Chalna, chehra/aankhon ki disha, haath ka jhoolna, rukna, sar samne: BODY.md + SEEKH.md mein likha hai. Naya engine kaam pehle branch par test render, jaanch PASS hone par hi `auto-video` mein.
+- Dusre chat mein ban rahe episode (jaise Bhag 8) ko is kaam se mat chhedo.
+- Baaki harkat (mudna, baithna-uthna, haath jodna, alag chaal) BODY.md "Abhi baaki" mein; helper ye kaam issue ki branch par kar sakta hai.
