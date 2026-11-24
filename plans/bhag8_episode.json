@@ -378,15 +378,15 @@
   "cast": [
    {
     "who": "kanya1",
-    "x": 420,
+    "x": 400,
     "pose": "stand",
     "face": "worry"
    },
    {
     "who": "vayu",
-    "x": 960,
-    "pose": "point",
-    "face": "stern"
+    "x": 900,
+    "pose": "stand",
+    "face": "angry"
    }
   ]
  }
