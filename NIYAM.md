@@ -18,10 +18,10 @@ Ye file kisi bhi AI (Gemini, DeepSeek, ChatGPT, Claude...) ko do aur bolo:
 - Kahani **bilkul waisi** jaisi Valmiki mein hai, episode-dar-episode aage. **Apni taraf se kuch mat jodo, kuch mat badlo.**
 - Pehle us bhaag ka sarga padho, phir likho.
 - Script **aaj ki bolchaal wali saaf, sahi Hindi** mein (bhaari kitaabi shabd nahi), aur line se line smooth flow.
-- Pehli line sabse dilchasp pal ya sawaal ho — recap ya "आपने देखा" nahi. **Chhoti (12 shabd tak), chaunkane wali baat pehle shabdon mein, awaaz 0.3 sec se shuru, pehle shot mein 1 sec ke andar harkat** (24 Nov 2026: 69.8% log swipe kar rahe the, aausat dekhna ~6 sec; poora kaaran aur udaharan VIRAL.md section 1). Video 35–45 sec, 55 se upar nahi.
+- Pehli line sabse dilchasp pal ya sawaal ho — recap ya "आपने देखा" nahi. **Chhoti (12 shabd tak), chaunkane wali baat pehle shabdon mein, awaaz 0.3 sec se shuru, pehle shot mein 1 sec ke andar harkat** (24 Nov 2026: 69.8% log swipe kar rahe the, aausat dekhna ~6 sec; poora kaaran aur udaharan VIRAL.md section 1). Video lagbhag 40–60 sec (75 tak theek) — lambai se zyada zaroori pehle 3 sec ka hook.
 - Kahani ka dhaancha: hook → peechhe ki baat → mod → raaz → nateeja → bhaavuk aakhri line.
 - Aakhir mein agle bhaag ka sawaal + "कमेंट करें: जय श्री राम".
-- Lambai lagbhag 35–45 sec. Koi khaali second nahi.
+- Lambai lagbhag 40–60 sec (75 tak theek). Koi khaali second nahi.
 
 ## 3. Pehle tay karo, phir banao
 - Har scene aur visual **pehle kahani ke hisaab se tay karo**, shot list dikhao, **haan milne ke baad hi** banana shuru karo.

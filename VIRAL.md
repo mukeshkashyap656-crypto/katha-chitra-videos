@@ -14,13 +14,13 @@ Dhyan: ye ek **pareeksha** hai, pakka formula nahi. Roz ke views `stats/STATS.md
 - Pehla shot sabse zordaar chitra ho (chehre ka close-up, shock ya bada devta/rakshas), shaant wide shot nahi.
 - Ooper ek sawaal ka banner poore video mein tika rahe.
 - Pehli frame par cover (0.1 sec).
-- Lambai 35-45 sec (55 sec se upar nahi). Lambi video mein swipe zyada hota hai; Bhag 3-5 56-66 sec ki thi.
+- Lambai lagbhag 40-60 sec ideal, 75 sec tak theek. Asli data (section 8): achhe chalne wale kahani-Shorts 0:58, 1:09, 1:23 ke bhi hain, yaani lambai se zyada zaroori pehle 3 sec ka hook hai.
 - Aakhri line mein agle bhaag ka sawaal + "कमेंट में लिखिए: जय श्री राम" + 2-3 shabd "सब्सक्राइब कीजिए" (widget ke saath), aur ye sawaal shuruaat ke sawaal se juda ho (dobara dekhne ki wajah).
 - Naap: har episode ke baad YouTube Studio ka "Stayed to watch" (rukne wale %) aur aausat dekhne ka time `stats/STATS.md` mein likho. Lakshya: 30% se upar, phir 50%. Pehle (24 Nov) ka aadhaar 30.2% / ~6 sec.
 
 ## 2. Kahani ka dhaancha
 hook -> peechhe ki baat -> mod -> raaz -> nateeja -> bhavuk aakhri line -> agle bhaag ka sawaal + "कमेंट करें: जय श्री राम".
-Lambai lagbhag 35-45 sec. Koi khaali second nahi. Sirf Valmiki Ramayan, apni taraf se kuch nahi.
+Lambai lagbhag 40-60 sec (75 tak theek). Koi khaali second nahi. Sirf Valmiki Ramayan, apni taraf se kuch nahi.
 
 ## 3. Raftaar: scene ke hisaab se (user ka niyam)
 - Tez scene (ladai, khulasa, achanak mod): jaldi-jaldi cut, 1-2 sec ke shot.
@@ -58,7 +58,7 @@ Jaanchne wale AI ko check_sheet (har 0.25 sec ka frame) aur episode.json do. Har
 9. Kahani Valmiki se alag, ya koi cheez apni taraf se jodi gayi.
 10. Pehli frame par cover nahi.
 11. Pehli line 12 shabd se lambi, ya chaunkane wali baat/sawaal pehle 3 sec mein nahi aaya (section 1). Pehle shot mein 1 sec ke andar koi harkat nahi.
-12. Video 55 sec se lambi.
+12. Video 75 sec se lambi.
 
 **Number (har ek 0-10, sab milakar 70 mein se kam se kam 56 chahiye):**
 - Shuruaat ka hook, kahani ka dhaancha, raftaar scene ke hisaab se, chehre ke bhaav, mood ka rang, aakhri line + agla sawaal, camera ke niyam (headroom, kinare).
@@ -70,7 +70,16 @@ FAIL par: AI har galti ke liye exact sudhaar likhe, episode.json theek ho, dobar
 Har video ke views, reach, likes, comments, shares `stats/STATS.md` mein roz judte hain. Har hafte: top aur neeche ke bhaag dekho (hook ka tarah, sawaal, shuruaat, posting time) aur section 1-4 mein jo seekha wo likho. Sirf ek-do video ke aadhaar par pakka nahi bolna.
 
 ## 8. Dusre Ramayan Shorts se seekha (24 Nov 2026) — pareeksha, pakka nahi
-Source: YouTube par Hindi/English Ramayan Shorts (pichhle 3 mahine, "sabse zyada views" kram) ke title aur pehli line dekhi. Dhyan: us din YouTube ka quota khatam tha aur vidIQ ke credit 0 (11 Dec tak), isliye ASLI views/length nahi mil paaye; neeche ki baatein title/dhaanche ki hain, pakki ginti nahi. Credit wapas aate hi `vidiq_outliers` (keyword "रामायण", contentType short, language hi) se asli views ke saath dobara jaancho.
+Source (24 Nov 2026): vidIQ `vidiq_outliers` (contentType short, keyword "Valmiki Ramayana" aur "Ramayan Hindi story", engagement 2%+) se asli views + 2 transcript. vidIQ ke Hindi (language=hi) Shorts index nahi hote, isliye Hindi keyword se kuch nahi milta; keyword angrezi/Roman mein do aur language mat bharo (ya en). Credit ab 0 (11 Dec ko wapas). Ye ek din ki jaanch hai, pakka nahi.
+**Asli aankde (views, channel ke subscriber):**
+- "RAVANA'S BRUTAL SITA ABDUCTION 😱🔥 #walmikiramayan" — 579K, 0:58, 29.6K subs.
+- "Hanumanji was not as powerful as Ravana? 😱" — 256K, 1:54, 6.9K subs (100x channel ke aam se).
+- "How Old Was Sita When She Married Ram? 😳" — 124K, 1:23, sirf 2.1K subs.
+- "Kisne Mari Hanuman Ji Ko Laat?" (Hindi) — 89K, 1:09, 13.7K subs. Chhote channel (2-14K) bhi 100K+ le rahe hain, to hook sahi ho to hamare jaisa naya channel bhi chal sakta hai.
+- Sabse bade views film ke hype (Ranbir/Yash/Sai Pallavi) aur "Jai Shree Ram" jaise generic clips ke the (1M+). Ye hamari lane nahi; film ke naam hum nahi lete, aur generic clips ki nakal nahi.
+**Transcript se (pehli lines):**
+- "Sita ki umra kitni thi? 6 saal? 18 saal? Log roz behas karte hain. To Valmiki ki kitaab hi kholte hain. Aranya Kanda, sarga 47..." — 5 second mein sawaal + do chaunkane wale number, phir **sarga ka hawala** (bharosa), phir saaf nateeja ("Valmiki ne ek simple number kabhi nahi diya"), end mein comment ka sawaal ("kaun se shabd par zyada bharosa? Comment mein batao"). Ye hamare Valmiki-only channel par bilkul fit hota hai.
+- Hindi: "आखिर क्यों मारी यमराज जी ने हनुमान जी को लात?" (10 shabd) aur turant kahani/baatcheet, koi bhoomika nahi; end mein "follow karo, comment mein likho jai bajrangbali". Kahani Valmiki ki nahi thi, hum nahi lenge — sirf dhaancha: 10 shabd ka sawaal, seedhe action.
 - **"Asli Valmiki mein kya likha hai" wala dhaancha baar-baar dikha**: "लक्ष्मण रेखा असली रामायण में है ही नहीं!", "What Valmiki actually wrote about Sita's abduction", "Why is Valmiki's Ramayana so brutal?", "Ram never told Sita to walk into the fire", "Valmiki's first verse was a curse...". Hum pehle se sirf Valmiki par chalte hain, to ye hamara sabse apna hook hai: "TV mein jo dikhaya woh Valmiki mein nahi".
 - Naam wale chhote chaunkane wale dawe: "Ravan ke 9 adhoore sapne", "Ram ko maut tak nahi chhu saki kyunki Hanuman darwaze par the", "jis dhanush se Ravan mara wo Ram ke bête par taana gaya tha". Ek hi baat, ek hi line mein, jawab video mein.
 - Kam kaam ke: film/actor/trailer wale (hum nahi karenge), mitti ki murti banane wale.
