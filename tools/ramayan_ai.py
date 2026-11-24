@@ -970,12 +970,12 @@ def review_once(sheets, ep_json):
         "Use section 6 of VIRAL.md below and the rules of NIYAM.md and SEEKH.md. "
         "IMPORTANT facts about our machine: it ALWAYS adds the small Katha Chitra logo at the top-right corner of every frame, the "
         "title box at the top and the subtitle box at the bottom; the cover as first frame and the sound level are checked by "
-        "separate machine tests, so do NOT judge hard-fail rules 8 and 10 and do not judge the logo. Judge the subscribe widget "
+        "separate machine tests, so do NOT judge hard-fail rules 8, 10 and 12 (12 = video length, a machine test) and do not judge the logo. Judge the subscribe widget "
         "(finger, SUBSCRIBE button, bell) ONLY from image 2. Things you cannot judge from pictures (voice loudness, voice-subtitle "
         "sync) must NOT be failures; put them in cannot_check. Never invent a problem; when unsure, do not list it. "
         "Identical consecutive frames while someone speaks are a weakness for 'pace' and 'emotion' only, not a hard fail.\n"
         "Reply with ONLY valid JSON:\n"
-        '{"hard_fails":[{"rule":<1-10>,"what":"Hinglish: kya dikh raha hai aur kis frame/jagah","fix":"exact change in episode.json"}],'
+        '{"hard_fails":[{"rule":<1-12>,"what":"Hinglish: kya dikh raha hai aur kis frame/jagah","fix":"exact change in episode.json"}],'
         '"scores":{"hook":0-10,"structure":0-10,"pace":0-10,"emotion":0-10,"mood":0-10,"ending":0-10,"camera":0-10},'
         '"weak":[{"what":"...","fix":"..."}],"cannot_check":["..."],"summary":"Hinglish, 2 short lines"}\n\n'
         "# VIRAL.md\n" + viral + "\n\n# NIYAM.md\n" + open("NIYAM.md", encoding="utf-8").read() + "\n\n# SEEKH.md\n"
@@ -1097,12 +1097,12 @@ def review(sheet, ep_json, video_path=None):
     for r in runs:
         for h in r.get("hard_fails") or []:
             keys.setdefault(str(h.get("rule")), []).append(h)
-    hard = [v[0] for k, v in keys.items() if len(v) >= len(runs) and k not in ("8", "10")]
+    hard = [v[0] for k, v in keys.items() if len(v) >= len(runs) and k not in ("8", "10", "12")]
     if first_check.startswith("FAIL"):
         hard.append({"rule": 10, "what": "cover video ka pehla frame nahi hai (machine jaanch)", "fix": "cover ko pehle 0.1 sec par lagao"})
     # machine ki ginti AI ki raay se upar: kaali/ruki screen = niyam 5, awaaz/khamoshi = niyam 8
     for f in (machine or {}).get("fails", []):
-        rule = 8 if any(w in f for w in ("awaaz", "khamoshi")) else 5
+        rule = 8 if any(w in f for w in ("awaaz", "khamoshi")) else 12 if "lambai" in f else 5
         hard.append({"rule": rule, "what": f"(machine jaanch) {f}", "fix": "us hisse ke shot/lines badlo ya chhota karo, VERSION badhao"})
     sc = {k: round(sum(r["scores"][k] for r in runs) / len(runs)) for k in SCORE_KEYS}
     total = sum(sc.values())

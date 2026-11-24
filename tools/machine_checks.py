@@ -75,10 +75,12 @@ def check(path):
         fails.append(f"size {p['w']}x{p['h']} hai, Short ke liye 1080x1920 chahiye")
     if p["fps"] and p["fps"] < 24:
         warns.append(f"fps kam hai ({p['fps']})")
-    if not (20 <= p["dur"] <= 62):
-        (fails if (p["dur"] < 8 or p["dur"] > 180) else warns).append(f"lambai {p['dur']:.1f} sec (Short ke liye 20-62 sec theek)")
-    elif p["dur"] > 50:
-        warns.append(f"lambai {p['dur']:.1f} sec, VIRAL.md ka target 35-45 sec hai")
+    if p["dur"] < 8 or p["dur"] > 75:
+        fails.append(f"lambai {p['dur']:.1f} sec (Short 40-60 sec ideal, 75 se upar nahi, VIRAL.md niyam 12)")
+    elif p["dur"] < 20:
+        warns.append(f"lambai {p['dur']:.1f} sec (bahut chhoti, 40-60 sec ideal)")
+    elif p["dur"] > 60:
+        warns.append(f"lambai {p['dur']:.1f} sec, VIRAL.md ka target 40-60 sec hai")
     if not p["has_audio"]:
         fails.append("video mein awaaz hai hi nahi")
         return _pack(fails, warns, facts)
