@@ -2,7 +2,7 @@
  "NAME": "Ramayan_Bhag8_Kushanabh_ki_Sau_Betiyan",
  "COVER_NAME": "Ramayan_Bhag8_Cover",
  "BHAG": 8,
- "VERSION": 2,
+ "VERSION": 3,
  "QUESTION": "देवता ने सौ राजकुमारियों के साथ क्या किया?",
  "LINES": {
   "n1": [
@@ -94,7 +94,7 @@
    "kind": "m",
    "crown": true,
    "jewel": true,
-   "beard": true,
+   "beard": "#2a1a10",
    "bare": true,
    "skin": "#e0a878",
    "hair": "#2a1a10",

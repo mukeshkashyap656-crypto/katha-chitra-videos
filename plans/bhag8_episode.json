@@ -94,7 +94,7 @@
    "kind": "m",
    "crown": true,
    "jewel": true,
-   "beard": true,
+   "beard": "#2a1a10",
    "bare": true,
    "skin": "#e0a878",
    "hair": "#2a1a10",
