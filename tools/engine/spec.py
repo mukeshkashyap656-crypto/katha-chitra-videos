@@ -129,6 +129,12 @@ def shot_states(entry, shot, epi):
         for i, ph in enumerate((0, 1.5708, 3.1416, 4.7124)):
             out[f"{base}_walk{i}"] = dict(p, walk=ph + (sum(map(ord, entry["who"])) % 7) * 0.4)
         return out
+    if layered(entry, shot):                    # body (no head, no arms) + head as its own picture: head turns / nods / blinks / talks on its own
+        out[base] = dict(p); hb = f"{base}_h"; ph = dict(p, part="head")
+        out[hb] = ph; out[f"{hb}_blink"] = dict(ph, blink=True)
+        if speaker(shot["line"], epi) == entry["who"] and not p["shadow"]:
+            for m in ("A", "B", "E", "O", "M"): out[f"{hb}_{m}"] = dict(ph, mouth=m)
+        return out
     out[base] = dict(p); out[f"{base}_blink"] = dict(p, blink=True)
     if speaker(shot["line"], epi) == entry["who"] and not p["shadow"]:
         for m in ("A", "B", "E", "O", "M"): out[f"{base}_{m}"] = dict(p, mouth=m)

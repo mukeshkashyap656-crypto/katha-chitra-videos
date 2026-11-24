@@ -79,16 +79,16 @@ def deg(a): return -a * 180 / math.pi
 #   rest = (la, le, ra, re); gest = GESTURES ke index; gap = ishare ke beech ka samay (sec); gs = ishare ki badai;
 #   sway = hilna; tempo = saans ki gati (bada = dheema); lean = degree mein tirchha khada hona
 STYLES = {
-    "vishwamitra": dict(rest=(0.10, 0.22, -0.09, -0.10), gest=(0, 2), gap=2.4, gs=1.0, sway=0.5, tempo=1.3, lean=0.0),   # kathor, kam ishare, kamandalu baayein haath mein
-    "ram":         dict(rest=(0.10, 0.34, -0.10, -0.34), gest=(0, 4), gap=2.9, gs=0.7, sway=0.6, tempo=1.2, lean=0.0),    # shaant, sanyat, haath dheele aage
-    "lakshman":    dict(rest=(0.13, 0.10, -0.13, -0.10), gest=(0, 1, 3, 2), gap=1.2, gs=1.2, sway=1.4, tempo=0.8, lean=0.0),  # tez, chaukanna
-    "vasishtha":   dict(rest=(0.09, 0.16, -0.10, -0.18), gest=(0, 2), gap=3.2, gs=0.8, sway=0.4, tempo=1.6, lean=0.0),   # buzurg, dheere
-    "dasharatha":  dict(rest=(0.12, 0.28, -0.12, -0.28), gest=(1, 3), gap=2.6, gs=1.1, sway=0.5, tempo=1.4, lean=0.0),    # raja, bhaari
-    "_female":     dict(rest=(0.08, 0.40, -0.08, -0.40), gest=(4, 5, 0), gap=2.2, gs=0.8, sway=1.0, tempo=1.0, lean=0.0),  # komal, haath aage
-    "_devta":      dict(rest=(0.18, 0.08, -0.18, -0.08), gest=(3, 2, 0), gap=2.0, gs=1.25, sway=0.4, tempo=1.5, lean=0.0), # bhavya, khule haath
-    "_rakshas":    dict(rest=(0.30, 0.22, -0.30, -0.22), gest=(2, 1), gap=1.4, gs=1.3, sway=1.2, tempo=0.9, lean=0.0),      # bhaari
-    "_elder":      dict(rest=(0.09, 0.16, -0.10, -0.18), gest=(0, 2), gap=3.0, gs=0.8, sway=0.5, tempo=1.5, lean=0.0),
-    "_man":        dict(rest=(0.10, 0.12, -0.10, -0.12), gest=(0, 1, 2), gap=1.9, gs=1.0, sway=1.0, tempo=1.0, lean=0.0),
+    "vishwamitra": dict(rest=(0.10, 0.22, -0.09, -0.10), gest=(0, 2), gap=2.4, gs=1.0, sway=0.5, tempo=1.3, lean=0.0, nod=0.6),   # kathor, kam ishare, kamandalu baayein haath mein
+    "ram":         dict(rest=(0.10, 0.34, -0.10, -0.34), gest=(0, 4), gap=2.9, gs=0.7, sway=0.6, tempo=1.2, lean=0.0, nod=0.7),    # shaant, sanyat, haath dheele aage
+    "lakshman":    dict(rest=(0.13, 0.10, -0.13, -0.10), gest=(0, 1, 3, 2), gap=1.2, gs=1.2, sway=1.4, tempo=0.8, lean=0.0, nod=1.4),  # tez, chaukanna
+    "vasishtha":   dict(rest=(0.09, 0.16, -0.10, -0.18), gest=(0, 2), gap=3.2, gs=0.8, sway=0.4, tempo=1.6, lean=0.0, nod=0.5),   # buzurg, dheere
+    "dasharatha":  dict(rest=(0.12, 0.28, -0.12, -0.28), gest=(1, 3), gap=2.6, gs=1.1, sway=0.5, tempo=1.4, lean=0.0, nod=0.8),    # raja, bhaari
+    "_female":     dict(rest=(0.08, 0.40, -0.08, -0.40), gest=(4, 5, 0), gap=2.2, gs=0.8, sway=1.0, tempo=1.0, lean=0.0, nod=1.0),  # komal, haath aage
+    "_devta":      dict(rest=(0.18, 0.08, -0.18, -0.08), gest=(3, 2, 0), gap=2.0, gs=1.25, sway=0.4, tempo=1.5, lean=0.0, nod=0.6), # bhavya, khule haath
+    "_rakshas":    dict(rest=(0.30, 0.22, -0.30, -0.22), gest=(2, 1), gap=1.4, gs=1.3, sway=1.2, tempo=0.9, lean=0.0, nod=1.3),      # bhaari
+    "_elder":      dict(rest=(0.09, 0.16, -0.10, -0.18), gest=(0, 2), gap=3.0, gs=0.8, sway=0.5, tempo=1.5, lean=0.0, nod=0.6),
+    "_man":        dict(rest=(0.10, 0.12, -0.10, -0.12), gest=(0, 1, 2), gap=1.9, gs=1.0, sway=1.0, tempo=1.0, lean=0.0, nod=1.0),
 }
 def body_style(e, meta):
     who = e["who"]
@@ -125,6 +125,7 @@ def arm_js(cid, e, t0, t1, speak, rest_style, style=None):
                 wp[j2] += [(g, rest[ri + 1]), (g + 0.38, a2), (g + 0.80, a2 - 0.10), (g + 1.25, rest[ri + 1])]
             gest.append((g, g + 1.25))
             g += 1.25 + st["gap"] * (0.7 + 0.6 * rnd.random())
+    arm_js.last_gest = gest
     out = []
     for i, j in enumerate(joints):
         pts = wp[j]; a = amp[j[0]]
@@ -147,6 +148,34 @@ def arm_js(cid, e, t0, t1, speak, rest_style, style=None):
                 out.append(f'tl.set("#{cid}f{sd}-open",{{opacity:0}},{ge - 0.2:.3f});tl.set("#{cid}f{sd}-{rest_style}",{{opacity:1}},{ge - 0.2:.3f});')
     return out
 
+
+def head_js(cid, e, t0, t1, speak, st, seed, gest):
+    """Head animation (2D-animator rules): the head lags behind the body (follow-through), dips a little BEFORE a hand gesture
+    (anticipation), nods on the beat of speech, drifts when idle and settles into every shot with a tiny overshoot.
+    Every key (time, y, rotation) goes into ONE sorted list and is played one after the other, so tweens never fight. st['nod'] = how much."""
+    rnd = random.Random(zlib.crc32((cid + "h").encode())); amp = st.get("nod", 1.0); el = f"#{cid}h"
+    sg = 1 if seed % 2 else -1; ev = []
+    t = t0 + 0.9
+    while t < t1 - 0.4:                                           # idle drift
+        ev.append((t, (rnd.random() * 2 - 1) * 1.5, (rnd.random() * 2 - 1) * 0.9 * amp)); t += 1.4 + rnd.random() * 1.0
+    if speak and speak[1] - speak[0] > 0.6:
+        ev = [q for q in ev if not (speak[0] - 0.3 < q[0] < speak[1] + 0.2)]
+        t = speak[0] + 0.15; k = 0
+        while t < speak[1] - 0.3:                                 # nod on the beat of the words (uneven)
+            ev.append((t, 2.6 * amp, (rnd.random() * 2 - 1) * 1.1 * amp)); ev.append((t + 0.22, -1.0 * amp, 0.0))
+            t += 0.5 + rnd.random() * 0.5; k += 1
+    for (gs, ge) in (gest or []):                                 # anticipation: chin dips just before the hand moves
+        ev = [q for q in ev if not (gs - 0.35 < q[0] < gs + 0.5)]
+        ev.append((max(t0 + 0.2, gs - 0.1), 3.0 * amp, 1.3 * sg * amp)); ev.append((gs + 0.3, -1.8 * amp, -0.7 * sg * amp))
+    ev.sort(key=lambda q: q[0])
+    out = [f'tl.fromTo("{el}",{{y:-7,rotation:{-1.3 * sg * amp:.2f}}},{{y:0,rotation:0,duration:0.55,ease:"back.out(2.2)",immediateRender:false}},{t0:.3f});']
+    cur = t0 + 0.6
+    for (tt, y, r) in ev:
+        if tt < cur + 0.12 or tt > t1 - 0.05: continue
+        out.append(f'tl.to("{el}",{{y:{y:.1f},rotation:{r:.2f},duration:{tt - cur:.2f},ease:"sine.inOut",immediateRender:false}},{cur:.3f});'); cur = tt
+    return out
+
+
 # ---------- characters ----------
 DW, DH, DTOP = 689, 935, 582          # human picture size + top (feet stand on y=1480)
 BW, BH, BTOP = 837, 1107, 409         # big (devta/rakshasa) picture
@@ -165,8 +194,10 @@ for si, sh in enumerate(SHOTS):
     html_c = []
     for ci, e in enumerate(sh.get("cast", [])):
         base, p = SP.state_base(e, sh, EPI); keys = list(SP.shot_states(e, sh, EPI))
+        lay = SP.layered(e, sh) and p["who"] in PIVOTS
+        hb = f"{base}_h" if lay else base                     # layered people: only the HEAD picture changes (blink / mouth)
         off = (ci * 1.3 + si * 0.7) % 3.4
-        def state(t, e=e, base=base, p=p, keys=keys, off=off):
+        def state(t, e=e, base=hb, p=p, keys=keys, off=off):
             if p["pose"] == "walk": return f"{base}_walk{int((t - t0) / 0.13) % 4}"
             if sp == e["who"] and T[k] - LIP_LEAD / FPS <= t < E[k] and not p["shadow"]:
                 m = mouth(k, t); return base if m == "X" else f"{base}_{m}"
@@ -174,7 +205,13 @@ for si, sh in enumerate(SHOTS):
         cid = f"s{si}c{ci}"; big = is_big(e["who"]); w_, h_, top = (BW, BH, BTOP) if big else (DW, DH, DTOP)
         top -= e.get("lift", 0)
         first = state(t0)
-        imgs = "".join(f'<img id="{cid}-{kk}" class="ci" src="assets/{kk}.png" style="width:{w_}px;height:{h_}px;opacity:{1 if kk == first else 0}">' for kk in keys)
+        _mk = lambda kk: f'<img id="{cid}-{kk}" class="ci" src="assets/{kk}.png" style="width:{w_}px;height:{h_}px;opacity:{1 if kk == first else 0}">'
+        if lay:
+            _hx, _hy = [v * (w_ / PIVOTS[p["who"]]["cw"]) for v in PIVOTS[p["who"]]["head"]]
+            imgs = _mk(base) .replace('opacity:0', 'opacity:1') + (f'<div id="{cid}h" style="position:absolute;left:0;top:0;width:{w_}px;height:{h_}px;transform-origin:{_hx:.1f}px {_hy:.1f}px">'
+                    + "".join(_mk(kk) for kk in keys if kk.startswith(hb)) + '</div>')
+        else:
+            imgs = "".join(_mk(kk) for kk in keys)
         arms_html = ""
         if SP.layered(e, sh) and p["who"] in PIVOTS:
             kit = p["who"]; pv = PIVOTS[kit]; fs = w_ / pv["cw"]; rs = SP.HAND_BY_POSE.get(e.get("pose", "stand"), "relaxed")
@@ -193,7 +230,9 @@ for si, sh in enumerate(SHOTS):
         moves.append(f'tl.to("#{cid}i",{{scaleY:1.016,scaleX:0.997,duration:{_pb / 2:.2f},ease:"sine.inOut",yoyo:true,repeat:{max(1, int(_dur / (_pb / 2)))},immediateRender:false}},{t0:.3f});')
         _ps = 3.2 + 0.5 * ((ci * 2 + si) % 3); _sg = 1 if (ci + si) % 2 else -1; _ln = _bs["lean"]; _am = 0.18 * _bs["sway"]
         moves.append(f'tl.fromTo("#{cid}i",{{rotation:{_ln - _am * _sg:.2f}}},{{rotation:{_ln + _am * _sg:.2f},duration:{_ps / 2:.2f},ease:"sine.inOut",yoyo:true,repeat:{max(1, int(_dur / (_ps / 2)))},immediateRender:false}},{t0:.3f});')
-        if sp == e["who"] and not p["shadow"] and p["pose"] != "walk":
+        if lay:
+            moves.extend(head_js(cid, e, t0, t1, (max(t0, T[k]), min(t1, E[k])) if sp == e["who"] else None, _bs, ci + si, arm_js.last_gest))
+        elif sp == e["who"] and not p["shadow"] and p["pose"] != "walk":
             _s0, _s1 = max(t0, T[k]), min(t1, E[k])
             if _s1 - _s0 > 0.6:
                 _per = 0.62

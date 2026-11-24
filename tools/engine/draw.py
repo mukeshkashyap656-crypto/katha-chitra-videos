@@ -94,7 +94,7 @@ def draw_state(file, who, pose="stand", face="neutral", look=0.0, mouth="X", bli
            blink=blink, emo=face, look=look, bow=1.0 if pose == "bow" else 0.0,
            turn=(1.0 if look > 0.4 else -1.0 if look < -0.4 else 0.0) if (pose != "sit" and walk is None) else None,
            hand=(hstyle, hstyle) if part not in ("all", "body") else HANDS.get(pose, ("relaxed", "relaxed")), part=part)
-    PIV[who] = {"scale": (1.0), "cw": CW, "piv": [list(map(float, t)) for t in info["pivots"]]}
+    PIV[who] = {"scale": (1.0), "cw": CW, "piv": [list(map(float, t)) for t in info["pivots"]], "head": list(map(float, info["headpiv"]))}
     C.WALK = None
     if meta.get("rakshas") and part in ("all", "body"):
         horns_fangs(c, x, top, u)

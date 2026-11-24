@@ -570,9 +570,10 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
         for s in (-1, 1):
             ellipse(ctx, x + s * sh_w * 0.85, sh_y + 0.02 * u, 0.16 * u, 0.06 * u); fill_stroke(ctx, c["trim"], 3)
     if _walking: ctx.restore()
+    ctx = _dummy if part == "body" else (_real if part == "head" else ctx)     # head is its own picture (part="head"): body part skips it
     if _walking:                                   # head stays level: cancels the body sway, small nod with each step
         ctx.save(); ctx.translate(hx, hy + 0.4 * u); ctx.rotate(-0.07 * SIDE + 0.012 * math.cos(2 * WALK) if SIDE else -0.045 * math.sin(WALK) - 0.035 + 0.012 * math.cos(2 * WALK)); ctx.translate(-hx, -(hy + 0.4 * u))
-    _talk = (mouth != "X") and not _walking          # TALKING: head/body speak too (mouth is only 10-20% of the effect): small nod + tilt accents
+    _talk = (mouth != "X") and not _walking and part == "all"          # TALKING: head/body speak too (mouth is only 10-20% of the effect): small nod + tilt accents
     if _talk:
         ctx.save(); ctx.translate(0, 0.012 * u * math.sin(t * 4.1)); ctx.translate(hx, hy + 0.4 * u)
         ctx.rotate(0.018 * math.sin(t * 2.3) + 0.008 * math.sin(t * 5.1)); ctx.translate(-hx, -(hy + 0.4 * u))
@@ -629,6 +630,7 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
             ctx.set_source_rgb(*hexc(c["pagdi2"])); ctx.set_line_width(0.035 * u); ctx.stroke()
         ellipse(ctx, hx + 0.42 * u, py - 0.12 * u, 0.1 * u, 0.14 * u); fill_stroke(ctx, c["pagdi"], 4)
     if _walking or _talk: ctx.restore()
+    ctx = _real if part in ("all", "body") else _dummy
     if _walking:
         ctx.save(); ctx.translate(x, 0); ctx.scale(1.0 if SIDE else 1 - 0.13 * math.cos(WALK) ** 2, 1); ctx.translate(-x, 0)
         if not SIDE: ctx.translate(x, waist_y); ctx.rotate(-0.05 * math.sin(WALK)); ctx.translate(-x, -waist_y)
@@ -691,7 +693,7 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
     if _walking: ctx.restore()
     if bend: ctx.restore()
     if _walking: ctx.restore()
-    return dict(head=(hx, hy), u=u, hands=hands, top=top - 0.3 * u, pivots=_piv)
+    return dict(head=(hx, hy), u=u, hands=hands, top=top - 0.3 * u, pivots=_piv, headpiv=(hx, hy + 0.4 * u))
 
 
 def turn_seq(p):
