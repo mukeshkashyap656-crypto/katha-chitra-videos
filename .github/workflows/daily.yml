@@ -19,7 +19,7 @@ concurrency:
 jobs:
   daily:
     runs-on: ubuntu-latest
-    timeout-minutes: 170
+    timeout-minutes: 90
     steps:
       - uses: actions/checkout@v5
         with:
@@ -44,7 +44,7 @@ jobs:
           SAMBANOVA_API_KEY: ${{ secrets.SAMBANOVA_API_KEY }}
           NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
           FORCE_BHAG: ${{ inputs.force_bhag }}
-          DAILY_AHEAD: "5"   # 5 din aage tak episode banao (170 min mein ~5-6 episode)
+          DAILY_AHEAD: "1"   # roz sirf ek naya episode (kal wala); Actions ke free minute bachane ke liye
         run: |
           git config user.name katha-chitra-bot
           git config user.email bot@users.noreply.github.com
