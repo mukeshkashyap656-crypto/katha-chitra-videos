@@ -34,7 +34,7 @@ REPO = os.environ["GITHUB_REPOSITORY"]
 MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite"]
 MAX_FIX_ROUNDS = 5
 STATE = "ai_state.json"
-CONTEXT = ["NIYAM.md", "VIRAL.md", "KNOWLEDGE.md", "SEEKH.md", "BODY.md", "ANIMATION.md", "tools/engine/README.md"]
+CONTEXT = ["NIYAM.md", "VIRAL.md", "FESTIVAL.md", "RESEARCH_24NOV.md", "KNOWLEDGE.md", "SEEKH.md", "BODY.md", "ANIMATION.md", "tools/engine/README.md"]
 
 
 BASE = {}    # auto-video ka commit jahan se is issue ka kaam shuru hua
@@ -717,7 +717,7 @@ def autopost_brief():
             "judge the result, so do NOT ask for an OK. In ONE answer write plans/bhag{b}_PLAN.md, plans/bhag{b}_episode.json AND "
             "episodes/bhag{b}/episode.json (action change, render true). Episode: Bhag {b}; topic: {t}; Valmiki Bala Kanda "
             "sargas (approx.): {s}. Follow VIRAL.md (hook in the first line, QUESTION banner, scene-wise pace, ending with the "
-            "next part's question + comment call) and SEEKH.md. About 35-45 seconds. Story exactly as in Valmiki, nothing added; every scene must follow the Valmiki text in the order it happens.\n"
+            "next part's question + comment call) and SEEKH.md. About 40-60 seconds (75 max, no dead second). Story exactly as in Valmiki, nothing added; every scene must follow the Valmiki text in the order it happens.\n"
             ).format(b=b, t=it.get("topic", "?"), s=it.get("sargas", "?")) + VR.brief_text(radar) + st_txt
 
 
