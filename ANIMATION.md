@@ -157,3 +157,8 @@ Ye khaas hamare kaam ka hai kyunki wo cut-out/puppet rig ki walk hai (humari eng
 - Har badi pose ke beech ek chart: ease in, ease out, ya dono, ya seedha.
 - Animation theek na lage toh aksar timing/spacing ka masla hota hai.
 **Pose to pose vs straight ahead:** pose to pose (key, breakdown, phir inbetween) kam galti (size/jagah nahi badalti), time bachta hai; straight ahead mein jaan/jaadu par bhatakne ka khatra. Computer tween (puppet rig) mein bhi easing curve (slow-in/out) manao warna doori barabar aur seedhi line ban jati hai; squash/stretch alag key se do.
+
+## Puppet jaisa na lage (24 Nov 2026, user ki shikayat: "ungali nhi hai, jaan nhi hai")
+- **Haath mein ungliyan:** gol goley nahi. `draw_hand` (template/lib/chars.py): relaxed (ungli-rekha + angootha), open (khuli hatheli, bless/raise), point (ek ungli), fist (angry), join (pranam). Engine pose se apne aap chunta hai (`HANDS`, tools/engine/draw.py).
+- **Jaan:** har character PNG ke upar saans (halka upar-neeche phulna), dheema wazan-hilna (+-0.5 degree), aur bolte waqt har ~0.6 sec par chhota nod (build.py, "life" block). Paer zameen par tike rehte hain (origin kamar/paer).
+- Dikkat dikhe (chaadar jaisa hilna, paer uthna) toh amplitude build.py mein kam karo, band mat karo.

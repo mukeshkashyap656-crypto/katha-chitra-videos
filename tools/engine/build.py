@@ -92,7 +92,18 @@ for si, sh in enumerate(SHOTS):
         top -= e.get("lift", 0)
         first = state(t0)
         imgs = "".join(f'<img id="{cid}-{kk}" class="ci" src="assets/{kk}.png" style="width:{w_}px;height:{h_}px;opacity:{1 if kk == first else 0}">' for kk in keys)
-        html_c.append(f'<div class="char" id="{cid}" style="left:{e["x"] - w_ / 2:.0f}px;top:{top}px;width:{w_}px;height:{h_}px">{imgs}</div>')
+        html_c.append(f'<div class="char" id="{cid}" style="left:{e["x"] - w_ / 2:.0f}px;top:{top}px;width:{w_}px;height:{h_}px"><div id="{cid}i" style="position:absolute;left:0;top:0;width:{w_}px;height:{h_}px;transform-origin:50% 96%">{imgs}</div></div>')
+        # ---- life (puppet fix): breathing, slow weight sway, and a small nod on every beat while this person speaks ----
+        _dur = max(0.4, t1 - t0)
+        _pb = 1.9 + 0.35 * ((ci + si) % 3)                      # each person breathes at his own pace
+        moves.append(f'tl.to("#{cid}i",{{scaleY:1.016,scaleX:0.997,duration:{_pb / 2:.2f},ease:"sine.inOut",yoyo:true,repeat:{max(1, int(_dur / (_pb / 2)))},immediateRender:false}},{t0:.3f});')
+        _ps = 3.2 + 0.5 * ((ci * 2 + si) % 3); _sg = 1 if (ci + si) % 2 else -1
+        moves.append(f'tl.fromTo("#{cid}i",{{rotation:{-0.5 * _sg}}},{{rotation:{0.5 * _sg},duration:{_ps / 2:.2f},ease:"sine.inOut",yoyo:true,repeat:{max(1, int(_dur / (_ps / 2)))},immediateRender:false}},{t0:.3f});')
+        if sp == e["who"] and not p["shadow"] and p["pose"] != "walk":
+            _s0, _s1 = max(t0, T[k]), min(t1, E[k])
+            if _s1 - _s0 > 0.6:
+                _per = 0.62
+                moves.append(f'tl.fromTo("#{cid}i",{{y:0}},{{y:-5,duration:{_per / 2:.2f},ease:"sine.inOut",yoyo:true,repeat:{max(1, int((_s1 - _s0) / (_per / 2)))},immediateRender:false}},{_s0:.3f});')
         prev = first
         for f in range(int(t0 * FPS) + 1, int(t1 * FPS) + 1):
             s_ = state(f / FPS)

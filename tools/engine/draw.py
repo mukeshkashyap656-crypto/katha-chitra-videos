@@ -45,6 +45,9 @@ ARMS = {"stand": (0.12, 0.05, -0.12, -0.05), "namaste": (-0.1, 2.18, 0.1, -2.18)
         "bless": (0.12, 0.05, 0.55, -0.9), "point": (0.12, 0.05, 1.25, 0.25), "raise": (0.12, 0.05, 2.45, 0.25),
         "walk": (0.12, 0.05, -0.12, -0.05), "sit": (-0.1, 2.18, 0.1, -2.18), "bow": (-0.1, 2.18, 0.1, -2.18),
         "angry": (0.6, 0.9, -0.6, -0.9)}
+HANDS = {"stand": ("relaxed", "relaxed"), "walk": ("relaxed", "relaxed"), "talk": ("relaxed", "open"), "bless": ("relaxed", "open"),
+         "point": ("relaxed", "point"), "raise": ("relaxed", "open"), "namaste": ("join", "join"), "sit": ("join", "join"),
+         "bow": ("join", "join"), "angry": ("fist", "fist")}
 MOUTHS = ["X", "A", "B", "E", "O", "M"]
 
 
@@ -85,7 +88,7 @@ def draw_state(file, who, pose="stand", face="neutral", look=0.0, mouth="X", bli
         bglib.bow_back(c, x, feet - HS, HS / 5); bglib.quiver(c, x, feet - HS, HS / 5)
     C.WALK = walk
     person(c, who, x, feet, HS, pose="sit" if pose == "sit" else "stand", arms=ARMS.get(pose, ARMS["stand"]), mouth=mouth,
-           blink=blink, emo=face, look=look, bow=1.0 if pose == "bow" else 0.0)
+           blink=blink, emo=face, look=look, bow=1.0 if pose == "bow" else 0.0, hand=HANDS.get(pose, ("relaxed", "relaxed")))
     C.WALK = None
     if meta.get("rakshas"):
         horns_fangs(c, x, top, u)

@@ -75,6 +75,55 @@ def limb(ctx, pts, w, col):
     ctx.set_source_rgb(*OL); ctx.set_line_width(w + 2 * LW); ctx.stroke_preserve()
     ctx.set_source_rgb(*hexc(col)); ctx.set_line_width(w); ctx.stroke()
 
+def draw_hand(ctx, x, y, ang, u, skin, style, side):
+    """Hand with fingers at the wrist point (x, y). ang = forearm direction (radians from straight down, + = screen right).
+    style: relaxed | open | point | fist | join.  side: -1 left arm / +1 right arm (thumb goes toward the body)."""
+    ctx.save(); ctx.translate(x, y); ctx.rotate(-ang)
+    th = -side                                   # thumb side in local x
+    def finger(x0, y0, ln, curl, w=0.056, a=0.0):
+        # straight finger leaning by angle a (radians from the forearm direction)
+        pts = [(x0 * u, y0 * u)]
+        ca = a
+        for k in range(3):
+            ca += curl * (k + 1) * 0.5
+            px, py = pts[-1]; pts.append((px + math.sin(ca) * ln / 3 * u, py + math.cos(ca) * ln / 3 * u))
+        limb(ctx, pts, w * u, skin)
+    if style == "join":                          # palms pressed together (pranam): a closed leaf shape, fingers together
+        poly(ctx, [(-0.1 * u, 0.0), (-0.085 * u, 0.2 * u), (-0.04 * u, 0.4 * u), (0.0, 0.44 * u), (0.04 * u, 0.4 * u), (0.085 * u, 0.2 * u), (0.1 * u, 0.0)])
+        fill_stroke(ctx, skin, 4)
+        ctx.set_source_rgba(*OL, 0.8); ctx.set_line_width(2.2)
+        for fx in (-0.045, 0.0, 0.045):
+            ctx.move_to(fx * u, 0.24 * u); ctx.line_to(fx * u, 0.4 * u if fx == 0 else 0.37 * u); ctx.stroke()
+        ctx.restore(); return
+    def thumb(far=0.19):
+        limb(ctx, [(th * 0.08 * u, 0.04 * u), (th * far * u, 0.15 * u)], 0.075 * u, skin)
+    if style == "fist":
+        thumb(0.12)
+        ellipse(ctx, 0, 0.07 * u, 0.11 * u, 0.11 * u); fill_stroke(ctx, skin, 4)
+        ctx.set_source_rgba(*OL, 0.85); ctx.set_line_width(2.4)
+        for fx in (-0.045, 0.0, 0.045):
+            ctx.move_to(fx * u, 0.1 * u); ctx.line_to(fx * u, 0.17 * u); ctx.stroke()
+    elif style == "point":                      # index finger out, the rest curled into the palm
+        thumb(0.15)
+        finger(th * 0.0, 0.06, 0.34, 0.0, w=0.075)
+        ellipse(ctx, 0, 0.07 * u, 0.1 * u, 0.1 * u); fill_stroke(ctx, skin, 4)
+        for fx in (-th * 0.035, -th * 0.07):
+            ctx.arc(fx * u, 0.13 * u, 0.04 * u, 0, 6.3); fill_stroke(ctx, skin, 3)
+    elif style == "open":                       # fingers spread (blessing / showing)
+        for fx, ln, a in ((-0.075, 0.22, -0.3), (-0.026, 0.28, -0.1), (0.026, 0.28, 0.1), (0.075, 0.22, 0.3)):
+            finger(fx, 0.08, ln, 0.0, w=0.07, a=a)
+        thumb(0.21)
+        ellipse(ctx, 0, 0.06 * u, 0.1 * u, 0.1 * u); fill_stroke(ctx, skin, 4)
+    else:                                       # relaxed: mitten with finger lines + thumb
+        thumb(0.17)
+        poly(ctx, [(-0.095 * u, 0.0), (-0.1 * u, 0.2 * u), (-0.06 * u, 0.3 * u), (0.0, 0.32 * u), (0.06 * u, 0.3 * u), (0.1 * u, 0.2 * u), (0.095 * u, 0.0)])
+        fill_stroke(ctx, skin, 4)
+        ctx.set_source_rgba(*OL, 0.85); ctx.set_line_width(2.4)
+        for fx, ln in ((-0.045, 0.27), (0.0, 0.29), (0.045, 0.27)):
+            ctx.move_to(fx * u, 0.17 * u); ctx.line_to(fx * u, ln * u); ctx.stroke()
+    ctx.restore()
+
+
 # ---------------- character specs (fixed for whole series) ----------------
 CHARS = {
     "rani_m": dict(kind="f", skin="#d99a6c", hair="#1a0f0a", blouse="#2f6b3a", saree="#8e1b2b",
@@ -266,7 +315,7 @@ def face(ctx, c, hx, hy, u, mouth="X", blink=False, emo="neutral", look=0.0, tur
 
 
 def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=False, emo="neutral",
-           look=0.0, bow=0.0, prop=None, t=0.0, turn=None, bend=0.0, fixarms=False):
+           look=0.0, bow=0.0, prop=None, t=0.0, turn=None, bend=0.0, fixarms=False, hand=None):
     """arms = (l_sh, l_el, r_sh, r_el) radians from straight-down; positive -> screen right."""
     c = CHARS[cname]
     if turn is None:
@@ -560,7 +609,11 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
             bx, by = ex + math.sin(a1 + a2) * L2 * 0.8, ey + math.cos(a1 + a2) * L2 * 0.8
             col = c.get("bandcol") or ("#e8b730" if (c.get("jewel") or c.get("bare")) else "#d9cfb8")
             ctx.arc(bx, by, 0.08 * u if kind == "f" else 0.1 * u, 0, 6.3); ctx.set_source_rgb(*hexc(col)); ctx.set_line_width(5); ctx.stroke()
-        ctx.arc(hx2, hy2, 0.11 * u, 0, 6.3); fill_stroke(ctx, _skn, 4)
+        _hs = (hand[0] if s < 0 else hand[1]) if isinstance(hand, (tuple, list)) else hand
+        if _hs:
+            draw_hand(ctx, hx2, hy2, a1 + a2, u, _skn, _hs, s)
+        else:
+            ctx.arc(hx2, hy2, 0.11 * u, 0, 6.3); fill_stroke(ctx, _skn, 4)
         hands.append((hx2, hy2))
     if c.get("kamandalu") and prop != "none":
         kx, ky = hands[0]
