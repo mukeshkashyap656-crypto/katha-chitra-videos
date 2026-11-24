@@ -1,0 +1,33 @@
+name: weekly-cleanup
+# Har hafte (Ravivaar subah 9 IST): AI ke 7 din se purane issue-comment hata deta hai. Aapke apne comment, issue ki body aur 7 din ke andar ke comment nahi chhute.
+on:
+  schedule:
+    - cron: '30 3 * * 0'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'true = sirf dikhao, mat hatao'
+        default: 'false'
+permissions:
+  issues: write
+jobs:
+  clean:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: AI ke purane comment hatao
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
+          DRY: ${{ github.event.inputs.dry_run }}
+        run: |
+          cutoff=$(date -u -d '7 days ago' +%Y-%m-%dT%H:%M:%SZ)
+          echo "7 din se purane (cutoff $cutoff)"
+          gh api --paginate "repos/$REPO/issues/comments?per_page=100" \
+            --jq ".[] | select(.created_at < \"$cutoff\") | select(.body | test(\"<sub>AI: |roz ka report\")) | .id" > ids.txt || true
+          n=$(wc -l < ids.txt | tr -d ' ')
+          echo "mile: $n comment"
+          while read -r id; do
+            [ -z "$id" ] && continue
+            if [ "$DRY" = "true" ]; then echo "hatata: $id (dry run)"; else gh api -X DELETE "repos/$REPO/issues/comments/$id" && echo "hata: $id"; fi
+          done < ids.txt
