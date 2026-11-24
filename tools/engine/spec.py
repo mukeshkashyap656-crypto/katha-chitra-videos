@@ -197,8 +197,6 @@ def check(epi):
         if words > 12:
             P.append(f"HOOK: pehli line '{first}' {words} shabd ki hai; 12 shabd se chhoti karo — chaunkane wali baat ya sawaal "
                      f"pehle shabdon mein (jaise 'Sirf 3 kadam mein tinon lok naap liye? Kisne?'), peechhe ki baat baad mein")
-        if len(order) > 1 and len(lines[first][0]) > 0 and not any(c in lines[first][0] for c in "?!…"):
-            P.append(f"HOOK: pehli line '{first}' mein sawaal ya chaunkane wala nishaan (? ya !) nahi; use sawaal/khulasa banao")
     return P
 
 
