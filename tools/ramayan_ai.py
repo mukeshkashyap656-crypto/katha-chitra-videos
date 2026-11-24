@@ -34,7 +34,7 @@ REPO = os.environ["GITHUB_REPOSITORY"]
 MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite"]
 MAX_FIX_ROUNDS = 5
 STATE = "ai_state.json"
-CONTEXT = ["NIYAM.md", "VIRAL.md", "SEEKH.md", "BODY.md", "ANIMATION.md", "tools/engine/README.md"]
+CONTEXT = ["NIYAM.md", "VIRAL.md", "KNOWLEDGE.md", "SEEKH.md", "BODY.md", "ANIMATION.md", "tools/engine/README.md"]
 
 
 BASE = {}    # auto-video ka commit jahan se is issue ka kaam shuru hua
