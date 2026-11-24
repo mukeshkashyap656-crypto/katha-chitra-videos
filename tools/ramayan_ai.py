@@ -1354,6 +1354,11 @@ def mode_report():
         lines.append(f"**'Baad-mein' queue mein:** {len(q)} kaam" + (f" ({', '.join('#' + str(n) for n in q)})" if q else ""))
     except Exception:
         pass
+    try:
+        import tool_check as _tc
+        lines += ["", _tc.text()]
+    except Exception:
+        pass
     st = VR.stats_text()
     if st.strip():
         lines += ["", "**Asli views (YouTube):**", "", st.strip()[:1800]]

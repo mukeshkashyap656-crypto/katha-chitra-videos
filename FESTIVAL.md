@@ -35,3 +35,8 @@ Tarikh badli ho toh VIRAL radar aur panchang dobara dekho.
 
 ## 5. Pehle bante hain
 1. Vivah Panchami (Ram-Sita vivah, Valmiki Bal Kand). 2. Gita Jayanti. 3. Hanuman ka bhakt-chamatkar (Valmiki Sundar Kand se). 4. Makar Sankranti (Surya, Aditya Hridayam). 5. Sardi mein Ram-Lakshman van mein.
+
+## 6. Jo cheez helper ke paas nahi (24 Nov 2026, owner ka hukm: "jo search na ho GitHub se jodo ya batao kaunsa app/tool jodna hai")
+- `tools/tool_check.py` roz ke report mein likhta hai: kaunsa key/app juda hai (✅/❌), kaunsi free site tak runner pahunch raha hai, aur jo baaki hai wo kaise jodna hai.
+- Helper ko koi data na mile (tarikh, asli views, transcript) toh andaza na lagaye: issue mein likhe "ye tool chahiye: <naam> — aise jodo", aur jo free rasta ho (panchang site, YouTube autocomplete) wo pehle try kare.
+- Paid cheez (vidIQ transcript) sirf owner ke "haan" par.
