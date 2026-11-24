@@ -6,7 +6,7 @@ Use:  python3 tools/machine_checks.py <video.mp4> [out.json]
 Jawab: JSON {"ok": bool, "fails": [...], "warns": [...], "facts": {...}}  (aur ek chhota Hinglish text)
 
 Jo cheezein jaanchi jaati hain:
-  - size 1080x1920, fps, lambai (Short: 20-62 sec), awaaz hai ya nahi
+  - size 1080x1920, fps, lambai (Short: 40-60 sec ideal, 75 se upar FAIL), awaaz hai ya nahi
   - kaali frame (beech mein khaali screen)            -> FAIL
   - ruki hui (frozen) frame lambe samay tak           -> WARN (bolte waqt zyada ho toh FAIL)
   - lambi khamoshi (awaaz ke beech mein)              -> WARN
