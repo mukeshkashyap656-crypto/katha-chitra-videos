@@ -99,7 +99,7 @@ Ye file kisi bhi AI (Gemini, DeepSeek, ChatGPT, Claude...) ko do aur bolo:
 - Sirf wahi file do jo is baar bani/badli.
 
 ## 12. YouTube (Katha Chitra) niyam
-- Title = sawaal + bada naam + emoji + "रामायण भाग X" + "Valmiki Ramayan" + #shorts.
+- Title (24 Nov 2026, user ki ijazat se badla; RESEARCH_24NOV.md): ek seedha, akele samajhne wala SAWAAL + bada naam + 😱, 100 akshar tak, aakhir mein #shorts. Title mein **"रामायण भाग X" aur "Valmiki Ramayan" mat likho** (top Shorts mein 0% / 4%). "भाग X" description ki pehli line mein (`🎬 रामायण भाग X (वाल्मीकि रामायण)`) aur tags mein jaata hai. Sawaal aise naam/cheez par jo log khojte hain (jaise Brahmastra, Ganga, Ravan, Hanuman) — kahani Valmiki ki hi rahe.
 - Tags alag-alag chip (ek lambi comma wali tag nahi): valmiki ramayan, ramayana facts, ramayan story... Film/actor ke naam nahi.
 - Naya episode shaam **7 baje IST** public. Wahi video Instagram Reel par bhi.
 - Public hone ke baad agle bhaag ka sawaal wala comment pin karo.

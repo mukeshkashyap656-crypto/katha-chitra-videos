@@ -39,7 +39,7 @@ Lambai lagbhag 40-60 sec (75 tak theek). Koi khaali second nahi. Sirf Valmiki Ra
 - Aakhir mein ek majboot line (seekh ya aaj ki zindagi se jod), phir agle bhaag ka sawaal.
 
 ## 5. Post ke niyam
-- Title: sawaal + bada naam + emoji + "रामायण भाग X" + "Valmiki Ramayan" + #shorts.
+- Title (24 Nov 2026, user ki ijazat se badla; RESEARCH_24NOV.md): ek seedha, akele samajhne wala SAWAAL + bada naam + 😱, 100 akshar tak, aakhir mein #shorts. Title mein **"रामायण भाग X" aur "Valmiki Ramayan" mat likho** (top Shorts mein 0% / 4%). "भाग X" description ki pehli line mein (`🎬 रामायण भाग X (वाल्मीकि रामायण)`) aur tags mein jaata hai. Sawaal aise naam/cheez par jo log khojte hain (jaise Brahmastra, Ganga, Ravan, Hanuman) — kahani Valmiki ki hi rahe.
 - Tags alag-alag (ek lambi comma wali nahi): valmiki ramayan, ramayana facts, ramayan story. Film/actor ke naam nahi.
 - Shaam 7 baje IST, YouTube aur Instagram dono par. Description mein agle bhaag ka sawaal.
 
@@ -86,3 +86,6 @@ Source (24 Nov 2026): vidIQ `vidiq_outliers` (contentType short, keyword "Valmik
 - Seedhe sawaal waale hook ("kya aap jaante hain...") bhi chale (hamara 472 views wala), lekin "dawa/khulasa + ?" zyada tez lagta hai.
 - Aam Shorts-niyam (vidIQ, Opus aur dusre guide, koi aadhikarik seema nahi): 1 hook trigger chuno, chitra mein payoff pehli frame se dikhao, 5-10 shabd mein bolo, hafte mein 3 alag hook test karo, "Viewed vs Swiped" 70%+ ko achha maanein (har channel ka alag hota hai, apna aadhaar 30.2%); aakhri frame pehli frame mein sahaj mud jaye to log 2-3 baar dekhte hain.
 - **Hook ka test (Bhag 8 se 3 episode):** teen alag trigger alag-alag episodes mein aazmao, par har episode mein wahi trigger lo jo us bhaag ki Valmiki wali kahani mein SACH mein baithe (kahani se bahar ki baat ya jhooth dawa kabhi nahi): (A) myth-todna "X Valmiki mein hai hi nahi / asli Valmiki mein alag hai" (sirf tab jab sarga mein sach mein aisa ho), (B) chhota khulasa-dawa "Sirf 3 kadam mein 3 lok?", (C) seedha sawaal. Har episode ke trigger ka naam aur uska "Stayed to watch" `stats/STATS.md` mein likho; 3 episode baad jeetne wala tareeka aage rakho. Kahani Valmiki se ek shabd bhi na badle — sirf kaun si baat pehle bolni hai ye badalta hai. (Bhag 8 ka vishay Kushanabh ki 100 kanyayein hai, isliye wahan myth-todna zabardasti nahi; jo sarga ke andar sabse chaunkane wala asli pal ho wahi se shuru karo.)
+
+## 9. Asli research (24 Nov 2026)
+Poora data aur nateeja `RESEARCH_24NOV.md` mein. Mukhya: title mein "भाग X"/"Valmiki Ramayan" nahi (seedha sawaal), top Shorts ka median 75 sec (lambai se zyada zaroori pehle 3 sec), bade naam (Ravan, Hanuman, Sita, Ganga...) par zordaar hook.
