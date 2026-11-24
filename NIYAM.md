@@ -134,3 +134,6 @@ Ye file kisi bhi AI (Gemini, DeepSeek, ChatGPT, Claude...) ko do aur bolo:
 
 ## 14. Tyohar, mausam aur sab bhagwan (24 Nov 2026, owner ka hukm)
 Ramayan ke saath tyohar/mausam/har bhagwan ke extra Shorts bhi bante hain. Poore niyam, data aur calendar: FESTIVAL.md. Tyohar ka Short tyohar se 1-2 din pehle post, kahani asli granth se, aakhir mein 'aaj kya karein'.
+
+## 15. Issue ki safai (24 Nov 2026, owner ka hukm)
+AI ke issue-comment har hafte saaf hote hain (workflow `weekly-cleanup`, Ravivaar subah 9 IST, main branch par): sirf "<sub>AI:" wale aur "roz ka report" wale, 7 din se purane. Owner ke apne comment, issue ki body aur taaza comment nahi chhute. Kuch zaroori baat issue mein rakhni ho toh uski body mein likho, comment mein nahi.
