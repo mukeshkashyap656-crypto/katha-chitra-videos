@@ -44,6 +44,7 @@ jobs:
           SAMBANOVA_API_KEY: ${{ secrets.SAMBANOVA_API_KEY }}
           NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY }}
           FORCE_BHAG: ${{ inputs.force_bhag }}
+          DAILY_AHEAD: "5"   # 5 din aage tak episode banao (170 min mein ~5-6 episode)
         run: |
           git config user.name katha-chitra-bot
           git config user.email bot@users.noreply.github.com
