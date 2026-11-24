@@ -59,6 +59,7 @@ Jaanchne wale AI ko check_sheet (har 0.25 sec ka frame) aur episode.json do. Har
 10. Pehli frame par cover nahi.
 11. Pehli line 12 shabd se lambi, ya chaunkane wali baat/sawaal pehle 3 sec mein nahi aaya (section 1). Pehle shot mein 1 sec ke andar koi harkat nahi.
 12. Video 75 sec se lambi.
+13. Scene line se nahi mela: line mein jo kaam/bhaav/cheez hai wo screen par nahi dikha, kirdaar sirf khade bol rahe hain, ya chehra bhaav se nahi mela (NIYAM.md section 13).
 
 **Number (har ek 0-10, sab milakar 70 mein se kam se kam 56 chahiye):**
 - Shuruaat ka hook, kahani ka dhaancha, raftaar scene ke hisaab se, chehre ke bhaav, mood ka rang, aakhri line + agla sawaal, camera ke niyam (headroom, kinare).
