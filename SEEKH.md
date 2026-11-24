@@ -41,3 +41,7 @@ Ye wo galtiyan aur sudhaar hain jo pichhle episodes (Bhag 2, 3, 4, 5) mein mile.
 
 ## Character ke tay roop
 NIYAM.md section 4 "Tay roop (character bible)" mein hain. Har character ka alag chehra, sharir aur khade hone ka dhang. Naya character aaye toh uska roop pehle Valmiki se tay karke NEW_CHARS mein joddo, phir har scene mein wahi.
+
+## Free Tools aur Auto Intelligence (Daily Routine)
+- Daily Kaam: Valmiki Ramayan sargas se script padhna, viral 3-sec hook + 12-shabd limit design karna, plan aur episode.json likhna, frame-by-frame check karna.
+- Free Tools Used: Free Microsoft Edge TTS (hi-IN-MadhurNeural), ElevenLabs free tier fallback, free CC0 SFX audio, CMU mocap motion data, Python PIL/OpenCV fixed rendering engine.
