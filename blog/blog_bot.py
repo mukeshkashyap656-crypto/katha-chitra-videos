@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Daily Hindi tech/mobile news blog bot (Blogger).
+"""Daily Hindi mobile-gaming news blog bot (Blogger).
 Roz: Google News se aaj ki khabar -> Gemini (Google Search grounding) se verify + apne shabdon mein post
 -> quality jaanch -> Blogger par DRAFT (ya MODE=live par publish).
 Env: GEMINI_API_KEY (+ optional OPENROUTER_API_KEY), BLOG_ID, BLOGGER_CLIENT_ID, BLOGGER_CLIENT_SECRET,
@@ -12,7 +12,7 @@ import requests
 HERE = os.path.dirname(os.path.abspath(__file__))
 STATE = os.path.join(HERE, "posted.json")
 OUT = os.path.join(HERE, "out")
-QUERIES = ["नया स्मार्टफोन लॉन्च भारत", "टेक न्यूज़ भारत", "AI नया टूल", "मोबाइल अपडेट एंड्रॉयड आईफोन"]
+QUERIES = ["मोबाइल गेमिंग न्यूज़", "BGMI Free Fire नया अपडेट", "गेमिंग स्मार्टफोन लॉन्च भारत", "नया मोबाइल गेम लॉन्च"]
 MODE = os.environ.get("MODE", "draft")
 N = int(os.environ.get("N_POSTS", "2"))
 MIN_WORDS = 350
@@ -60,7 +60,7 @@ def similar(a, b):
     return difflib.SequenceMatcher(None, a, b).ratio() > 0.6
 
 
-PROMPT = """Tum ek imaandaar Hindi tech patrakar ho. Aaj ki is khabar par ek apni post likho:
+PROMPT = """Tum ek imaandaar Hindi mobile-gaming patrakar ho. Aaj ki is khabar par ek apni post likho:
 Khabar: {title}  (srot: {source})
 
 Niyam (zaroori):
@@ -69,8 +69,10 @@ Niyam (zaroori):
 - Dhaancha: chhota parichay (kya hua) -> <h2> "Iska matlab kya hai" -> <h2> "Aapke liye kya" -> <h2> "Aage kya dhyan rakhein".
 - 450-700 shabd. Sirf HTML (<h2>, <p>, <ul><li>), <h1> nahi.
 - Heading seedhi aur sachchi, clickbait nahi.
-- Daam/tareekh/spec sirf tab jab srot mein ho.
-Sirf ek JSON do: {{"title": "...", "description": "150 akshar ka saar", "labels": ["Mobile","Tech"], "image_query": "english 2-3 words, generic (jaise smartphone)", "body_html": "..."}}"""
+- Daam/tareekh/spec/update ki details sirf tab jab srot mein ho.
+- KABHI mat likho: cheat, hack, mod APK, pirated/crack game, free diamond/UC/redeem code ke jhoothe daave, ya account becha-kharida. Sirf khabar, update, review, tips jo game ke niyam ke andar hon.
+- Game ke screenshot/logo ki baat sirf shabdon mein; tasveer tum nahi doge.
+Sirf ek JSON do: {{"title": "...", "description": "150 akshar ka saar", "labels": ["Mobile Gaming","Gaming News"], "image_query": "english 2-3 words, generic (jaise smartphone gaming)", "body_html": "..."}}"""
 
 
 def gemini_models(client):
@@ -149,6 +151,7 @@ def quality_ok(post, srcs, item):
     if not srcs and not item.get("link"): why.append("srot nahi")
     if re.search(r"(?i)\b(shocking|you won't believe|chaunk|चौंक)", post["title"]): why.append("clickbait heading")
     if "<h1" in post["body_html"].lower(): why.append("h1 mana")
+    if re.search(r"(?i)(mod apk|hack|cheat|crack|free (diamond|uc|redeem)|redeem code|हैक|चीट)", post["title"] + " " + plain(post["body_html"])): why.append("mana wala vishay (hack/cheat/mod/redeem)")
     return why
 
 
@@ -225,11 +228,11 @@ def main():
             if not bad: break
             log("quality fail:", bad, "-", item["title"][:60])
         if bad: continue
-        img = find_image(post.get("image_query") or "smartphone")
+        img = find_image(post.get("image_query") or "smartphone gaming")
         content = build_html(post, srcs, item, img)
         slug = re.sub(r"\W+", "-", post["title"])[:40]
         open(os.path.join(OUT, f"{time.strftime('%Y%m%d')}-{slug}.html"), "w", encoding="utf-8").write(content)
-        url = publish(post["title"], content, post.get("labels") or ["Tech"])
+        url = publish(post["title"], content, post.get("labels") or ["Mobile Gaming"])
         st["posted"].append({"title": item["title"], "blog_title": post["title"], "date": time.strftime("%Y-%m-%d"), "url": url, "mode": MODE})
         save_state(st); made += 1
         log("POST:", post["title"], "->", url, "(", MODE, ")")

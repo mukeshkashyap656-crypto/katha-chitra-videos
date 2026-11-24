@@ -1,5 +1,5 @@
-name: Blog daily (tech news, Hindi)
-# Roz subah 7:30 IST: aaj ki mobile/tech khabar -> verify -> apne shabdon mein post -> Blogger.
+name: Blog daily (mobile gaming news, Hindi)
+# Roz subah 7:30 IST: aaj ki mobile gaming khabar -> verify -> apne shabdon mein post -> Blogger.
 # Pehle DRAFT mode (MODE=draft). Aap dekhkar manual run mein mode=live karo ya repo variable BLOG_MODE=live set karo.
 on:
   schedule:

@@ -1,6 +1,6 @@
 # Blog ke niyam (Google ke rules ke hisaab se)
 
-Ye blog "naye mobile, tech aur AI ki khabar, Hindi mein" ke liye hai. Katha Chitra / Ramayan se alag.
+Ye blog "mobile gaming ki khabar (BGMI, Free Fire, naye mobile game, gaming phone), Hindi mein" ke liye hai. Katha Chitra / Ramayan se alag.
 
 1. Roz 1-2 post, zyada nahi. Kam par achhi post > zyada par kachri.
 2. Khabar asli sroton se verify hoti hai (Google Search grounding). Koi bhi tathya/aankda bina srot ke nahi.
@@ -11,3 +11,6 @@ Ye blog "naye mobile, tech aur AI ki khabar, Hindi mein" ke liye hai. Katha Chit
 7. Pehle DRAFT mein jaati hai. Owner dekhkar MODE=live karta hai, tab apne aap publish.
 8. Ek jaisi/duplicate khabar nahi (posted.json se milaan).
 9. Mukhya ruk-jaane waali galti (kam shabd, srot nahi, ginti fail) = post nahi, agle din dobara.
+10. Mobile gaming ke khaas niyam: hack, cheat, mod APK, pirated game, free diamond/UC/redeem code ke daave, account becha-kharida, ya game ke niyam todne ka tareeka KABHI nahi (Google AdSense aur game company dono ke niyam ke khilaaf). Code mein ye shabd mile to post apne aap ruk jaati hai.
+11. Game ke screenshot, logo, character ki tasveer nahi (copyright). Sirf CC0 tasveer ya bina tasveer.
+12. Bachchon wale khel hon to jua/paise ka laalach nahi dikhana. Khabar seedhi aur sachchi.
