@@ -3,7 +3,7 @@
 Used by draw.py / build.py (to make the video) and by tools/ramayan_ai.py (to reject a bad
 episode.json BEFORE it is pushed). check(epi) returns a list of problems in plain words.
 """
-import hashlib, json, re
+import math, hashlib, json, re
 
 BGS = {"morning": "subah ka jungle", "cloudvan": "pahad ke paas baadal jaisa van", "divine": "sunehra divya aakash",
        "ghorvan": "ghana andhera jungle (rakshas wala)", "ashram": "rishiyon ka ashram + yagya kund",
@@ -88,10 +88,15 @@ def look_value(entry, shot, epi):
     return 0.8 if tgt["x"] > entry["x"] else -0.8
 
 
+WALK_N = 12   # walk-cycle pictures per step (real motion capture, see BODY.md)
+
+
 def state_base(entry, shot, epi):
     """Parameters that define one look of one character in one shot."""
     p = {"who": kit_name(entry["who"]), "pose": entry.get("pose", "stand"), "face": entry.get("face", "neutral"),
          "look": look_value(entry, shot, epi), "shadow": bool(entry.get("shadow", False))}
+    if p["pose"] == "walk":   # side-view walk: face and body go where the character goes (right = +1, left = -1)
+        p["side"] = 1 if entry.get("to_x", entry.get("x", 0)) >= entry.get("x", 0) else -1
     h = hashlib.md5(json.dumps(p, sort_keys=True).encode()).hexdigest()[:6]
     return f"{entry['who']}_{h}", p
 
@@ -100,8 +105,9 @@ def shot_states(entry, shot, epi):
     """All picture keys this cast entry needs in this shot -> drawing params."""
     base, p = state_base(entry, shot, epi); out = {}
     if p["pose"] == "walk":
-        for i, ph in enumerate((0, 1.5708, 3.1416, 4.7124)):
-            out[f"{base}_walk{i}"] = dict(p, walk=ph + (sum(map(ord, entry["who"])) % 7) * 0.4)
+        for i in range(WALK_N):   # 12 real-mocap walk phases (BODY.md: 12 frames per cycle, not 4)
+            out[f"{base}_walk{i}"] = dict(p, walk=2 * math.pi * i / WALK_N)
+        out[base] = dict(p, pose="stand", side=0)    # standing picture: after the walk ends the legs must stop too
         return out
     out[base] = dict(p); out[f"{base}_blink"] = dict(p, blink=True)
     if speaker(shot["line"], epi) == entry["who"] and not p["shadow"]:

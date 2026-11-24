@@ -83,8 +83,15 @@ for si, sh in enumerate(SHOTS):
     for ci, e in enumerate(sh.get("cast", [])):
         base, p = SP.state_base(e, sh, EPI); keys = list(SP.shot_states(e, sh, EPI))
         off = (ci * 1.3 + si * 0.7) % 3.4
-        def state(t, e=e, base=base, p=p, keys=keys, off=off):
-            if p["pose"] == "walk": return f"{base}_walk{int((t - t0) / 0.13) % 4}"
+        # walk: feet must not slide -> one 12-picture step cycle covers exactly 3.2*u of ground (BODY.md); body moves at constant speed
+        walk_end = t0; cyc = 1.0; woff = 0
+        if p["pose"] == "walk":
+            u_ = U_B if is_big(e["who"]) else U_H; dur_ = max(0.2, (t1 - t0) * 0.9); walk_end = t0 + dur_
+            cyc = min(1.6, max(0.45, 3.2 * u_ / max(8.0, abs(e["to_x"] - e["x"]) / dur_))); woff = sum(map(ord, e["who"])) % SP.WALK_N
+        def state(t, e=e, base=base, p=p, keys=keys, off=off, walk_end=walk_end, cyc=cyc, woff=woff):
+            if p["pose"] == "walk":
+                if t >= walk_end: return base     # arrived: legs stop with the body
+                return f"{base}_walk{(int((t - t0) / cyc * SP.WALK_N) + woff) % SP.WALK_N}"
             if sp == e["who"] and T[k] - LIP_LEAD / FPS <= t < E[k] and not p["shadow"]:
                 m = mouth(k, t); return base if m == "X" else f"{base}_{m}"
             return f"{base}_blink" if blink(t, off) and f"{base}_blink" in keys else base
@@ -99,7 +106,7 @@ for si, sh in enumerate(SHOTS):
             if s_ != prev:
                 sets.append(f'tl.set("#{cid}-{prev}",{{opacity:0}},{f / FPS:.3f});tl.set("#{cid}-{s_}",{{opacity:1}},{f / FPS:.3f});'); prev = s_
         if p["pose"] == "walk":
-            moves.append(f'tl.fromTo("#{cid}",{{x:0}},{{x:{e["to_x"] - e["x"]},duration:{(t1 - t0) * 0.9:.3f},ease:"none",immediateRender:false}},{t0:.3f});')
+            moves.append(f'tl.fromTo("#{cid}",{{x:0}},{{x:{e["to_x"] - e["x"]},duration:{walk_end - t0:.3f},ease:"none",immediateRender:false}},{t0:.3f});')
     layers.append(f'<div class="lay shot" id="shot{si}" style="opacity:{1 if si == 0 else 0}"><img class="wfull" src="assets/bg_{sh["bg"]}.png">{"".join(html_c)}</div>')
 
 # ---------- fx: astra (glowing arrow) with result, rain ----------

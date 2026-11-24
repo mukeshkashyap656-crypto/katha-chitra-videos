@@ -72,7 +72,7 @@ def glow(c, x, hy, u, kind):
         g.add_color_stop_rgba(0, 0.55, 0.05, 0.05, 0.6); g.add_color_stop_rgba(1, 0.1, 0, 0, 0); c.set_source(g); c.paint()
 
 
-def draw_state(file, who, pose="stand", face="neutral", look=0.0, mouth="X", blink=False, shadow=False, walk=None, big=False):
+def draw_state(file, who, pose="stand", face="neutral", look=0.0, mouth="X", blink=False, shadow=False, walk=None, side=0, big=False):
     meta = SP.char_meta(who, EPI)
     big = big or meta.get("big", False)
     CW, CH, HS = (680, 900, 650) if big else (560, 760, 520)
@@ -83,10 +83,10 @@ def draw_state(file, who, pose="stand", face="neutral", look=0.0, mouth="X", bli
         glow(c, x, top + 0.5 * u, u, meta["glow"])
     if who in ("ram", "lakshman"):
         bglib.bow_back(c, x, feet - HS, HS / 5); bglib.quiver(c, x, feet - HS, HS / 5)
-    C.WALK = walk
+    C.WALK = walk; C.SIDE = side if walk is not None else 0
     person(c, who, x, feet, HS, pose="sit" if pose == "sit" else "stand", arms=ARMS.get(pose, ARMS["stand"]), mouth=mouth,
            blink=blink, emo=face, look=look, bow=1.0 if pose == "bow" else 0.0)
-    C.WALK = None
+    C.WALK = None; C.SIDE = 0
     if meta.get("rakshas"):
         horns_fangs(c, x, top, u)
     if shadow:   # first entry of a rakshasa: black shadow with glowing red eyes
