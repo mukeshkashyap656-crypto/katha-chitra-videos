@@ -114,3 +114,8 @@ Ye file kisi bhi AI (Gemini, DeepSeek, ChatGPT, Claude...) ko do aur bolo:
 - Chalna, chehra/aankhon ki disha, haath ka jhoolna, rukna, sar samne: BODY.md + SEEKH.md mein likha hai. Naya engine kaam pehle branch par test render, jaanch PASS hone par hi `auto-video` mein.
 - Dusre chat mein ban rahe episode (jaise Bhag 8) ko is kaam se mat chhedo.
 - Baaki harkat (mudna, baithna-uthna, haath jodna, alag chaal) BODY.md "Abhi baaki" mein; helper ye kaam issue ki branch par kar sakta hai.
+
+## Har kirdaar alag (24 Nov 2026, user ka hukm: "sab ek jaise nhi, har character ki body language, bolne ka tarika, voice alag")
+- **Body language:** har kirdaar ka apna andaaz (`STYLES`, tools/engine/build.py): Vishwamitra kathor aur kam ishare, Ram shaant, Lakshman tez aur chaukanna, buzurg dheere, mahila komal, devta bhavya khule haath, rakshas bhaari akad. Naya kirdaar aaye to uski umar/jaati/bhumika se style chuno; kabhi bhi do kirdaar ek jaise na khade hon, na ek jaise hilein.
+- **Awaaz:** har kirdaar ki apni awaaz (`tools/make_voice.py`): kathavachak = **Adam** (en-US-AdamMultilingualNeural; na chale to Andrew/Brian, aakhir mein Madhur), mahilayein = Swara, purush = Madhur apni-apni gati/sur mein (LINES mein rate/pitch). Awaaz na chale to agli, aakhir mein Madhur. Episode.json mein `"VOICES": {"narrator": "...", "<kirdaar>": "..."}` se badal sakte hain. Workflow log mein "KAUN SI AWAAZ KISKI" aata hai.
+- **Kathavachak sirf zarurat par:** kahani jahan tak ho sake kirdaaron ke sanvaad se chale; kathavachak sirf hook, jodne wali baat aur agle bhaag ke sawaal par.

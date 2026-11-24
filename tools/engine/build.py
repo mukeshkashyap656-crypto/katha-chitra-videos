@@ -75,30 +75,59 @@ GESTURES = [(None, (0.60, -0.95)), ((0.30, 0.60), (0.95, -0.55)), (None, (1.05, 
             (None, (0.35, -1.35)), ((0.15, 1.0), (0.2, -1.0))]
 def deg(a): return -a * 180 / math.pi
 
-def arm_js(cid, e, t0, t1, speak, rest_style):
-    """GSAP for the 4 joints of one person: gentle idle sway + (while speaking) hand gestures with a smooth go / hold / return."""
+# Har character ka apna body-language (insaan sab alag hote hain): aaram ka pose, ishare ki gati/badai, saans, jhukaav.
+#   rest = (la, le, ra, re); gest = GESTURES ke index; gap = ishare ke beech ka samay (sec); gs = ishare ki badai;
+#   sway = hilna; tempo = saans ki gati (bada = dheema); lean = degree mein tirchha khada hona
+STYLES = {
+    "vishwamitra": dict(rest=(0.12, 0.30, -0.10, -0.22), gest=(0, 2), gap=2.4, gs=1.0, sway=0.5, tempo=1.3, lean=-0.7),   # kathor, kam ishare, kamandalu baayein haath mein
+    "ram":         dict(rest=(0.12, 0.55, -0.12, -0.55), gest=(0, 4), gap=2.9, gs=0.7, sway=0.6, tempo=1.2, lean=0.0),    # shaant, sanyat, haath dheele jude
+    "lakshman":    dict(rest=(0.16, 0.12, -0.16, -0.12), gest=(0, 1, 3, 2), gap=1.2, gs=1.2, sway=1.5, tempo=0.8, lean=0.8),  # tez, chaukanna, haath thode door
+    "vasishtha":   dict(rest=(0.10, 0.20, -0.12, -0.25), gest=(0, 2), gap=3.2, gs=0.8, sway=0.4, tempo=1.6, lean=-1.0),   # buzurg, dheere
+    "dasharatha":  dict(rest=(0.14, 0.40, -0.14, -0.40), gest=(1, 3), gap=2.6, gs=1.1, sway=0.5, tempo=1.4, lean=0.0),    # raja, bhaari
+    "_female":     dict(rest=(0.10, 0.62, -0.10, -0.62), gest=(4, 5, 0), gap=2.2, gs=0.8, sway=1.0, tempo=1.0, lean=0.6),  # komal, haath aage jude
+    "_devta":      dict(rest=(0.22, 0.10, -0.22, -0.10), gest=(3, 2, 0), gap=2.0, gs=1.25, sway=0.4, tempo=1.5, lean=0.0), # bhavya, khule haath
+    "_rakshas":    dict(rest=(0.38, 0.30, -0.38, -0.30), gest=(2, 1), gap=1.4, gs=1.3, sway=1.2, tempo=0.9, lean=1.2),      # bhaari, akadu
+    "_elder":      dict(rest=(0.10, 0.22, -0.12, -0.26), gest=(0, 2), gap=3.0, gs=0.8, sway=0.5, tempo=1.5, lean=-0.8),
+    "_man":        dict(rest=(0.12, 0.14, -0.12, -0.14), gest=(0, 1, 2), gap=1.9, gs=1.0, sway=1.0, tempo=1.0, lean=0.0),
+}
+def body_style(e, meta):
+    who = e["who"]
+    if who in STYLES: return STYLES[who]
+    nc = EPI.get("NEW_CHARS", {}).get(who, {})
+    if meta.get("rakshas"): return STYLES["_rakshas"]
+    if meta.get("big"): return STYLES["_devta"]
+    if nc.get("kind") == "f" or who.startswith("kanya") or who in ("sita", "urmila"): return STYLES["_female"]
+    if nc.get("age", 0) >= 2 or who.startswith("rishi") or who in ("mantri",): return STYLES["_elder"]
+    return STYLES["_man"]
+
+def arm_js(cid, e, t0, t1, speak, rest_style, style=None):
+    """GSAP for the 4 joints of one person: gentle idle sway + (while speaking) hand gestures with a smooth go / hold / return,
+    all in this character's own style (STYLES)."""
+    st = style or STYLES["_man"]
     pose = e.get("pose", "stand"); rest = list(POSE_ARMS[pose]); rnd = random.Random(zlib.crc32(cid.encode()))
-    if pose == "stand" and zlib.crc32(cid.encode()) % 3 == 0: rest = [0.12, 0.55, -0.12, -0.55]      # loose hands in front (variety)
-    elif pose == "stand" and zlib.crc32(cid.encode()) % 3 == 1: rest = [0.09, 0.14, -0.14, -0.30]   # one hand a little forward
-    joints = ["uL", "fL", "uR", "fR"]; amp = {"u": 0.03, "f": 0.055}
+    if pose in ("stand", "talk", "bless"):
+        r0 = list(st["rest"])
+        if pose == "stand": rest = r0
+        else: rest = [r0[0], r0[1]] + rest[2:]            # talk/bless: right arm stays raised, left follows the character's own rest
+    joints = ["uL", "fL", "uR", "fR"]; amp = {"u": 0.03 * st["sway"], "f": 0.055 * st["sway"]}
     if pose == "namaste": amp = {"u": 0.006, "f": 0.008}
     wp = {j: [(t0, rest[i])] for i, j in enumerate(joints)}      # waypoints (time, angle) per joint
     gest = []                                                      # (start, end) windows
     if speak and pose in ("stand", "talk", "bless") and speak[1] - speak[0] > 1.0:
         g = speak[0] + 0.25 + rnd.random() * 0.3; n = 0
         while g + 1.35 < speak[1]:
-            gl, gr = GESTURES[(n + zlib.crc32(cid.encode())) % len(GESTURES)]; n += 1
+            gl, gr = GESTURES[st["gest"][(n + zlib.crc32(cid.encode())) % len(st["gest"])]]; n += 1
+            gsc = st["gs"]
             for (tgt, j1, j2, ri) in ((gl, "uL", "fL", 0), (gr, "uR", "fR", 2)):
                 if tgt is None: continue
-                a1, a2 = tgt
+                a1 = rest[ri] + (tgt[0] - rest[ri]) * gsc; a2 = rest[ri + 1] + (tgt[1] - rest[ri + 1]) * gsc
                 wp[j1] += [(g, rest[ri]), (g + 0.38, a1), (g + 0.80, a1 + 0.10), (g + 1.25, rest[ri])]
                 wp[j2] += [(g, rest[ri + 1]), (g + 0.38, a2), (g + 0.80, a2 - 0.10), (g + 1.25, rest[ri + 1])]
             gest.append((g, g + 1.25))
-            g += 1.25 + 0.35 + rnd.random() * 0.55
+            g += 1.25 + st["gap"] * (0.7 + 0.6 * rnd.random())
     out = []
     for i, j in enumerate(joints):
         pts = wp[j]; a = amp[j[0]]
-        # idle sway waypoints outside the gesture windows
         t = t0 + 0.8 + rnd.random() * 0.8; idle = []
         while t < t1:
             if not any(gs - 0.5 <= t <= ge + 0.2 for gs, ge in gest): idle.append((t, rest[i] + (rnd.random() * 2 - 1) * a))
@@ -156,14 +185,14 @@ for si, sh in enumerate(SHOTS):
                               f'<img class="ci" src="assets/arm_{kit}_u{sd}.png" style="width:{w_}px;height:{h_}px">'
                               f'<div id="{cid}f{sd}" style="position:absolute;left:0;top:0;width:{w_}px;height:{h_}px;transform-origin:{ex:.1f}px {ey:.1f}px">{fimgs}</div></div>')
             _spk = (max(t0, T[k]), min(t1, E[k])) if sp == e["who"] else None
-            moves.extend(arm_js(cid, e, t0, t1, _spk, rs))
+            moves.extend(arm_js(cid, e, t0, t1, _spk, rs, body_style(e, SP.char_meta(p["who"], EPI) | SP.char_meta(e["who"], EPI))))
         html_c.append(f'<div class="char" id="{cid}" style="left:{e["x"] - w_ / 2:.0f}px;top:{top}px;width:{w_}px;height:{h_}px"><div id="{cid}i" style="position:absolute;left:0;top:0;width:{w_}px;height:{h_}px;transform-origin:50% 96%">{imgs}{arms_html}</div></div>')
         # ---- life (puppet fix): breathing, slow weight sway, and a small nod on every beat while this person speaks ----
-        _dur = max(0.4, t1 - t0)
-        _pb = 1.9 + 0.35 * ((ci + si) % 3)                      # each person breathes at his own pace
+        _dur = max(0.4, t1 - t0); _bs = body_style(e, SP.char_meta(p["who"], EPI) | SP.char_meta(e["who"], EPI))
+        _pb = (1.9 + 0.35 * ((ci + si) % 3)) * _bs["tempo"]     # each person breathes at his own pace
         moves.append(f'tl.to("#{cid}i",{{scaleY:1.016,scaleX:0.997,duration:{_pb / 2:.2f},ease:"sine.inOut",yoyo:true,repeat:{max(1, int(_dur / (_pb / 2)))},immediateRender:false}},{t0:.3f});')
-        _ps = 3.2 + 0.5 * ((ci * 2 + si) % 3); _sg = 1 if (ci + si) % 2 else -1
-        moves.append(f'tl.fromTo("#{cid}i",{{rotation:{-0.5 * _sg}}},{{rotation:{0.5 * _sg},duration:{_ps / 2:.2f},ease:"sine.inOut",yoyo:true,repeat:{max(1, int(_dur / (_ps / 2)))},immediateRender:false}},{t0:.3f});')
+        _ps = 3.2 + 0.5 * ((ci * 2 + si) % 3); _sg = 1 if (ci + si) % 2 else -1; _ln = _bs["lean"]; _am = 0.5 * _bs["sway"]
+        moves.append(f'tl.fromTo("#{cid}i",{{rotation:{_ln - _am * _sg:.2f}}},{{rotation:{_ln + _am * _sg:.2f},duration:{_ps / 2:.2f},ease:"sine.inOut",yoyo:true,repeat:{max(1, int(_dur / (_ps / 2)))},immediateRender:false}},{t0:.3f});')
         if sp == e["who"] and not p["shadow"] and p["pose"] != "walk":
             _s0, _s1 = max(t0, T[k]), min(t1, E[k])
             if _s1 - _s0 > 0.6:
