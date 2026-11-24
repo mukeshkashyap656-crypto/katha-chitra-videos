@@ -51,3 +51,6 @@ Poora udaharan: `episodes/bhag6/episode.json`.
   - `{"type": "rain", "color": "#b0101a"}` — barish (laal = rakt varsha).
 - Cast mein `"lift": 0-400` — character aasmaan mein (jaise rakshas upar se aate hain). Camera unhe poora dikhata hai.
 - Astra ya chalne wale shot mein camera wide rehta hai (action ya poora raasta frame se bahar nahi jaata).
+
+## Insaani harkat ki settings (build.py `STYLES`, har character ki apni)
+`rest` (haath ke rest angle), `gest` (kaunse ishare), `gap`/`gs` (ishare ka gap/zor), `sway`, `tempo` (saans), `lean` (0 hi rakho), `talkel` (bolte waqt forearm kitna uthe, rad), `nod` (sir ka hilna, 1.0 = aam). Sir alag layer hai (`part="head"`, `head_js`): nod, anticipation, shot-shuru ka settle. Naye character ka style `body_style()` khud chunta hai (_female/_elder/_man/_devta/_rakshas).

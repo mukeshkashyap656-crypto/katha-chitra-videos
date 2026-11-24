@@ -140,3 +140,12 @@ AI ke issue-comment har hafte saaf hote hain (workflow `weekly-cleanup`, Ravivaa
 
 ## 16. Sirf kaam ke message (24 Nov 2026, owner ka hukm: "jo mere kaam ke hain unke message aane chahiye, faltu nahi")
 Helper issue mein tabhi likhe jab owner ko kuch karna/dekhna ho: video taiyar, kaam fail hua, queue atki, zaroori key kam, ya sawaal jiska jawab chahiye. Roz ka report: sab theek ho toh chup; sirf tab bhejo jab kaam kharab hue / queue atki / AI key nahi, aur Ravivaar ko hafte ka ek saar. Beech ke halke update ("shuru kiya", "soch raha hoon", sab theek hai) mat likho.
+
+## 17. Insaan jaisa body language (24 Nov 2026, owner ka hukm: "insaan ke baare mein sab seekho, AI ko bhi sikhao")
+Pura seekh: ANIMATION.md ("Insaan kaise bolta hai"). Har video par lagta hai:
+- **Bolte waqt haath uthte hain** (belly/chest tak), pehle shabd se zara pehle uthte, aakhri ke baad utarte. Neeche latke haath = gudiya. Engine: `STYLES[...]["talkel"]`.
+- **Gesture 5 tarah ke:** cheez dikhana, vichaar dikhana, ishara, baat dena/rokna, aur beat (shabd ke zor par ek forearm ki chhoti jhatak, dono haath baari-baari).
+- **Kuch ek saath nahi:** sharir pehle, haath, phir sir kuch der se (overlap/follow-through); harkat se pehle halka peeche/neeche (anticipation); sir bolte waqt shabdon ki taal par thoda hilta hai (`head_js`, `STYLES[...]["nod"]`).
+- **Har character ka apna andaaz:** talkel, nod, gs, gap, sway sab alag. Naye character ke liye `STYLES` mein apni entry ya nazdiki `_female/_elder/_man/_devta/_rakshas`.
+- **Jod saaf:** kohni/ungli par ring nahi (`tlimb(open_start=True)`); haath chehre jitna lamba; sir alag layer (`part="head"`), isliye ghoomta/jhukta hai.
+- Naya sudhaar karo to ANIMATION.md aur yahan, dono mein likho.
