@@ -86,8 +86,12 @@ for si, sh in enumerate(SHOTS):
         # walk: feet must not slide -> one 12-picture step cycle covers exactly 3.2*u of ground (BODY.md); body moves at constant speed
         walk_end = t0; cyc = 1.0; woff = 0
         if p["pose"] == "walk":
-            u_ = U_B if is_big(e["who"]) else U_H; dur_ = max(0.2, (t1 - t0) * 0.9); walk_end = t0 + dur_
-            cyc = min(1.6, max(0.45, 3.2 * u_ / max(8.0, abs(e["to_x"] - e["x"]) / dur_))); woff = sum(map(ord, e["who"])) % SP.WALK_N
+            # natural pace: one 12-picture step cycle (1.0 s) covers 3.2*u of ground, so the body speed = 3.2*u px/s and the feet never slide.
+            # The character walks only as long as the way needs, arrives, then STANDS for the rest of the shot (no marching on the spot).
+            u_ = U_B if is_big(e["who"]) else U_H; dist_ = max(1.0, abs(e["to_x"] - e["x"])); dur_ = dist_ / (3.2 * u_ / 1.0); cyc = 1.0
+            if dur_ > 0.9 * (t1 - t0):          # long way in a short shot: walk a bit faster (shorter step time), never slower than natural
+                dur_ = 0.9 * (t1 - t0); cyc = 3.2 * u_ * dur_ / dist_
+            cyc = max(0.5, cyc); walk_end = t0 + dur_; woff = sum(map(ord, e["who"])) % SP.WALK_N
         def state(t, e=e, base=base, p=p, keys=keys, off=off, walk_end=walk_end, cyc=cyc, woff=woff):
             if p["pose"] == "walk":
                 if t >= walk_end: return base     # arrived: legs stop with the body

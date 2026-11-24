@@ -113,16 +113,16 @@
    "cast": [
     {
      "who": "ram",
-     "x": 500,
-     "to_x": 1050,
+     "x": 1210,
+     "to_x": 450,
      "pose": "walk",
      "face": "neutral",
      "look": "auto"
     },
     {
      "who": "lakshman",
-     "x": 150,
-     "to_x": 700,
+     "x": 700,
+     "to_x": 150,
      "pose": "walk",
      "face": "neutral",
      "look": "auto"
@@ -136,17 +136,16 @@
    "cast": [
     {
      "who": "vishwamitra",
-     "x": 1200,
-     "to_x": 650,
+     "x": 200,
+     "to_x": 900,
      "pose": "walk",
      "face": "stern",
      "look": "auto"
     },
     {
      "who": "rishi1",
-     "x": 900,
-     "to_x": 380,
-     "pose": "walk",
+     "x": 1210,
+     "pose": "stand",
      "face": "neutral",
      "look": "auto"
     }
@@ -166,5 +165,5 @@
    }
   ]
  },
- "VERSION": 1
+ "VERSION": 2
 }
