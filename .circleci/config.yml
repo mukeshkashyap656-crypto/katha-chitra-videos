@@ -1,0 +1,88 @@
+version: 2.1
+# Ramayan video on CircleCI: voice (Madhur) -> drawings -> HyperFrames render -> MP4 + cover.
+# Same steps as .github/workflows/make-video.yml. Starts by itself when files under episodes/ change,
+# or by hand: run the pipeline with parameter "episode" (e.g. episodes/bhag5).
+# Project env var needed to put the video on branch render-<episode>: GH_TOKEN (GitHub token with repo write).
+
+parameters:
+  episode:
+    type: string
+    default: ""
+  voice:
+    type: string
+    default: "madhur"
+
+jobs:
+  render:
+    docker:
+      - image: cimg/python:3.12-node
+    resource_class: large
+    environment:
+      VOICE_ENGINE: << pipeline.parameters.voice >>
+    steps:
+      - checkout
+      - restore_cache:
+          keys:
+            - render-tools-v1-{{ checksum "template/setup.sh" }}
+            - render-tools-v1-
+      - run:
+          name: Tools
+          command: |
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq ffmpeg libcairo2-dev pkg-config fonts-noto-core >/dev/null
+            pip install -q pycairo numpy pillow edge-tts
+      - run:
+          name: Which episode
+          command: |
+            E="<< pipeline.parameters.episode >>"
+            if [ -z "$E" ]; then
+              git fetch --depth 2 origin "$CIRCLE_BRANCH" 2>/dev/null || true
+              E=$(git diff --name-only HEAD~1 HEAD -- episodes 2>/dev/null | cut -d/ -f1-2 | sort -u | head -1)
+            fi
+            echo "Episode: ${E:-none}"
+            if [ -z "$E" ]; then echo "Koi episode nahi badla, kuch banana nahi"; circleci-agent step halt; fi
+            echo "export EPISODE=$E" >> "$BASH_ENV"
+      - run:
+          name: Make the episode (3 tries, 3rd may use fallback voice)
+          no_output_timeout: 30m
+          command: |
+            for TRY in 1 2 3; do
+              echo "=== Koshish $TRY ==="
+              rm -rf out /tmp/ep
+              if [ $TRY -lt 3 ]; then export MADHUR_ONLY=1; else export MADHUR_ONLY=0; fi
+              if bash tools/make_episode.sh "$EPISODE"; then exit 0; fi
+              echo "Koshish $TRY fail hui"; [ $TRY -lt 3 ] && sleep $((90 * TRY))
+            done
+            exit 1
+      - save_cache:
+          key: render-tools-v1-{{ checksum "template/setup.sh" }}
+          paths:
+            - ~/.npm
+            - ~/.cache/pip
+            - ~/.cache/hyperframes
+      - store_artifacts:
+          path: out
+          destination: video
+      - run:
+          name: Put the video on branch render-<episode> (4 tries)
+          when: always
+          command: |
+            [ -d out ] || exit 0
+            [ -n "$GH_TOKEN" ] || { echo "GH_TOKEN project variable nahi hai, video sirf Artifacts mein hai"; exit 0; }
+            B=render-$(basename "$EPISODE")$([ "$VOICE_ENGINE" = "piper" ] && echo -piper-test || true)
+            cd out && git init -q && git checkout -q -b "$B"
+            git config user.name "katha-chitra-bot"; git config user.email "bot@users.noreply.github.com"
+            git add -A && git commit -q -m "Render of $EPISODE from ${CIRCLE_SHA1:0:7} (CircleCI)"
+            for TRY in 1 2 3 4; do
+              git push -f "https://x-access-token:${GH_TOKEN}@github.com/${CIRCLE_PROJECT_USERNAME}/${CIRCLE_PROJECT_REPONAME}" "$B" && exit 0
+              echo "push koshish $TRY fail"; sleep $((15 * TRY))
+            done
+            exit 1
+
+workflows:
+  make-video:
+    jobs:
+      - render:
+          filters:
+            branches:
+              ignore: /^render-.*/
