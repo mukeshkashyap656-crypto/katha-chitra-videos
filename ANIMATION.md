@@ -162,3 +162,9 @@ Ye khaas hamare kaam ka hai kyunki wo cut-out/puppet rig ki walk hai (humari eng
 - **Haath mein ungliyan:** gol goley nahi. `draw_hand` (template/lib/chars.py): relaxed (ungli-rekha + angootha), open (khuli hatheli, bless/raise), point (ek ungli), fist (angry), join (pranam). Engine pose se apne aap chunta hai (`HANDS`, tools/engine/draw.py).
 - **Jaan:** har character PNG ke upar saans (halka upar-neeche phulna), dheema wazan-hilna (+-0.5 degree), aur bolte waqt har ~0.6 sec par chhota nod (build.py, "life" block). Paer zameen par tike rehte hain (origin kamar/paer).
 - Dikkat dikhe (chaadar jaisa hilna, paer uthna) toh amplitude build.py mein kam karo, band mat karo.
+
+## Insaan jaisa roop (24 Nov 2026, dusri shikayat: "realistic nahi, haath-pair, ungali, body language")
+- Haath-pair ab nali jaise nahi: `tlimb` (template/lib/chars.py) — kandhe se kalai tak patle hote, kohni/pindli par halka ubhaar, ek saaf outline. Kandhe .31u -> kohni .24u -> kalai .15u; pair .38u -> .19u.
+- Haath: hatheli + 4 alag ungliyan + angootha (relaxed/open/point/fist/join). Paon: chappal ka talwa + paon + 5 ungliyan, thoda bahar ki taraf mude, ek pair par wazan (thoda asymmetric).
+- Sir: jo kisi aur ki taraf dekh raha ho (look |0.4| se zyada) uska chehra 3/4 mudta hai (engine `turn`), sirf putli nahi.
+- Aaram ke haath ek jaise nahi: 3 tareeke (latke, aage dheele, ek haath thoda aage) character ke hisaab se.

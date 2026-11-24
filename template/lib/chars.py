@@ -75,54 +75,98 @@ def limb(ctx, pts, w, col):
     ctx.set_source_rgb(*OL); ctx.set_line_width(w + 2 * LW); ctx.stroke_preserve()
     ctx.set_source_rgb(*hexc(col)); ctx.set_line_width(w); ctx.stroke()
 
-def draw_hand(ctx, x, y, ang, u, skin, style, side):
-    """Hand with fingers at the wrist point (x, y). ang = forearm direction (radians from straight down, + = screen right).
-    style: relaxed | open | point | fist | join.  side: -1 left arm / +1 right arm (thumb goes toward the body)."""
-    ctx.save(); ctx.translate(x, y); ctx.rotate(-ang)
-    th = -side                                   # thumb side in local x
-    def finger(x0, y0, ln, curl, w=0.056, a=0.0):
-        # straight finger leaning by angle a (radians from the forearm direction)
-        pts = [(x0 * u, y0 * u)]
-        ca = a
-        for k in range(3):
-            ca += curl * (k + 1) * 0.5
-            px, py = pts[-1]; pts.append((px + math.sin(ca) * ln / 3 * u, py + math.cos(ca) * ln / 3 * u))
-        limb(ctx, pts, w * u, skin)
-    if style == "join":                          # palms pressed together (pranam): a closed leaf shape, fingers together
-        poly(ctx, [(-0.1 * u, 0.0), (-0.085 * u, 0.2 * u), (-0.04 * u, 0.4 * u), (0.0, 0.44 * u), (0.04 * u, 0.4 * u), (0.085 * u, 0.2 * u), (0.1 * u, 0.0)])
-        fill_stroke(ctx, skin, 4)
-        ctx.set_source_rgba(*OL, 0.8); ctx.set_line_width(2.2)
-        for fx in (-0.045, 0.0, 0.045):
-            ctx.move_to(fx * u, 0.24 * u); ctx.line_to(fx * u, 0.4 * u if fx == 0 else 0.37 * u); ctx.stroke()
-        ctx.restore(); return
-    def thumb(far=0.19):
-        limb(ctx, [(th * 0.08 * u, 0.04 * u), (th * far * u, 0.15 * u)], 0.075 * u, skin)
-    if style == "fist":
-        thumb(0.12)
-        ellipse(ctx, 0, 0.07 * u, 0.11 * u, 0.11 * u); fill_stroke(ctx, skin, 4)
-        ctx.set_source_rgba(*OL, 0.85); ctx.set_line_width(2.4)
-        for fx in (-0.045, 0.0, 0.045):
-            ctx.move_to(fx * u, 0.1 * u); ctx.line_to(fx * u, 0.17 * u); ctx.stroke()
-    elif style == "point":                      # index finger out, the rest curled into the palm
-        thumb(0.15)
-        finger(th * 0.0, 0.06, 0.34, 0.0, w=0.075)
-        ellipse(ctx, 0, 0.07 * u, 0.1 * u, 0.1 * u); fill_stroke(ctx, skin, 4)
-        for fx in (-th * 0.035, -th * 0.07):
-            ctx.arc(fx * u, 0.13 * u, 0.04 * u, 0, 6.3); fill_stroke(ctx, skin, 3)
-    elif style == "open":                       # fingers spread (blessing / showing)
-        for fx, ln, a in ((-0.075, 0.22, -0.3), (-0.026, 0.28, -0.1), (0.026, 0.28, 0.1), (0.075, 0.22, 0.3)):
-            finger(fx, 0.08, ln, 0.0, w=0.07, a=a)
-        thumb(0.21)
-        ellipse(ctx, 0, 0.06 * u, 0.1 * u, 0.1 * u); fill_stroke(ctx, skin, 4)
-    else:                                       # relaxed: mitten with finger lines + thumb
-        thumb(0.17)
-        poly(ctx, [(-0.095 * u, 0.0), (-0.1 * u, 0.2 * u), (-0.06 * u, 0.3 * u), (0.0, 0.32 * u), (0.06 * u, 0.3 * u), (0.1 * u, 0.2 * u), (0.095 * u, 0.0)])
-        fill_stroke(ctx, skin, 4)
-        ctx.set_source_rgba(*OL, 0.85); ctx.set_line_width(2.4)
-        for fx, ln in ((-0.045, 0.27), (0.0, 0.29), (0.045, 0.27)):
-            ctx.move_to(fx * u, 0.17 * u); ctx.line_to(fx * u, ln * u); ctx.stroke()
+
+def tlimb(ctx, pts, ws, col, lw=None, bulge=0.0):
+    """Tapered, organic limb along the polyline pts: width ws[i] at pts[i] (+ a soft muscle bulge between joints), round ends, one clean outline."""
+    lw = LW if lw is None else lw
+    cl, wd = [], []
+    for i in range(len(pts) - 1):
+        (x0, y0), (x1, y1) = pts[i], pts[i + 1]
+        for k in range(8):
+            t = k / 8; cl.append((x0 + (x1 - x0) * t, y0 + (y1 - y0) * t)); wd.append(ws[i] + (ws[i + 1] - ws[i]) * t + bulge * math.sin(math.pi * t))
+    cl.append(pts[-1]); wd.append(ws[-1])
+    L, R = [], []
+    for i, (px, py) in enumerate(cl):
+        a = cl[max(i - 1, 0)]; b = cl[min(i + 1, len(cl) - 1)]
+        dx, dy = b[0] - a[0], b[1] - a[1]; n = math.hypot(dx, dy) or 1.0; nx, ny = -dy / n, dx / n
+        h = wd[i] / 2; L.append((px + nx * h, py + ny * h)); R.append((px - nx * h, py - ny * h))
+    def dirang(i0, i1):
+        return math.atan2(cl[i1][1] - cl[i0][1], cl[i1][0] - cl[i0][0])
+    ctx.new_path(); ctx.move_to(*L[0])
+    for q in L[1:]: ctx.line_to(*q)
+    ph = dirang(len(cl) - 2, len(cl) - 1); ex_, ey_ = cl[-1]
+    ctx.arc_negative(ex_, ey_, wd[-1] / 2, ph + math.pi / 2, ph - math.pi / 2)
+    for q in reversed(R): ctx.line_to(*q)
+    ph0 = dirang(0, 1); sx_, sy_ = cl[0]
+    ctx.arc_negative(sx_, sy_, wd[0] / 2, ph0 - math.pi / 2, ph0 - 3 * math.pi / 2)
+    ctx.close_path()
+    ctx.set_line_join(cairo.LINE_JOIN_ROUND)
+    ctx.set_source_rgb(*OL); ctx.set_line_width(2 * lw); ctx.stroke_preserve()
+    ctx.set_source_rgb(*hexc(col)); ctx.fill()
+
+
+def draw_foot(ctx, x, y, u, skin, rot=0.0, side=0):
+    """Foot with a sandal sole and toes. side 0 = seen from the front (toes along the bottom edge), +-1 = side view facing that way."""
+    ctx.save(); ctx.translate(x, y); ctx.rotate(rot)
+    if side:
+        ellipse(ctx, 0.05 * u * side, 0.015 * u, 0.2 * u, 0.065 * u); fill_stroke(ctx, "#6b3a1e", 3.5)
+        ellipse(ctx, 0.04 * u * side, -0.025 * u, 0.15 * u, 0.055 * u); fill_stroke(ctx, skin, 3)
+        for k in range(4):
+            ctx.arc((0.15 + 0.03 * k) * u * side, -0.02 * u + 0.01 * k * u, 0.026 * u, 0, 6.3); fill_stroke(ctx, skin, 2)
+    else:
+        ellipse(ctx, 0, 0.02 * u, 0.17 * u, 0.075 * u); fill_stroke(ctx, "#6b3a1e", 3.5)
+        ellipse(ctx, 0, -0.01 * u, 0.125 * u, 0.06 * u); fill_stroke(ctx, skin, 3)
+        for k in range(5):
+            tx = (-0.09 + 0.045 * k) * u
+            ctx.arc(tx, 0.045 * u + 0.012 * u * (1 - abs(k - 2) / 2.0) * -1, (0.028 - 0.002 * abs(k - 2)) * u, 0, 6.3); fill_stroke(ctx, skin, 2)
     ctx.restore()
 
+def draw_hand(ctx, x, y, ang, u, skin, style, side):
+    """Human-looking hand at the wrist point (x, y). ang = forearm direction (radians from straight down, + = screen right).
+    style: relaxed | open | point | fist | join.  side: -1 left arm / +1 right arm (thumb toward the body)."""
+    ctx.save(); ctx.translate(x, y); ctx.rotate(-ang)
+    th = -side
+    FL = 2.4                                                                          # thin outline for fingers
+    def fing(x0, y0, ln, a=0.0, curl=0.0, w=0.056):
+        pts = [(x0 * u, y0 * u)]; ca = a
+        for k in range(3):
+            ca += curl * (0.6 + 0.4 * k)
+            px, py = pts[-1]; pts.append((px + math.sin(ca) * ln / 3 * u, py + math.cos(ca) * ln / 3 * u))
+        tlimb(ctx, pts, [w * u, w * 0.9 * u, w * 0.78 * u, w * 0.66 * u], skin, lw=FL)
+    def palm(w0=0.21, w1=0.19, ln=0.15):
+        tlimb(ctx, [(0, -0.03 * u), (0, ln * u)], [w0 * u, w1 * u], skin, lw=3.2)
+    def thumb(ang_=0.55, ln=0.19, y0=0.03):
+        pts = [(th * 0.09 * u, y0 * u), (th * (0.09 + 0.07 * math.sin(ang_)) * u, (y0 + 0.5 * ln * math.cos(ang_)) * u), (th * (0.09 + 0.13 * math.sin(ang_)) * u, (y0 + ln * math.cos(ang_)) * u)]
+        tlimb(ctx, pts, [0.085 * u, 0.072 * u, 0.058 * u], skin, lw=FL)
+    if style == "join":                          # palms pressed together (pranam): closed leaf, fingers together
+        poly(ctx, [(-0.1 * u, 0.0), (-0.09 * u, 0.2 * u), (-0.045 * u, 0.4 * u), (0.0, 0.45 * u), (0.045 * u, 0.4 * u), (0.09 * u, 0.2 * u), (0.1 * u, 0.0)])
+        fill_stroke(ctx, skin, 4)
+        ctx.set_source_rgba(*OL, 0.8); ctx.set_line_width(2.2)
+        for fx_ in (-0.045, 0.0, 0.045):
+            ctx.move_to(fx_ * u, 0.24 * u); ctx.line_to(fx_ * u, (0.41 if fx_ == 0 else 0.38) * u); ctx.stroke()
+    elif style == "fist":
+        thumb(0.9, 0.14, 0.05)
+        tlimb(ctx, [(0, 0.0), (0, 0.12 * u)], [0.24 * u, 0.22 * u], skin, lw=3.5)
+        ctx.set_source_rgba(*OL, 0.9); ctx.set_line_width(2.4)
+        for fx_ in (-0.06, -0.02, 0.02, 0.06):
+            ctx.move_to(fx_ * u, 0.1 * u); ctx.line_to(fx_ * u, 0.17 * u); ctx.stroke()
+    elif style == "point":                       # index finger out, the others curled into the palm, thumb across
+        palm(0.21, 0.19, 0.17)
+        fing(th * 0.0 - th * 0.0, 0.15, 0.30, a=th * 0.0, curl=0.0, w=0.066)
+        for k, fx_ in enumerate((0.05, 0.085, 0.115)):
+            ctx.arc(-th * fx_ * u, 0.2 * u, 0.04 * u, 0, 6.3); fill_stroke(ctx, skin, 2.4)
+        thumb(0.9, 0.14, 0.06)
+    elif style == "open":                        # fingers gently spread: blessing / explaining
+        for fx_, ln, a_ in ((-0.075, 0.24, -0.34), (-0.026, 0.3, -0.11), (0.026, 0.31, 0.09), (0.075, 0.25, 0.3)):
+            fing(fx_, 0.11, ln, a=a_, curl=-a_ * 0.12)
+        thumb(0.95, 0.22, 0.04)
+        palm(0.22, 0.2, 0.15)
+    else:                                        # relaxed: four fingers, gently curled, thumb alongside
+        for fx_, ln, c_ in ((-0.077, 0.24, 0.2), (-0.026, 0.29, 0.24), (0.026, 0.28, 0.26), (0.077, 0.22, 0.3)):
+            fing(fx_, 0.11, ln, a=fx_ * 0.9, curl=c_ * -th * 0.35)
+        thumb(0.5, 0.2, 0.02)
+        palm(0.22, 0.2, 0.15)
+    ctx.restore()
 
 # ---------------- character specs (fixed for whole series) ----------------
 CHARS = {
@@ -437,16 +481,16 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
                             hh = math.sqrt(max(seg * seg - (d / 2) ** 2, 0.0))
                             _bd = SIDE if SIDE else 1
                             knee = (hip[0] + vx * d / 2 + vy * hh * _bd, hip[1] + vy * d / 2 - vx * hh * _bd)
-                        limb(ctx, [hip, knee, foot], 0.30 * u, _dk(c["lower"]) if (SIDE and s < 0) else c["lower"])
-                        ctx.save(); ctx.translate(foot[0] + 0.05 * u * (SIDE or 1), foot[1] + 0.01 * u); ctx.rotate(toe * (SIDE or 1))
-                        ellipse(ctx, 0, 0, 0.22 * u, 0.09 * u); fill_stroke(ctx, "#6b3a1e", 4); ctx.restore()
+                        tlimb(ctx, [hip, knee, foot], [0.36 * u, 0.27 * u, 0.19 * u], _dk(c["lower"]) if (SIDE and s < 0) else c["lower"], bulge=0.03 * u)
+                        draw_foot(ctx, foot[0] + 0.05 * u * (SIDE or 1), foot[1] + 0.01 * u, u, c["skin"], rot=toe * (SIDE or 1), side=SIDE)
                         continue
                     lift = dx = 0.0
                     fy = feet - lift
-                    poly(ctx, [(x + s * 0.05 * u, waist_y + 0.6 * u), (x + s * 0.38 * u, waist_y + 0.6 * u),
-                               (x + s * 0.28 * u + dx, fy - 0.05 * u), (x + s * 0.1 * u + dx, fy - 0.05 * u)])
-                    fill_stroke(ctx, c["lower"])
-                    ellipse(ctx, x + s * 0.24 * u + dx * 1.3, fy - 0.04 * u, 0.17 * u, 0.07 * u); fill_stroke(ctx, "#6b3a1e", 4)
+                    _hipp = (x + s * 0.2 * u, waist_y + 0.6 * u)
+                    _ank = (x + s * (0.26 if s > 0 else 0.30) * u + dx, fy - 0.07 * u)          # a little asymmetric: weight on one leg
+                    _kn = (_hipp[0] + (_ank[0] - _hipp[0]) * 0.5 + s * (0.015 if s > 0 else 0.05) * u, _hipp[1] + (_ank[1] - _hipp[1]) * 0.5)
+                    tlimb(ctx, [_hipp, _kn, _ank], [0.38 * u, 0.28 * u, 0.19 * u], c["lower"], bulge=0.03 * u)
+                    draw_foot(ctx, _ank[0] + s * 0.02 * u, fy - 0.03 * u, u, c["skin"], rot=s * (0.16 if s > 0 else 0.26))
                 sk = c.get("skirt", 1.0) * (0.84 if (SIDE and WALK is not None) else 1.0)
                 _sway = 0.05 * u * math.sin(WALK) if (WALK is not None and not SIDE) else 0.0
                 poly(ctx, [(x - (bw - 0.03) * u, waist_y), (x + (bw - 0.03) * u, waist_y), (x + (bw + 0.05 + 0.12 * sk) * u + _sway, waist_y + sk * u), (x - (bw + 0.05 + 0.12 * sk) * u + _sway, waist_y + sk * u)])
@@ -615,13 +659,13 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
         _side = "L" if s < 0 else "R"
         if part not in ("all", "body"): ctx = _real if part == "u" + _side else _dummy
         elif part == "all": ctx = _real
-        limb(ctx, [(sx, sy), (ex, ey)], 0.24 * u, _skn if c.get("bare") else _sl)
+        tlimb(ctx, [(sx, sy), (ex, ey)], [0.31 * u, 0.24 * u], _skn if c.get("bare") else _sl, bulge=0.025 * u)
         if c.get("bare"):
             mx_, my_ = (sx + ex) / 2, (sy + ey) / 2
             ctx.move_to(mx_ - math.cos(a1) * 0.13 * u, my_ + math.sin(a1) * 0.13 * u); ctx.line_to(mx_ + math.cos(a1) * 0.13 * u, my_ - math.sin(a1) * 0.13 * u)
             ctx.set_source_rgb(*hexc(c.get("bandcol", "#f2c230"))); ctx.set_line_width(0.07 * u); ctx.stroke()
         if part not in ("all", "body"): ctx = _real if part == "f" + _side else _dummy
-        limb(ctx, [(ex, ey), (hx2, hy2)], 0.2 * u if kind != "f" else 0.15 * u, _sl if kind == "b" else _skn)
+        tlimb(ctx, [(ex, ey), (hx2, hy2)], [0.23 * u, 0.15 * u] if kind != "f" else [0.18 * u, 0.115 * u], _sl if kind == "b" else _skn, bulge=0.03 * u)
         if kind == "f" or c.get("bare"):
             bx, by = ex + math.sin(a1 + a2) * L2 * 0.8, ey + math.cos(a1 + a2) * L2 * 0.8
             col = c.get("bandcol") or ("#e8b730" if (c.get("jewel") or c.get("bare")) else "#d9cfb8")

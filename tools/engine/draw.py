@@ -92,6 +92,7 @@ def draw_state(file, who, pose="stand", face="neutral", look=0.0, mouth="X", bli
     C.WALK = walk
     info = person(c, who, x, feet, HS, pose="sit" if pose == "sit" else "stand", arms=ARMS.get(pose, ARMS["stand"]), mouth=mouth,
            blink=blink, emo=face, look=look, bow=1.0 if pose == "bow" else 0.0,
+           turn=(1.0 if look > 0.4 else -1.0 if look < -0.4 else 0.0) if (pose != "sit" and walk is None) else None,
            hand=(hstyle, hstyle) if part not in ("all", "body") else HANDS.get(pose, ("relaxed", "relaxed")), part=part)
     PIV[who] = {"scale": (1.0), "cw": CW, "piv": [list(map(float, t)) for t in info["pivots"]]}
     C.WALK = None

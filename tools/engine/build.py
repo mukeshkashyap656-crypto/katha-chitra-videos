@@ -67,8 +67,8 @@ ends = starts[1:] + [END]
 
 # ---------- arms as separate pieces: shoulder + elbow rotate smoothly (real cut-out animation) ----------
 PIVOTS = json.load(open(f"{P}/assets/pivots.json")) if os.path.exists(f"{P}/assets/pivots.json") else {}
-POSE_ARMS = {"stand": (0.10, 0.40, -0.10, -0.40), "talk": (0.10, 0.40, 0.55, -0.95), "bless": (0.10, 0.40, 0.55, -0.95),
-             "point": (0.10, 0.40, 1.25, 0.25), "raise": (0.10, 0.40, 2.45, 0.25), "namaste": (-0.1, 2.18, 0.1, -2.18),
+POSE_ARMS = {"stand": (0.10, 0.06, -0.10, -0.06), "talk": (0.10, 0.10, 0.55, -0.95), "bless": (0.10, 0.10, 0.55, -0.95),
+             "point": (0.10, 0.10, 1.25, 0.25), "raise": (0.10, 0.10, 2.45, 0.25), "namaste": (-0.1, 2.18, 0.1, -2.18),
              "angry": (0.6, 0.9, -0.6, -0.9)}
 # talking gestures: (left a1,a2) / (right a1,a2); None = stay at rest
 GESTURES = [(None, (0.60, -0.95)), ((0.30, 0.60), (0.95, -0.55)), (None, (1.05, -1.30)), ((-0.45, 0.85), (0.45, -0.85)),
@@ -78,6 +78,8 @@ def deg(a): return -a * 180 / math.pi
 def arm_js(cid, e, t0, t1, speak, rest_style):
     """GSAP for the 4 joints of one person: gentle idle sway + (while speaking) hand gestures with a smooth go / hold / return."""
     pose = e.get("pose", "stand"); rest = list(POSE_ARMS[pose]); rnd = random.Random(zlib.crc32(cid.encode()))
+    if pose == "stand" and zlib.crc32(cid.encode()) % 3 == 0: rest = [0.12, 0.55, -0.12, -0.55]      # loose hands in front (variety)
+    elif pose == "stand" and zlib.crc32(cid.encode()) % 3 == 1: rest = [0.09, 0.14, -0.14, -0.30]   # one hand a little forward
     joints = ["uL", "fL", "uR", "fR"]; amp = {"u": 0.03, "f": 0.055}
     if pose == "namaste": amp = {"u": 0.006, "f": 0.008}
     wp = {j: [(t0, rest[i])] for i, j in enumerate(joints)}      # waypoints (time, angle) per joint
