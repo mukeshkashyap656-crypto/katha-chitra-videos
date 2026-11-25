@@ -75,7 +75,7 @@ Ye file kisi bhi AI (Gemini, DeepSeek, ChatGPT, Claude...) ko do aur bolo:
 - Subtitle karaoke: poori line halki, har shabd **theek bole jaane ke time** par chamke, 1–2 khaas shabd peele. Purani line poori hat jaaye tab nayi aaye; naam ki chip bhi.
 - Har hisse par 2–3 shabd ki Hindi heading chip; chip ya widget kabhi chehra/pair na dhake; chip cut ke saath hate.
 - Mushkil baat (vardaan, shakti) chhote icon ya ginti se (jaise पुत्र: 0 → 4).
-- **Awaaz: free Madhur voice** (hi-IN-MadhurNeural). Har character ka alag tone: Ram thoda ooncha, Vishwamitra dheema-gehra. User ko batao kaunsi awaaz kiske liye hai.
+- **Awaaz:** sirf kathavachak = **Adam**; baaki sab kirdaar **free awaaz** (neeche 'Har kirdaar alag' wala hissa hi pakka niyam hai). Har character ka alag tone: Ram thoda ooncha, Vishwamitra dheema-gehra. User ko batao kaunsi awaaz kiske liye hai.
 - Har line ki awaaz **ek barabar zor** ki; lambe chup ke gap kaat do.
 - Jungle ki awaaz + dhol/whoosh/chamak wale effects (free CC0 `sfx/`). Trending gaana video mein nahi — upload ke waqt app mein "Add sound".
 
@@ -88,6 +88,7 @@ Ye file kisi bhi AI (Gemini, DeepSeek, ChatGPT, Claude...) ko do aur bolo:
 - Cover video ke **pehle 0.1 sec** par lagta hai (gallery thumbnail + YouTube cover).
 
 ## 10. Director check (bhejne se pehle zaroori)
+- **Adhoori jaanch = PASS nahi** (25 Nov 2026): asli video dekhi-suni na ja sake, ya chitra/Valmiki jaanch na chale, toh auto-post nahi hoga. Issue 'jaanch-baaki' list mein jaata hai aur din mein sirf jaanch dobara hoti hai (video dobara nahi banta). Baaki automatic kaam chalte rehte hain.
 - Poora video khud dekho: har ¼ sec ka frame, chehre/haath/dhanush/kinare zoom karke.
 - Movement lagatar frames mein, awaaz aur subtitle ka mel, awaaz ka level.
 - Pichhle version se milao — kuch kharab toh nahi hua.
@@ -105,11 +106,11 @@ Ye file kisi bhi AI (Gemini, DeepSeek, ChatGPT, Claude...) ko do aur bolo:
 - Public hone ke baad agle bhaag ka sawaal wala comment pin karo.
 - Audience: "not made for kids" (pehle se set).
 
-## 13. Kharcha
+## 13A. Kharcha
 - Hamesha free tools pehle. Paisa lagne wali cheez bina poochhe nahi. API key kabhi kisi ko mat dikhao.
 
 
-## 14. Purane episode aur harkat ka kaam (24 Nov 2026, owner ka hukm)
+## 14A. Purane episode aur harkat ka kaam (24 Nov 2026, owner ka hukm)
 - Jo episode pehle ban chuke (Bhag 2-6) unhe **chhod do**, dobara mat banao. Naye niyam sirf aane wale naye episodes par.
 - Chalna, chehra/aankhon ki disha, haath ka jhoolna, rukna, sar samne: BODY.md + SEEKH.md mein likha hai. Naya engine kaam pehle branch par test render, jaanch PASS hone par hi `auto-video` mein.
 - Dusre chat mein ban rahe episode (jaise Bhag 8) ko is kaam se mat chhedo.
@@ -155,7 +156,7 @@ Pura seekh: ANIMATION.md ("Insaan kaise bolta hai"). Har video par lagta hai:
 
 ## 18. Hamesha naya zamana (25 Nov 2026, owner ka hukm: "sab kuch modern zamane ke hisab se chalna chahiye, AI bhi GitHub ko update dete rahe")
 - Koi bhi AI model, awaaz, tool ya GitHub Action ka naam/version purana ho jaye (404, "no longer available", "deprecated" ki chetavani) toh use khud naye se badlo; purane ko list se hata do.
-- Model ki list pehle se tay mat rakho: pehle Google/OpenRouter/GitHub Models ki abhi ki list mangwao, phir chuno (hardcoded naam sirf aakhri sahara).
+- Model ki list pehle se tay mat rakho: pehle Google/OpenRouter ki abhi ki list mangwao, phir chuno (hardcoded naam sirf aakhri sahara).
 - Jab bhi koi masla theek ho, seekh SEEKH.md mein ek chhoti line likho, aur code GitHub mein update karo. Owner ko har baar poochhna na pade.
 
 ## 19. Viral seekh (25 Nov 2026, owner ka hukm: GitHub AI free mein viral topic, hook seekhe)

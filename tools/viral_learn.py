@@ -24,6 +24,13 @@ MIN_VIEWS = 5000
 OUT = "VIRAL_LEARN.md"
 DAILY = "SEEKH_ROZ.md"
 API = "https://www.googleapis.com/youtube/v3"
+# film, actor, comedy, AI-tool wale video se seekh nahi leni (Valmiki katha channel)
+JUNK = re.compile(r"film|फिल्म|फ़िल्म|movie|मूवी|cinema|trailer|teaser|adipurush|आदिपुरुष|bollywood|hollywood|box ?office|"
+                  r"\bactors?\b|actress|director|comedy|कॉमेडी|funny|\bmemes?\b|lip[ -]?sync|\bvfx\b", re.I)
+
+
+def is_junk(*texts):
+    return any(JUNK.search(t or "") for t in texts)
 
 
 def yt(path, **params):
@@ -67,6 +74,8 @@ def find_outliers():
         views = int(v["statistics"].get("viewCount") or 0)
         subs = chans.get(v["snippet"]["channelId"], 0)
         if views < MIN_VIEWS or subs > MAX_SUBS:
+            continue
+        if is_junk(v["snippet"]["title"], v["snippet"].get("description"), v["snippet"]["channelTitle"]):
             continue
         rows.append({"id": vid, "title": v["snippet"]["title"], "views": views, "subs": subs,
                      "score": round(views / max(subs, 200), 1), "channel": v["snippet"]["channelTitle"],
@@ -129,7 +138,7 @@ def comment_questions(rows):
         for it in d.get("items", []):
             sn = it["snippet"]["topLevelComment"]["snippet"]
             t = re.sub(r"\s+", " ", sn.get("textDisplay", "")).strip()
-            if ("?" in t or "kya" in t.lower() or "kaun" in t.lower() or "kyu" in t.lower()) and 12 <= len(t) <= 140:
+            if not is_junk(t) and ("?" in t or "kya" in t.lower() or "kaun" in t.lower() or "kyu" in t.lower()) and 12 <= len(t) <= 140:
                 out.append((sn.get("likeCount", 0), t))
     out.sort(reverse=True)
     seen, res = set(), []
@@ -214,6 +223,7 @@ def main():
             r["line1"] = first_line(r["id"])
             if not r["line1"] and n < 2 and os.environ.get("GEMINI_API_KEY", "").strip():
                 r["line1"] = gemini_watch(r["id"])
+        rows = [r for r in rows if not is_junk(r.get("line1"))]      # video ke andar film wali baat nikle toh bhi hatao
         lines.append("## Chhote channel (50K subscriber tak) ke sabse chale Shorts (pichhle 60 din)")
         lines.append("Score = views / subscribers; zyada matlab chhote channel par bhi bahut chala.")
         for r in rows:
@@ -234,6 +244,7 @@ def main():
             txt = ask("Neeche Ramayan/katha ke un Shorts ki list hai jo chhote channel par bhi bahut chale. Inki shuruaat (title / pehli line) "
                       "dekh ke Hinglish mein 5 chhote, kaam ke niyam likho: kaise shuru karte hain (sawaal, ankda, raaz, chaunkane wali baat), "
                       "kitne shabd, kaun se shabd baar baar aate hain. Har niyam ek line, example ke saath. Kahani badalne ki baat KABHI nahi. "
+                      "Film, actor, 'deleted scene' jaisi baat ya jhooti sansani wale shabd kabhi salaah mat dena. "
                       "Sirf bullet list do, aur kuch nahi.\n\n" + data, want_json=False)
             lines += ["", "## Seekh (AI ne in Shorts se nikali)", txt.strip()[:1800]]
         except Exception as e:
@@ -249,7 +260,7 @@ def main():
         lines.append(f"## Abhi chhote channel wali list nahi bani: {why or 'koi Short filter mein nahi aaya'}")
     ideas = fallback_ideas()
     if ideas:
-        lines += ["", "## Log abhi YouTube pe ye type kar rahe hain (autocomplete)"] + [f"- {s}" for s in ideas[:20]]
+        lines += ["", "## Log abhi YouTube pe ye type kar rahe hain (autocomplete)"] + [f"- {s}" for s in [i for i in ideas if not is_junk(i)][:20]]
     open(OUT, "w", encoding="utf-8").write("\n".join(lines) + "\n")
     try:
         old = open(DAILY, encoding="utf-8").read()

@@ -12,11 +12,11 @@ Ye file Claude ke paas jo bhi jaankari hai (owner se baatcheet, channel ka asli 
 
 ## 2. Channel aur system ka nakshaa
 - Channel: Katha Chitra (@kathachitra_123), Valmiki Ramayan Shorts, 13 Nov 2026 ko bana; Bhag 1 19 Nov ko public. Instagram: @kathachitra56 (sirf naye Ramayan Reels rakhne hain, purane hata do). Do aur channel alag hain: Katha (auto Bhakti Katha Shorts, repo auto-youtube) aur M.K.Gaming (Free Fire/gaming). Inhe Katha Chitra se mat milao.
-- Repo: katha-chitra-videos (private). Branch `auto-video` = asli kaam; `main` = scripts/workflows. Voice page: public repo katha-chitra-voice (GitHub Pages), mic se Hindi bolkar "@ai" issue banta hai.
+- Repo: katha-chitra-videos (25 Nov 2026 se **public**: key/password kabhi file mein nahi). Branch `auto-video` = asli kaam; `main` = scripts/workflows. Voice page: public repo katha-chitra-voice (GitHub Pages), mic se Hindi bolkar "@ai" issue banta hai.
 - Posting: naya episode shaam 7 baje IST public; wahi video YouTube Short aur Instagram Reel par. Instagram ka API schedule nahi karta (7 baje ke liye ek-baar ka scheduled task). Instagram raw GitHub link seedha nahi padh pata (504) — pehle file upload karke video_file se Reel banate hain. YouTube par upload private + saada title, phir title/description/tags/schedule Composio/vidIQ se.
 - Audience: "not made for kids" pehle se set. Title/tag/comment ke niyam NIYAM.md section 12.
 - Apps jude hain Composio ke zariye (YouTube Katha Chitra + M.K.Gaming, Instagram, GitHub, Gemini, Drive) aur vidIQ (free plan, ~150 credit/mahina; credit 0 hon toh 11 Dec 2026 tak wapas nahi). Credit wale vidIQ kaam hafte mein ek baar, kai episodes ek saath. YouTube Data API ka roz ka quota bhar sakta hai (sham tak ruk jaata hai) — tab dobara koshish baad mein, rok ko bypass mat karo.
-- Video banne ka rasta: episode.json (SHOTS) -> tools/make_episode.sh -> awaaz (Madhur, free) -> chitra (tools/engine) -> HyperFrames render -> machine_checks -> AI director check -> PASS par post. Render ka branch `render-<naam>`; fetch: `git fetch --depth 1 origin render-<naam>` + `git archive FETCH_HEAD | tar -x`.
+- Video banne ka rasta: episode.json (SHOTS) -> tools/make_episode.sh -> awaaz (kathavachak Adam, baaki kirdaar free; NIYAM.md) -> chitra (tools/engine) -> HyperFrames render -> machine_checks -> AI director check -> PASS par post (poori video dekhe bina PASS nahi). Render ka branch `render-<naam>`; fetch: `git fetch --depth 1 origin render-<naam>` + `git archive FETCH_HEAD | tar -x`.
 
 ## 3. Channel ka asli haal (24 Nov 2026, Studio ka data)
 - Pahunch (reach) theek: ~92.8% views Shorts feed se. Dikkat **ruk kar dekhna** (retention): sirf 30.2% log ruke, 69.8% ne swipe kiya; aausat dekhna ~6 sec (video 40-60 sec ka). 0 subscriber kyunki aakhir ke widget tak koi pahunchta nahi.
@@ -43,7 +43,7 @@ Ye file Claude ke paas jo bhi jaankari hai (owner se baatcheet, channel ka asli 
 - Delivery: naya video + cover ek saath, naam `Ramayan_BhagX_<Title>.mp4` / `Ramayan_BhagX_Cover.jpg`, neeche numbered list. Drive/link nahi. Sirf wahi file jo is baar bani.
 
 ## 6. Awaaz
-- Madhur (free Microsoft) awaaz chuni gayi (ElevenLabs ke sets se behtar lagi). Script aaj ki saaf bolchaal ki Hindi mein, smooth flow; bhaari kitaabi shabd nahi. Awaaz ke saath jungle/dhol/whoosh sfx (`sfx/`, CC0). Kaun si awaaz kiske liye — owner ko batao.
+- Awaaz (25 Nov 2026 ka aakhri faisla): sirf kathavachak = Adam, baaki sab kirdaar free awaaz. Script aaj ki saaf bolchaal ki Hindi mein, smooth flow; bhaari kitaabi shabd nahi. Awaaz ke saath jungle/dhol/whoosh sfx (`sfx/`, CC0). Kaun si awaaz kiske liye — owner ko batao.
 
 ## 7. Harkat (movement) — ab tak ki seekh
 - Mocap (CMU, free) se asli chaal: 12 frame ka chakkar; body har chakkar mein 3.2*u aage (u = oonchai/5) warna paer phisalte hain. Dono haath paer ke ulte (arms=None, ARMS list chalte waqt mat lagao). Rukna asli data se (stop). Mudne mein pehle aankhein, phir sar, phir body.
@@ -61,4 +61,4 @@ Ye file Claude ke paas jo bhi jaankari hai (owner se baatcheet, channel ka asli 
 
 ## 9. Free AI helper (tum khud)
 - Tum sirf wahi jaante ho jo in files mein likha hai; har naya niyam/seekh SEEKH.md (ya BODY.md) mein likho taaki agli baar yaad rahe.
-- Tum owner se kabhi OK nahi poochhte; khud sochkar tay karo, maanyataayein summary mein likho. Free AI ka silsila: Gemini -> OpenRouter -> GitHub Models -> Cloudflare -> Groq -> Cerebras -> Mistral -> SambaNova -> NVIDIA -> Cohere -> HuggingFace -> aakhir mein local Ollama. Samay-seema 5 min/jawab; baaki subah ki queue mein.
+- Tum owner se kabhi OK nahi poochhte; khud sochkar tay karo, maanyataayein summary mein likho. Free AI ka silsila: Gemini -> OpenRouter -> Cloudflare -> Groq -> Cerebras -> Mistral -> SambaNova -> NVIDIA -> Cohere -> HuggingFace -> aakhir mein local Ollama. Samay-seema 5 min/jawab; baaki subah ki queue mein.

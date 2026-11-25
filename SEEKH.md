@@ -44,3 +44,7 @@ Ye wo galtiyan aur sudhaar hain jo pichhle episodes (Bhag 2, 3, 4, 5) mein mile.
 ## Character ke tay roop
 NIYAM.md section 4 "Tay roop (character bible)" mein hain. Har character ka alag chehra, sharir aur khade hone ka dhang. Naya character aaye toh uska roop pehle Valmiki se tay karke NEW_CHARS mein joddo, phir har scene mein wahi.
 - (24 Nov 2026) Bolte waqt forearm uthao (talkel) + beat flick; sir alag layer se nod/anticipation (nod); kohni par outline ring nahi (open_start); haath chehre jitna. Detail: ANIMATION.md "Insaan kaise bolta hai", NIYAM 17.
+
+- (25 Nov 2026) Poori video dekhe bina PASS/auto-post nahi; adhoori jaanch 'jaanch-baaki' list mein, sirf jaanch dobara.
+- (25 Nov 2026) GitHub Models 30 July 2026 ko band ho chuka, chain se hataya. gemini-2.5-pro naye user ke liye band, hataya. Free AI fail ho toh log mein HTTP code aur asli jawab dikhta hai.
+- (25 Nov 2026) Viral seekh se film/actor/comedy/AI-tool wale video chhante jaate hain.

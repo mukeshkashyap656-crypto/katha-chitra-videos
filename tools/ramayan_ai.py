@@ -1,5 +1,5 @@
 """
-Katha Chitra AI Helper - free. Pehle Gemini, busy ho to OpenRouter ke free AI, phir GitHub Models (koi alag key nahi). Sirf Katha Chitra (Ramayan).
+Katha Chitra AI Helper - free. Pehle Gemini, busy ho to OpenRouter ke free AI, phir doosre free AI. Sirf Katha Chitra (Ramayan).
 
 Issue ya comment mein "@ai <kaam>" likho, jaise:
   "@ai Bhag 7 ka plan banao"                 -> plans/ mein shot list + lines (pehle tay, phir banao)
@@ -121,7 +121,7 @@ def live_gemini_models(c):
         try:
             names = [m.name.split("/")[-1] for m in c.models.list()
                      if "generateContent" in (getattr(m, "supported_actions", None) or ["generateContent"])]
-            bad = ("image", "tts", "live", "audio", "thinking-exp", "preview-0", "embed", "vision", "robotics", "computer")
+            bad = ("gemini-2.5-pro", "image", "tts", "live", "audio", "thinking-exp", "preview-0", "embed", "vision", "robotics", "computer")
             ok = [n for n in names if not any(x in n for x in bad)]
             _LIVE["m"] = sorted((n for n in ok if "flash" in n), reverse=True)[:4]
             _LIVE["pro"] = sorted((n for n in ok if "pro" in n), reverse=True)[:2]
@@ -205,31 +205,6 @@ def openrouter(prompt_text, want_json):
     raise Busy(f"OpenRouter: {str(last)[:200]}")
 
 
-GH_MODELS = ["openai/gpt-4.1-mini", "openai/gpt-4o-mini", "deepseek/DeepSeek-V3-0324", "meta/Llama-3.3-70B-Instruct"]
-
-
-def github_models(prompt_text, want_json):
-    """Teesra free sahara: GitHub Models (GitHub ka apna token, koi alag key nahi; workflow mein models: read)."""
-    tok = os.environ.get("GH_TOKEN", "").strip()
-    if not tok:
-        raise Busy("GitHub token nahi")
-    last = None
-    for m in GH_MODELS:
-        try:
-            r = requests.post("https://models.github.ai/inference/chat/completions", timeout=300,
-                              headers={"Authorization": f"Bearer {tok}", "Content-Type": "application/json"},
-                              json={"model": m, "temperature": 0.3, "messages": [{"role": "user", "content": prompt_text}],
-                                    **({"response_format": {"type": "json_object"}} if want_json else {})})
-            txt = r.json()["choices"][0]["message"]["content"].strip()
-            if txt:
-                print("Jawab (GitHub Models):", m); USED.append("GitHub " + m)
-                return txt
-        except Exception as e:
-            last = e
-            print(f"GitHub Models {m} nahi chala: {str(e)[:160]}")
-    raise Busy(f"GitHub Models: {str(last)[:200]}")
-
-
 PREF = re.compile(r"(gpt-oss-120b|llama-?3\.3-70b|qwen.*(235|72|32)b|deepseek-v3|mistral-(large|medium)|command-a|gemma.*(27|70)b)", re.I)
 
 
@@ -260,7 +235,10 @@ def _openai_style(name, url, key, models, prompt_text, want_json, timeout=300):
                                   json={**body, **({"response_format": {"type": "json_object"}} if want_json else {})})
                 if want_json and r.status_code >= 400:    # kuch jagah JSON-mode nahi hota: bina uske dobara
                     r = requests.post(url, timeout=timeout, headers={"Authorization": f"Bearer {key}"}, json=body)
-                txt = r.json()["choices"][0]["message"]["content"].strip()
+                try:
+                    txt = (r.json()["choices"][0]["message"]["content"] or "").strip()
+                except (KeyError, IndexError, TypeError, ValueError):
+                    raise RuntimeError(f"HTTP {r.status_code}: {r.text[:200]!r}")
                 if txt:
                     print(f"Jawab ({name}):", m); USED.append(f"{name} {m}")
                     return txt
@@ -373,7 +351,6 @@ def ask(prompt_text, image=None, want_json=True, hard=False):
     chain = [("Gemini", lambda p: gemini(contents if p == prompt_text else p, want_json, hard))]
     if not imgs:   # tasveer sirf Gemini dekh sakta hai
         chain += [("OpenRouter", lambda p: openrouter(p, want_json)),
-                  ("GitHub", lambda p: github_models(p, want_json)),
                   ("Cloudflare", lambda p: cloudflare(p, want_json)),
                   ("Groq", lambda p: groq(p, want_json)),
                   ("Cerebras", lambda p: cerebras(p, want_json)),
@@ -1005,7 +982,11 @@ def review_once(sheets, ep_json):
         "# VIRAL.md\n" + viral + "\n\n# NIYAM.md\n" + open("NIYAM.md", encoding="utf-8").read() + "\n\n# SEEKH.md\n"
         + open("SEEKH.md", encoding="utf-8").read() + "\n\n# BODY.md\n" + open("BODY.md", encoding="utf-8").read() + "\n\n# ANIMATION.md\n" + open("ANIMATION.md", encoding="utf-8").read() + "\n\n# EPISODE\n" + ep_json)
     for _ in range(3):
-        txt = ask(prompt, image=sheets, want_json=False, hard=True)
+        try:
+            txt = ask(prompt, image=sheets, want_json=False, hard=True)
+        except Exception as e:
+            print("chitra jaanch nahi chali:", str(e)[:150])
+            return None
         mt = re.search(r"\{.*\}", txt, re.DOTALL)
         try:
             d = json.loads(mt.group(0) if mt else txt)
@@ -1116,7 +1097,7 @@ def review(sheet, ep_json, video_path=None):
         watch = fw.result()
     runs = [r for r in runs if r]
     if not runs:
-        return bad("jaanch ka jawab samajh nahi aaya, isliye PASS nahi")
+        return {**bad("jaanch ka jawab samajh nahi aaya, isliye PASS nahi"), "pending": True}
     keys = {}
     for r in runs:
         for h in r.get("hard_fails") or []:
@@ -1133,13 +1114,19 @@ def review(sheet, ep_json, video_path=None):
     watch_high = [pr for pr in ((watch or {}).get("problems") or [])[:6]
                   if str(pr.get("confidence", "")).lower() == "high" and pr.get("what")]
     # ek akeli "pakki" raay se video nahi rukta (free AI ghalat bhi ho sakta hai); 2 ya zyada pakki dikkatein = sudhaar zaroori
-    ok = (not hard) and total >= PASS_SCORE and len(watch_high) < 2
+    content_ok = (not hard) and total >= PASS_SCORE and len(watch_high) < 2
+    # video asli mein dekhi-suni na gayi ho toh PASS kabhi nahi (post rukta hai, baad mein sirf jaanch dobara)
+    watched = isinstance((watch or {}).get("problems"), list)
+    ok = content_ok and watched
+    pending = content_ok and not watched      # aur koi galti nahi: sudhaar nahi, sirf dobara jaanch
     weak = [w for r in runs for w in (r.get("weak") or [])][:6]
     for pr in watch_high:
         weak.append({"what": f"(video dekha-suna {pr.get('time', '')}, {pr.get('kind', '')}) {pr['what']}", "fix": pr.get("fix", "")})
     cant = sorted({str(c) for r in runs for c in (r.get("cannot_check") or [])})
     lines = [f"**Faisla: {'✅ PASS' if ok else '❌ FAIL'}** — number {total}/70 (chahiye {PASS_SCORE}+, {len(runs)} jaanch ka ausat): " +
              ", ".join(f"{k} {v}" for k, v in sc.items())]
+    if not watched:
+        lines.append("- ⏳ Asli video dekhi-suni nahi ja saki, isliye abhi PASS nahi.")
     for h in hard:
         lines.append(f"- ❌ Niyam {h.get('rule')}: {h.get('what')}")
     single = [h for k, v in keys.items() if len(v) < len(runs) for h in v[:1]]
@@ -1161,7 +1148,7 @@ def review(sheet, ep_json, video_path=None):
         fixes.append("The real video (watched and heard) has 2+ sure problems; fix them (see WEAK lines above).")
     if not hard and total < PASS_SCORE:
         fixes.append(f"Score {total}/70 is below {PASS_SCORE}; improve the weakest scores: " + str(sc))
-    return {"pass": ok, "score": total, "hard_fails": hard, "fix_text": "\n".join(fixes), "text": "\n".join(lines),
+    return {"pass": ok, "pending": pending, "score": total, "hard_fails": hard, "fix_text": "\n".join(fixes), "text": "\n".join(lines),
             "cannot_check": cant}
 
 
@@ -1169,8 +1156,9 @@ def autopost_on():
     return "[AUTOPOST]" in os.environ.get("ISSUE_TITLE", "")
 
 
-def finish(issue, branch, st, ep, run_url):
-    """Video ban gaya: kadi jaanch -> galti ho toh khud theek karke dobara -> PASS par (AUTOPOST ho toh) post."""
+def finish(issue, branch, st, ep, run_url, retry=False):
+    """Video ban gaya: kadi jaanch -> galti ho toh khud theek karke dobara -> PASS par (AUTOPOST ho toh) post.
+    Jaanch adhoori rahe toh post nahi: issue 'jaanch-baaki' list mein, baad mein sirf jaanch dobara (retry=True)."""
     ep_json = open(f"{ep}/episode.json", encoding="utf-8").read()
     verdict = None
     for rv in range(MAX_REVIEW_ROUNDS + 1):
@@ -1180,15 +1168,25 @@ def finish(issue, branch, st, ep, run_url):
         with ThreadPoolExecutor(max_workers=2) as ex:      # Valmiki jaanch aur video jaanch saath-saath
             fs = ex.submit(story_check, ep_json, bh)
             verdict = review(sheet, ep_json, fetch_video(ep))
-            sc_problems = fs.result()
+            try:
+                sc_problems = fs.result()
+            except Exception as e:      # Valmiki jaanch chali hi nahi: ye bhi adhoori jaanch hai
+                print("Valmiki jaanch nahi chali:", str(e)[:150])
+                sc_problems = []
+                verdict["pending"] = bool(verdict["pass"] or verdict.get("pending"))
+                verdict["pass"] = False
+                verdict["text"] += "\n- ⏳ Valmiki jaanch nahi ho paayi."
+        if verdict.get("pending"):
+            verdict["text"] = verdict["text"].replace("✅ PASS", "⏳ JAANCH BAAKI").replace("❌ FAIL", "⏳ JAANCH BAAKI")
         if sc_problems:
             verdict["pass"] = False
+            verdict["pending"] = False
             verdict["hard_fails"] = list(verdict.get("hard_fails") or []) + [{"rule": 9, **p} for p in sc_problems]
             verdict["text"] = verdict["text"].replace("✅ PASS", "❌ FAIL (Valmiki jaanch)") + "\n" + "\n".join(f"- ❌ Niyam 9 (Valmiki): {p.get('line')}: {p.get('what')}" for p in sc_problems)
             verdict["fix_text"] = (verdict.get("fix_text", "") + "\n" + "\n".join(
                 f"RULE 9: line {p.get('line')}: {p.get('what')} -> {p.get('fix')}" for p in sc_problems)).strip()
         print(f"Jaanch round {rv}: pass={verdict['pass']} score={verdict['score']}")
-        if verdict["pass"] or rv == MAX_REVIEW_ROUNDS:
+        if verdict["pass"] or verdict.get("pending") or rv == MAX_REVIEW_ROUNDS:
             break
         data = solve(f"The strict director review of the finished video of {ep} found problems. Fix them in {ep}/episode.json "
                      f"(change as little as needed, bump VERSION, render true). Problems:\n{verdict['fix_text']}")
@@ -1206,6 +1204,18 @@ def finish(issue, branch, st, ep, run_url):
             verdict = {"pass": False, "score": 0, "hard_fails": [], "text": "❌ Sudhaar ke baad video nahi bana.", "fix_text": ""}
             break
         ep_json = open(f"{ep}/episode.json", encoding="utf-8").read()
+    if verdict.get("pending"):
+        st["run_url"] = run_url
+        save_state(st)
+        commit_push(branch, f"AI Helper (issue {issue}): jaanch baaki")
+        mark_review_pending(issue)
+        if retry:
+            return                      # chup-chaap: agli baar phir (niyam 16)
+        deliver(issue, ep, run_url, verdict)
+        comment(issue, "⏳ Video ban gaya, par **poori jaanch nahi ho paayi** (video dekhne wala AI nahi chala). "
+                       "Isliye **abhi post nahi hoga**. Main din mein khud sirf jaanch dobara karunga; video dobara nahi banega. "
+                       "Jaanch der se hui toh post agle shaam 7 baje ke samay par jaa sakta hai.")
+        return
     deliver(issue, ep, run_url, verdict)
     if verdict["pass"]:
         try:
@@ -1213,13 +1223,16 @@ def finish(issue, branch, st, ep, run_url):
         except Exception as e:
             print("promote nahi hua:", str(e)[:200])
     if not autopost_on():
+        clear_review_pending(issue)
         return
     if verdict["pass"]:
         n = re.sub(r"\D", "", os.path.basename(ep))
         run(["gh", "workflow", "run", "publish.yml", "--repo", REPO, "--ref", "main",
              "-f", f"episode={ep}", "-f", f"bhag={n}", "-f", f"issue={issue}"])
+        clear_review_pending(issue)
         comment(issue, "🚀 Jaanch PASS. Shaam 7 baje YouTube + Instagram par apne aap jaayega.")
     else:
+        clear_review_pending(issue)
         run(["gh", "label", "create", "dekhna-hai", "--repo", REPO, "--color", "d93f0b", "--force",
              "--description", "Jaanch fail: post nahi hua"], check=False)
         run(["gh", "issue", "edit", str(issue), "--repo", REPO, "--add-label", "dekhna-hai"], check=False)
@@ -1322,11 +1335,48 @@ def queue_issue(issue, why):
                    "Aapko kuch likhne ki zaroorat nahi.\n\n" f"<sub>{why[:200]}</sub>")
 
 
+REVIEW_QUEUE = "jaanch-baaki"   # video ban chuka hai, sirf poori jaanch baaki (dobara banana NAHI)
+
+
+def mark_review_pending(issue):
+    run(["gh", "label", "create", REVIEW_QUEUE, "--repo", REPO, "--color", "fbca04", "--force",
+         "--description", "Video bana hai, poori jaanch baaki: post ruka hai"], check=False)
+    run(["gh", "issue", "edit", str(issue), "--repo", REPO, "--add-label", REVIEW_QUEUE])   # fail ho toh saaf galti dikhe
+
+
+def clear_review_pending(issue):
+    run(["gh", "issue", "edit", str(issue), "--repo", REPO, "--remove-label", REVIEW_QUEUE], check=False)
+
+
+def recheck_pending(base):
+    """'jaanch-baaki' wale video ki sirf jaanch dobara; PASS par wahi post wala raasta."""
+    nums = json.loads(run(["gh", "api", f"repos/{REPO}/issues?labels={REVIEW_QUEUE}&state=open", "-q", "[.[].number]"]) or "[]")
+    print("jaanch-baaki list:", nums)
+    for n in nums:
+        try:
+            iss = json.loads(run(["gh", "api", f"repos/{REPO}/issues/{n}"]))
+            os.environ.update(ISSUE_NUMBER=str(n), ISSUE_TITLE=iss["title"], REQUEST="")
+            run(["git", "checkout", "-q", "-f", base])
+            run(["git", "branch", "-D", f"ai/issue-{n}"], check=False)
+            USED.clear(); LEASE.clear(); CODE_TOUCHED.clear()
+            branch = f"ai/issue-{n}"
+            checkout_branch(branch)
+            st = load_state()
+            if not st.get("episode"):
+                print(f"#{n}: episode pata nahi, chhoda")
+                continue
+            finish(n, branch, st, st["episode"], st.get("run_url") or f"https://github.com/{REPO}/actions", retry=True)
+        except Exception as e:          # label laga rehta hai, agli baar phir
+            print(f"#{n}: dobara jaanch nahi ho payi: {str(e)[:200]}")
+
+
 def mode_queue():
     """Morning schedule: redo every queued issue with the owner's last @ai request."""
     os.environ["PATIENT"] = "1"      # shaant samay hai: Gemini ke liye zyada sabr
     owner = REPO.split("/")[0]
     base = run(["git", "rev-parse", "HEAD"]).strip()
+    recheck_pending(base)
+    run(["git", "checkout", "-q", "-f", base])
     nums = json.loads(run(["gh", "api", f"repos/{REPO}/issues?labels={QUEUE}&state=open", "-q", "[.[].number]"]) or "[]")
     print("baad-mein list:", nums)
     for n in nums:
@@ -1380,6 +1430,9 @@ def mode_report():
         q = json.loads(run(["gh", "api", f"repos/{REPO}/issues?labels={QUEUE}&state=open", "-q", "[.[].number]"]) or "[]")
         if q:
             need.append("queue mein kaam atke hain")
+        w = json.loads(run(["gh", "api", f"repos/{REPO}/issues?labels={REVIEW_QUEUE}&state=open", "-q", "[.[].number]"]) or "[]")
+        if w:
+            need.append("video ki jaanch baaki hai, post ruka hai (" + ", ".join("#" + str(n) for n in w) + ")")
         lines.append(f"**'Baad-mein' queue mein:** {len(q)} kaam" + (f" ({', '.join('#' + str(n) for n in q)})" if q else ""))
     except Exception:
         pass

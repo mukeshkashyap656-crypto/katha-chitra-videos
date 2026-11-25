@@ -1,7 +1,7 @@
 version: 2.1
 # Ramayan video on CircleCI: voice (Madhur) -> drawings -> HyperFrames render -> MP4 + cover.
-# Same steps as .github/workflows/make-video.yml. Starts by itself when files under episodes/ change,
-# or by hand: run the pipeline with parameter "episode" (e.g. episodes/bhag5).
+# Same steps as .github/workflows/make-video.yml. Does NOT start by itself (avoids double builds with GitHub Actions).
+# Start by hand: run the pipeline with parameter "episode" (e.g. episodes/bhag5).
 # Project env var needed to put the video on branch render-<episode>: GH_TOKEN (GitHub token with repo write).
 
 parameters:
@@ -81,6 +81,8 @@ jobs:
 
 workflows:
   make-video:
+    # Apne aap band (GitHub hi banata hai, double na ho). Haath se: pipeline parameter "episode" do.
+    when: << pipeline.parameters.episode >>
     jobs:
       - render:
           filters:
