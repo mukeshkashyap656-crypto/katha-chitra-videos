@@ -43,25 +43,108 @@ def save_state(st):
     json.dump(st, open(STATE, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 
 
-def news_items(queries):
-    items, seen = [], set()
+GOOGLE_NEWS_BLOCKED = False   # GitHub ke server ko Google News 503 deta hai: ek baar fail hote hi baaki koshish chhod do
+
+# Seedhe khule khabar feed (Google News band ho tab bhi chalein). Koi feed na chale to baaki chalte hain.
+FEEDS = {
+    "Mobile Gaming": ["https://gadgets.ndtv.com/rss/games", "https://www.gadgets360.com/rss/games/news", "https://hindi.news18.com/rss/khabar/tech/tech.xml"],
+    "Mobile & Tech": ["https://gadgets.ndtv.com/rss/mobiles/news", "https://www.gadgets360.com/rss/news", "https://hindi.news18.com/rss/khabar/tech/tech.xml"],
+    "AI & Apps": ["https://gadgets.ndtv.com/rss/apps/news", "https://www.gadgets360.com/rss/news", "https://hindi.news18.com/rss/khabar/tech/tech.xml"],
+    "Cricket & Khel": ["https://sports.ndtv.com/rss/cricket", "https://www.espncricinfo.com/rss/content/story/feeds/0.xml", "https://sports.ndtv.com/rss/all"],
+    "Film & OTT": ["https://khabar.ndtv.com/rss/entertainment", "https://www.bollywoodhungama.com/rss/news.xml", "https://hindi.news18.com/rss/khabar/entertainment/entertainment.xml"],
+    "Desh Duniya": ["https://feeds.bbci.co.uk/hindi/rss.xml", "https://khabar.ndtv.com/rss", "https://navbharattimes.indiatimes.com/rssfeedstopstories.cms"],
+}
+
+
+def _parse_feed(content, default_source=""):
+    out = []
+    try:
+        root = ET.fromstring(content)
+    except Exception:
+        return out
+    for it in root.iter():
+        tag = it.tag.split("}")[-1]
+        if tag not in ("item", "entry"):
+            continue
+        t = ""; link = ""; src = default_source
+        for ch in it:
+            ct = ch.tag.split("}")[-1]
+            if ct == "title": t = (ch.text or "").strip()
+            elif ct == "link": link = (ch.text or ch.attrib.get("href") or "").strip()
+            elif ct == "source" and (ch.text or "").strip(): src = ch.text.strip()
+        if t:
+            out.append({"title": t, "link": link, "source": src})
+    return out
+
+
+def _get_feed(url, source, tries=2):
+    for attempt in range(tries):
+        try:
+            r = requests.get(url, timeout=25, headers={"User-Agent": "Mozilla/5.0 (compatible; khabaradda-bot)"})
+            r.raise_for_status()
+            return _parse_feed(r.content, source)
+        except Exception as e:
+            log("feed koshish", attempt + 1, "fail:", url[:60], str(e)[:80])
+            time.sleep(3 * (attempt + 1))
+    return []
+
+
+def gemini_headlines(cat, queries):
+    """Aakhri sahara: Gemini Google Search se aaj ki 6 khabrein dhoondhe (jab saare RSS band hon)."""
+    key = os.environ.get("GEMINI_API_KEY")
+    if not key:
+        return []
+    try:
+        from google import genai
+        from google.genai import types
+        c = genai.Client(api_key=key)
+        prompt = ("Google Search se India ki AAJ ki (pichhle 24 ghante ki) 6 alag-alag taaza khabrein dhoondho, vishay: %s (jaise: %s). "
+                  "Sirf seedhi khabar: sehat, paisa/share, chunaav/rajneeti, hatya/hadsa, dharm wali nahi. "
+                  'Sirf JSON list do: [{"title": "Hindi mein khabar ka shirshak", "link": "khabar ka asli URL", "source": "website ka naam"}]') % (cat, ", ".join(queries))
+        for model in gemini_models(c):
+            try:
+                r = c.models.generate_content(model=model, contents=prompt,
+                                              config=types.GenerateContentConfig(tools=[types.Tool(google_search=types.GoogleSearch())]))
+                m = re.search(r"\[.*\]", r.text, re.DOTALL)
+                arr = json.loads(m.group(0))
+                res = [{"title": str(x["title"]).strip(), "link": str(x.get("link") or "").strip(), "source": str(x.get("source") or "").strip()}
+                       for x in arr if x.get("title")]
+                log("Gemini se khabar mili:", len(res), model)
+                return res
+            except Exception as e:
+                log("Gemini khabar", model, "fail:", str(e)[:120]); time.sleep(5)
+    except Exception as e:
+        log("Gemini khabar poora fail:", str(e)[:120])
+    return []
+
+
+def news_items(queries, cat=None):
+    """Khabar ke raaste (ek ke baad ek): 1) Google News 2) Bing News 3) seedhe feed 4) Gemini search. Pehla jo kaam kare, wahi nahi, sab milake."""
+    global GOOGLE_NEWS_BLOCKED
+    raw = []
     for q in queries:
-        url = "https://news.google.com/rss/search?" + urllib.parse.urlencode(
-            {"q": q + " when:1d", "hl": "hi", "gl": "IN", "ceid": "IN:hi"})
-        for attempt in range(3):
+        if not GOOGLE_NEWS_BLOCKED:
+            url = "https://news.google.com/rss/search?" + urllib.parse.urlencode({"q": q + " when:1d", "hl": "hi", "gl": "IN", "ceid": "IN:hi"})
             try:
                 r = requests.get(url, timeout=30, headers={"User-Agent": "Mozilla/5.0"})
                 r.raise_for_status()
-                for it in ET.fromstring(r.content).iter("item"):
-                    t = (it.findtext("title") or "").strip()
-                    if t and t not in seen and not BLOCKED.search(t):
-                        seen.add(t)
-                        items.append({"title": t, "link": it.findtext("link"),
-                                      "source": (it.findtext("source") or "").strip()})
-                break
+                raw += _parse_feed(r.content)
             except Exception as e:
-                log("RSS koshish", attempt + 1, "fail:", e)
-                time.sleep(5 * (attempt + 1))
+                log("Google News fail (ab ise chhod rahe):", str(e)[:80]); GOOGLE_NEWS_BLOCKED = True
+        burl = "https://www.bing.com/news/search?" + urllib.parse.urlencode({"q": q, "format": "rss", "setlang": "hi", "cc": "IN"})
+        raw += _get_feed(burl, "Bing News", tries=1)
+    log("Google/Bing se khabar:", len(raw))
+    if len(raw) < 3 and cat:
+        for fu in FEEDS.get(cat, []):
+            raw += _get_feed(fu, urllib.parse.urlparse(fu).netloc)
+        log("seedhe feed ke baad kul khabar:", len(raw))
+    if len(raw) < 3 and cat:
+        raw += gemini_headlines(cat, queries)
+    items, seen = [], set()
+    for it in raw:
+        t = it["title"]
+        if t and t not in seen and not BLOCKED.search(t):
+            seen.add(t); items.append(it)
     return items
 
 
@@ -483,7 +566,7 @@ def main():
     made = 0
     for cat in order:
         if made >= N: break
-        items = [i for i in news_items(CATS[cat]) if not any(similar(i["title"], t) for t in done_titles)]
+        items = [i for i in news_items(CATS[cat], cat) if not any(similar(i["title"], t) for t in done_titles)]
         log(cat, "- naye khabar:", len(items))
         for item in items[:6]:
             item["cat"] = cat
