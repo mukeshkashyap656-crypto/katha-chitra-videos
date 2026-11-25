@@ -129,7 +129,8 @@ def arm_js(cid, e, t0, t1, speak, rest_style, style=None, join=None):
             for i, j in enumerate(joints): wp[j] += [(c_, base_[i]), (d_, rest[i])]
         t = b_ + 0.45; k = 0                                       # BEATS: small flick of one forearm on the stress of the words, hands take turns
         while t < c_ - 0.4:
-            jb = ("fL", "fR")[(k + zlib.crc32(cid.encode())) % 2] if pose != "bless" else "fL"   # aashirvaad ka haath sthir; ib = joints.index(jb); sgn = 1 if ib == 1 else -1
+            jb = ("fL", "fR")[(k + zlib.crc32(cid.encode())) % 2] if pose != "bless" else "fL"   # aashirvaad ka haath sthir
+            ib = joints.index(jb); sgn = 1 if ib == 1 else -1
             wp[jb] += [(t, base_[ib]), (t + 0.11, base_[ib] + sgn * 0.20), (t + 0.34, base_[ib])]
             t += 0.55 + rnd.random() * 0.6; k += 1
     if talking and pose == "stand":
