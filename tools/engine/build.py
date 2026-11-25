@@ -195,6 +195,8 @@ def head_js(cid, e, t0, t1, speak, st, seed, gest):
 # ---------- characters ----------
 DW, DH, DTOP = 689, 935, 582          # human picture size + top (feet stand on y=1480)
 BW, BH, BTOP = 837, 1107, 409         # big (devta/rakshasa) picture
+LIE_DY = 280          # a lying person: centre moved down so the body rests on the ground (feet line y=1480)
+LIE_HEAD_DX = -300    # lying head (head to the left): this far left of the person's x
 U_H, HEAD_H = 128, 904                # human: head unit + head centre (world px)
 U_B, HEAD_B = 160, 760
 def is_big(who): return bool(SP.char_meta(who, EPI).get("big"))
@@ -315,8 +317,6 @@ def cam(px, py, z):
     s = S0 * z; x = VW / 2 - s * px; y = VH / 2 - s * py
     x = min(0, max(VW - WW * s, x)); y = min(0, max(VH - WH * s, y))
     return f"x:{x:.1f},y:{y:.1f},scale:{s:.4f}"
-LIE_DY = 280          # a lying person: centre moved down so the body rests on the ground (feet line y=1480)
-LIE_HEAD_DX = -300    # lying head (head to the left): this far left of the person's x
 def half_w(who): return 145 if is_big(who) else 118
 def ehw(e): return 480 if e.get("lie") else half_w(e["who"])
 def wide(cast, z_max=1.25):
