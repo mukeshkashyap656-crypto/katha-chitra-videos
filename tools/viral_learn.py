@@ -91,6 +91,80 @@ def first_line(vid):
             return None
 
 
+def gemini_watch(vid):
+    """Gemini seedha YouTube link dekhta hai: pehle 3 second mein kya bolta/dikhta hai. Na chale toh None."""
+    try:
+        from google import genai
+        from google.genai import types
+        import ramayan_ai as ra
+        c = genai.Client(api_key=os.environ["GEMINI_API_KEY"].strip(), http_options=types.HttpOptions(timeout=90000))
+        for m in ra.gemini_model_list(c)[:3]:
+            try:
+                r = c.models.generate_content(model=m, contents=types.Content(parts=[
+                    types.Part(file_data=types.FileData(file_uri=f"https://www.youtube.com/watch?v={vid}")),
+                    types.Part(text="Is video ke pehle 3 second mein kya bolta aur dikhta hai? Hinglish mein sirf ek chhoti line (30 shabd tak): "
+                                    "pehle shabd/sawaal kya hai aur screen par kya hai. Aur kuch mat likho.")]))
+                t = (r.text or "").strip()
+                if t:
+                    return t[:260]
+            except Exception as e:
+                print("gemini_watch", m, str(e)[:100])
+                if "404" in str(e) or "429" in str(e):
+                    continue
+                break
+    except Exception as e:
+        print("gemini_watch nahi chala:", str(e)[:100])
+    return None
+
+
+def comment_questions(rows):
+    """Viral videos ke comments mein jo sawaal log poochh rahe hain (agle hook ke liye)."""
+    out = []
+    for r in rows[:5]:
+        try:
+            d = yt("commentThreads", part="snippet", videoId=r["id"], order="relevance", maxResults=30, textFormat="plainText")
+        except Exception as e:
+            print("comments fail:", str(e)[:100]); continue
+        for it in d.get("items", []):
+            sn = it["snippet"]["topLevelComment"]["snippet"]
+            t = re.sub(r"\s+", " ", sn.get("textDisplay", "")).strip()
+            if ("?" in t or "kya" in t.lower() or "kaun" in t.lower() or "kyu" in t.lower()) and 12 <= len(t) <= 140:
+                out.append((sn.get("likeCount", 0), t))
+    out.sort(reverse=True)
+    seen, res = set(), []
+    for _, t in out:
+        k = t.lower()[:30]
+        if k not in seen:
+            seen.add(k); res.append(t)
+    return res[:12]
+
+
+WIKI = ["Ramayana", "Mandodari", "Ravana", "Hanuman", "Sita", "Lakshmana", "Bharata_(Ramayana)", "Kaikeyi", "Ahalya", "Shabari", "Jatayu",
+        "Vali_(Ramayana)", "Sugriva", "Vibhishana", "Kumbhakarna", "Indrajit", "Dasharatha", "Vishvamitra", "Tataka", "Shurpanakha",
+        "Valmiki", "Urmila", "Kausalya", "Sumitra", "Shatrughna", "Angada", "Jambavan", "Sampati", "Trijata", "Marich"]
+
+
+def wiki_trending():
+    """Wikipedia ke free pageviews: kaun sa kirdaar pichhle 7 din mein pehle se zyada khoja ja raha hai. Key nahi chahiye."""
+    end = dt.date.today() - dt.timedelta(days=1)
+    start = end - dt.timedelta(days=37)
+    rows = []
+    for a in WIKI:
+        try:
+            r = requests.get("https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/"
+                             f"{a}/daily/{start:%Y%m%d}00/{end:%Y%m%d}00", headers={"User-Agent": "katha-chitra-bot/1.0 (github)"}, timeout=20)
+            v = [x["views"] for x in r.json()["items"]]
+            if len(v) < 20:
+                continue
+            last7 = sum(v[-7:]) / 7
+            before = sum(v[:-7]) / max(1, len(v) - 7)
+            rows.append((last7 / max(before, 1), int(last7), a.replace("_", " ")))
+        except Exception:
+            continue
+    rows.sort(reverse=True)
+    return rows
+
+
 def fallback_ideas():
     out = []
     try:
@@ -117,13 +191,23 @@ def main():
     else:
         why = "YOUTUBE_API_KEY secret nahi hai (free: Google Cloud Console -> YouTube Data API v3 -> key)"
     if rows:
-        for r in rows[:8]:
+        for n, r in enumerate(rows[:8]):
             r["line1"] = first_line(r["id"])
+            if not r["line1"] and n < 4 and os.environ.get("GEMINI_API_KEY", "").strip():
+                r["line1"] = gemini_watch(r["id"])
         lines.append("## Chhote channel (50K subscriber tak) ke sabse chale Shorts (pichhle 60 din)")
         lines.append("Score = views / subscribers; zyada matlab chhote channel par bhi bahut chala.")
         for r in rows:
             lines.append(f"- {r['views']:,} views, {r['subs']:,} subs, score {r['score']}: \"{r['title']}\"" +
                          (f" | pehli line: \"{r['line1']}\"" if r.get("line1") else (f" | desc: {r['desc']}" if r["desc"] else "")))
+        extra = []
+        try:
+            qs = comment_questions(rows)
+            if qs:
+                extra += ["", "## Viral videos ke comments mein log ye poochh rahe hain (hook ke liye)"] + [f"- {q}" for q in qs]
+        except Exception as e:
+            print("comments:", str(e)[:100])
+        lines += extra
         try:
             from ramayan_ai import ask
             os.environ["NO_LOCAL"] = "1"
@@ -135,7 +219,14 @@ def main():
             lines += ["", "## Seekh (AI ne in Shorts se nikali)", txt.strip()[:1800]]
         except Exception as e:
             lines += ["", f"(AI ne seekh nahi nikali: {str(e)[:100]}; list upar hai, helper khud padh lega)"]
-    else:
+    try:
+        wt = wiki_trending()
+        if wt:
+            lines += ["", "## Wikipedia pe abhi kaun sa kirdaar zyada khoja ja raha hai (pichhle 7 din / pehle ke 30 din, roz ke views)"]
+            lines += [f"- {n}: {x:.1f} guna ({v} views roz)" for x, v, n in wt[:8]]
+    except Exception as e:
+        print("wiki nahi chala:", str(e)[:100])
+    if not rows:
         lines.append(f"## Abhi chhote channel wali list nahi bani: {why or 'koi Short filter mein nahi aaya'}")
         ideas = fallback_ideas()
         if ideas:
