@@ -1,0 +1,119 @@
+{
+ "NAME": "Ramayan_Bhag10_Ahalya_ka_Uddhar",
+ "COVER_NAME": "Ramayan_Bhag10_Cover",
+ "TAG": "रामायण कथा",
+ "BHAG": 10,
+ "VERSION": 1,
+ "QUESTION": "आहिल्या को श्राप से किसने मुक्त किया?",
+ "LINES": {
+  "n1": ["ऋषि ने अपनी ही पत्नी को श्राप दिया था!", "+0%", "+0Hz"],
+  "n2": ["उनका नाम था आहिल्या। पति ऋषि गौतम ने ही उन्हें श्राप दिया था।", "+0%", "+0Hz"],
+  "n3": ["विश्वामित्र के साथ राम-लक्ष्मण मिथिला जा रहे थे।", "+0%", "+0Hz"],
+  "n4": ["रास्ते में राम के आने से आहिल्या का श्राप टूट गया।", "+0%", "+0Hz"],
+  "ah1": ["हे राम! आपने मेरी पीड़ा का अंत किया।", "+0%", "+8Hz"],
+  "ram1": ["अब आप निडर रहिए, आहिल्या जी।", "+2%", "+10Hz"],
+  "n5": ["आहिल्या मुक्त हो गईं। आगे मिथिला में किससे मिले राम? अगले भाग में! कमेंट में लिखिए: जय श्री राम। सब्सक्राइब कीजिए।", "+0%", "+0Hz"]
+ },
+ "SPEAKER": {"ah1": "ahalya", "ram1": "ram"},
+ "KEYWORDS": {
+  "n1": ["श्राप"],
+  "n2": ["आहिल्या"],
+  "n3": ["मिथिला"],
+  "n4": ["श्राप"],
+  "ah1": ["राम"],
+  "ram1": ["निडर"],
+  "n5": ["मिथिला"]
+ },
+ "NEW_CHARS": {
+  "ahalya": {
+   "name": "आहिल्या",
+   "kind": "f",
+   "skin": "#e8b887",
+   "hair": "#140c08",
+   "saree": "#c85a3a",
+   "blouse": "#f2c230",
+   "border": "#f2c230",
+   "jewel": true,
+   "tilak": true
+  }
+ },
+ "SHOTS": [
+  {
+   "line": "n1",
+   "bg": "ashram",
+   "mood": "sorrow",
+   "chip": "श्राप",
+   "cast": [{"who": "ahalya", "x": 680, "pose": "stand", "face": "sad", "look": "front"}],
+   "show": "आहिल्या अकेली खड़ी, चेहरे पर गहरा दुख, आँखों में आँसू; सूना-सा आश्रम, ठंडा-नीला माहौल"
+  },
+  {
+   "line": "n2",
+   "bg": "ashram",
+   "mood": "sorrow",
+   "cast": [{"who": "ahalya", "x": 680, "pose": "sit", "face": "worry", "look": "front"}],
+   "show": "आहिल्या बैठी, सिर थोड़ा झुका, हाथ जोड़े; चेहरे पर चिंता और दुख, पीछे सूना आश्रम"
+  },
+  {
+   "line": "n3",
+   "bg": "morning",
+   "mood": "none",
+   "cam": "wide",
+   "chip": "मिथिला की ओर",
+   "cast": [
+    {"who": "vishwamitra", "x": 300, "pose": "walk", "face": "neutral", "to_x": 380},
+    {"who": "ram", "x": 680, "pose": "walk", "face": "neutral", "to_x": 760},
+    {"who": "lakshman", "x": 1060, "pose": "walk", "face": "neutral", "to_x": 1140}
+   ],
+   "show": "विश्वामित्र आगे, राम-लक्ष्मण साथ; तीनों जंगल के रास्ते मिथिला की ओर कदम मिलाकर बढ़ते हुए"
+  },
+  {
+   "line": "n4",
+   "bg": "ashram",
+   "mood": "wonder",
+   "chip": "श्राप टूटा",
+   "cast": [
+    {"who": "ram", "x": 420, "pose": "raise", "face": "firm", "look": "right"},
+    {"who": "ahalya", "x": 900, "pose": "stand", "face": "shock", "look": "left"}
+   ],
+   "show": "राम का आगमन, हाथ उठा; आहिल्या का चेहरा अचानक चमकता, आश्चर्य; चारों ओर सुनहरी रोशनी"
+  },
+  {
+   "line": "ah1",
+   "bg": "ashram",
+   "mood": "joy",
+   "cam": "two",
+   "cast": [
+    {"who": "ahalya", "x": 380, "pose": "namaste", "face": "joy", "look": "right"},
+    {"who": "ram", "x": 900, "pose": "stand", "face": "smile", "look": "left"}
+   ],
+   "show": "आहिल्या हाथ जोड़कर आभार व्यक्त करती, आँखों में आनंद; राम शांत मुस्कुराते हुए"
+  },
+  {
+   "line": "ram1",
+   "bg": "ashram",
+   "mood": "none",
+   "cam": "speaker",
+   "cast": [
+    {"who": "ram", "x": 420, "pose": "talk", "face": "firm", "look": "right"},
+    {"who": "ahalya", "x": 940, "pose": "stand", "face": "smile", "look": "left"}
+   ],
+   "show": "राम शांत और दृढ़ स्वर में आश्वासन देते; आहिल्या हाथ जोड़े, चेहरे पर भरोसा"
+  },
+  {
+   "line": "n5",
+   "bg": "ashram",
+   "mood": "wonder",
+   "chip": "अगला भाग",
+   "cast": [{"who": "ahalya", "x": 680, "pose": "namaste", "face": "joy", "look": "right"}],
+   "show": "आहिल्या अब प्रसन्न, हाथ जोड़े, जाते हुए राम की ओर देखती; दूर मिथिला का रास्ता, सुनहरा माहौल"
+  }
+ ],
+ "COVER": {
+  "bg": "ashram",
+  "tag": "आहिल्या का श्राप!",
+  "cast": [
+   {"who": "ahalya", "x": 400, "pose": "stand", "face": "worry", "look": "front"},
+   {"who": "ram", "x": 900, "pose": "stand", "face": "firm", "look": "left"}
+  ]
+ }
+}
