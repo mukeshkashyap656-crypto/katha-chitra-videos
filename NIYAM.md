@@ -152,3 +152,8 @@ Pura seekh: ANIMATION.md ("Insaan kaise bolta hai"). Har video par lagta hai:
 
 ## Haath (25 Nov 2026, owner ka hukm)
 - Haath ab ek poora insaani haath hai (`draw_hand`, template/lib/chars.py): moti ungliyan 3 jodon ki (knuckle line ke saath), palm kalaai se chauda hota hua, angootha palm se ugta hua, mutthi mein ungliyan saaf mudi hui, namaste mein gol sire waali pattiyan. Gol goli jaisa palm aur teeli jaisi ungliyan wapas nahi lani. Styles: relaxed / open / point / fist / join (purane naam wahi).
+
+## 18. Hamesha naya zamana (25 Nov 2026, owner ka hukm: "sab kuch modern zamane ke hisab se chalna chahiye, AI bhi GitHub ko update dete rahe")
+- Koi bhi AI model, awaaz, tool ya GitHub Action ka naam/version purana ho jaye (404, "no longer available", "deprecated" ki chetavani) toh use khud naye se badlo; purane ko list se hata do.
+- Model ki list pehle se tay mat rakho: pehle Google/OpenRouter/GitHub Models ki abhi ki list mangwao, phir chuno (hardcoded naam sirf aakhri sahara).
+- Jab bhi koi masla theek ho, seekh SEEKH.md mein ek chhoti line likho, aur code GitHub mein update karo. Owner ko har baar poochhna na pade.
