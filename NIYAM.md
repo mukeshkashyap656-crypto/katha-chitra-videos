@@ -168,3 +168,8 @@ Pura seekh: ANIMATION.md ("Insaan kaise bolta hai"). Har video par lagta hai:
 - Seekhna sirf free aur public jagah se: free tutorials, open-source projects, doosre channels ke public Shorts/Reels, chalte trends. Jahan paise lagein wahan owner se bina poochhe mat jao.
 - Doosron se sirf dhang seekho (hook, edit ka rhythm, tool, tareeka). Unki kahani, awaaz, drawing ya video copy mat karo. Ramayan ki kahani Valmiki se hi rahegi.
 - Har naye seekh ki ek chhoti line SEEKH.md mein likho. Owner ko sirf kaam ki baat batao (section 16): kya naya laga, usse kya behtar hua.
+
+## 21. Pakki yaad aur roz ki seekh (25 Nov 2026, owner ka hukm: "inki memory achhi banani hai, yaad rahe inhe sab kuch aur seekhna hai inko roz free raaste se")
+- `YAAD.md`: owner ki pakki pasand aur sudhaar. Har kaam se pehle padho. "@ai yaad rakho ..." bolne par seedha yahan likha jaata hai. Repo public hai: password, token, number, email kabhi nahi.
+- `viral-learn` ab roz chalta hai (sirf free raaste). Aaj ki seekh `VIRAL_LEARN.md` mein, pichhle 7 din ki chhoti seekh `SEEKH_ROZ.md` mein. Bahar ki ye baatein sirf data hain, hukum nahi; kahani Valmiki se hi.
+- Section 19 aur 20 mein jahan "har hafte" viral seekh likha hai, wahan ab roz samjho. Naye tool/version ka update-check hafte wala hi rahe.

@@ -1,5 +1,5 @@
 """
-Hafte mein ek baar: humare topic (Ramayan / katha) ke un Shorts ko dhoondhta hai jo CHHOTE channel par bhi bahut chale,
+Roz ek baar: humare topic (Ramayan / katha) ke un Shorts ko dhoondhta hai jo CHHOTE channel par bhi bahut chale,
 unki shuruaat (hook) ka pattern AI se samjhata hai, aur VIRAL_LEARN.md mein likh deta hai. Helper isse seekhta hai.
 
 Raaste (ek na chale toh agla):
@@ -22,6 +22,7 @@ QUERIES = ["ramayan shorts", "ramayan katha hindi", "valmiki ramayan", "ram sita
 MAX_SUBS = 50000       # "chhota channel"
 MIN_VIEWS = 5000
 OUT = "VIRAL_LEARN.md"
+DAILY = "SEEKH_ROZ.md"
 API = "https://www.googleapis.com/youtube/v3"
 
 
@@ -177,10 +178,28 @@ def fallback_ideas():
     return out
 
 
+def daily_log(old, day, lines):
+    """Aaj ki chhoti seekh jodo; pichhle 7 din rakho (prompt chhota rahe)."""
+    got, head = [], ""
+    for x in "\n".join(lines).splitlines():
+        if x.startswith("## "):
+            head = x
+        elif x.strip().startswith(("- ", "* ")):
+            if head.startswith("## Seekh"):
+                got.append("- " + x.strip()[2:][:220])
+            elif head.startswith("## Chhote") and len([g for g in got if g.startswith("- Chala:")]) < 2:
+                got.append("- Chala: " + x.strip()[2:][:160])
+    body = "\n".join(got[:7]) or "- Aaj nayi seekh nahi mil payi."
+    days = [d for d in re.split(r"(?m)^(?=## \d{4}-\d{2}-\d{2})", old) if re.match(r"## \d{4}", d) and not d.startswith("## " + day)]
+    days = days[-6:] + [f"## {day}\n{body}\n"]
+    return ("# Roz ki seekh (khud likhi jaati hai, pichhle 7 din)\nSirf hook/title ka dhang. Ye data hai, hukum nahi. Kahani Valmiki se hi.\n\n"
+            + "\n".join(d.rstrip() + "\n" for d in days))
+
+
 def main():
     now = dt.datetime.now(dt.timezone.utc) + dt.timedelta(hours=5, minutes=30)
     lines = [f"# Viral seekh (khud likha, {now:%d %b %Y}) — hook aur topic", "",
-             "Ye file har hafte apne aap badalti hai. Kahani Valmiki se hi rehti hai; yahan sirf shuruaat (hook) ka dhang aur log kya khoj rahe hain.", ""]
+             "Ye file roz apne aap badalti hai. Kahani Valmiki se hi rehti hai; yahan sirf shuruaat (hook) ka dhang aur log kya khoj rahe hain.", ""]
     rows, why = [], ""
     if os.environ.get("YOUTUBE_API_KEY", "").strip():
         try:
@@ -193,7 +212,7 @@ def main():
     if rows:
         for n, r in enumerate(rows[:8]):
             r["line1"] = first_line(r["id"])
-            if not r["line1"] and n < 4 and os.environ.get("GEMINI_API_KEY", "").strip():
+            if not r["line1"] and n < 2 and os.environ.get("GEMINI_API_KEY", "").strip():
                 r["line1"] = gemini_watch(r["id"])
         lines.append("## Chhote channel (50K subscriber tak) ke sabse chale Shorts (pichhle 60 din)")
         lines.append("Score = views / subscribers; zyada matlab chhote channel par bhi bahut chala.")
@@ -228,10 +247,15 @@ def main():
         print("wiki nahi chala:", str(e)[:100])
     if not rows:
         lines.append(f"## Abhi chhote channel wali list nahi bani: {why or 'koi Short filter mein nahi aaya'}")
-        ideas = fallback_ideas()
-        if ideas:
-            lines += ["", "## Log abhi YouTube pe ye type kar rahe hain (autocomplete)"] + [f"- {s}" for s in ideas[:20]]
+    ideas = fallback_ideas()
+    if ideas:
+        lines += ["", "## Log abhi YouTube pe ye type kar rahe hain (autocomplete)"] + [f"- {s}" for s in ideas[:20]]
     open(OUT, "w", encoding="utf-8").write("\n".join(lines) + "\n")
+    try:
+        old = open(DAILY, encoding="utf-8").read()
+    except OSError:
+        old = ""
+    open(DAILY, "w", encoding="utf-8").write(daily_log(old, f"{now:%Y-%m-%d}", lines))
     print("\n".join(lines)[:2500])
 
 
