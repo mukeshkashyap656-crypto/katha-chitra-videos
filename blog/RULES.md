@@ -31,3 +31,9 @@ Ye blog "sari khabar, Hindi mein" ke liye hai, 6 vishay baari-baari se: Mobile G
 - Har post mein ek "Khabaradda ka seedha jawab" hissa: "Agar X chahiye to ye lo, Y chahiye to wo lo" (battery / RAM / brand / kam budget).
 - Har post mein ek "Kisko mat lena" line: kis tarah ke user ko ye phone/cheez nahi leni chahiye.
 - Seedhi, aam bolchaal ki bhasha; "seedha sach" wala lehja; badhaa-chadhaa kar kuch nahi.
+
+## Asli photo ka rasta (copyright-free)
+1. Pehle us khaas model ki photo: Wikimedia Commons ya Openverse (sirf CC0 / public domain, ya aisi licence jisme credit dekar commercial use ho). Photo ke neeche credit (naam + link) zaroor likho.
+2. Na mile to us brand/segment ki aam smartphone photo: Pexels, Pixabay, Unsplash (inki licence mein commercial use free hai).
+3. Wo bhi na mile to khabaradda ka apna banaya card (blog/img jaisa). Purane model ki photo naye model ke naam se kabhi mat lagao.
+4. Company ki official photo / review site ki photo bina ijazat kabhi nahi.
