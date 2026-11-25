@@ -232,7 +232,11 @@ def write_post(item):
                         log("Gemini", model, "ok, srot:", len(srcs))
                         return post, srcs
                     except Exception as e:
-                        log("Gemini", model, "fail:", str(e)[:150]); time.sleep(8)
+                        msg = str(e)
+                        log("Gemini", model, "fail:", msg[:150])
+                        if "429" in msg or "RESOURCE_EXHAUSTED" in msg or "404" in msg or "NOT_FOUND" in msg:
+                            break   # quota khatam / model nahi: isi model par dobara koshish bekaar
+                        time.sleep(8)
         except Exception as e:
             log("Gemini poora fail:", e)
     okey = os.environ.get("OPENROUTER_API_KEY")
@@ -243,11 +247,53 @@ def write_post(item):
                                   headers={"Authorization": "Bearer " + okey},
                                   json={"model": model, "messages": [{"role": "user", "content":
                                         prompt + "\nDhyan: tumhare paas search nahi hai, isliye sirf wahi likho jo khabar ke shirshak se pakka ho."}]})
+                if "choices" not in r.json():
+                    raise RuntimeError(str(r.json())[:150])
                 post = parse_json(r.json()["choices"][0]["message"]["content"])
                 log("OpenRouter", model, "ok")
                 return post, []
             except Exception as e:
                 log("OpenRouter", model, "fail:", str(e)[:120])
+    nosearch = prompt + "\nDhyan: tumhare paas search nahi hai, isliye sirf wahi likho jo khabar ke shirshak se pakka ho."
+    acc, ctok = os.environ.get("CLOUDFLARE_ACCOUNT_ID"), os.environ.get("CLOUDFLARE_API_TOKEN")
+    if acc and ctok:   # sahara 3: Cloudflare Workers AI (free quota alag)
+        for model in ["@cf/meta/llama-3.3-70b-instruct-fp8-fast", "@cf/mistralai/mistral-small-3.1-24b-instruct", "@cf/meta/llama-3.1-8b-instruct"]:
+            try:
+                r = requests.post(f"https://api.cloudflare.com/client/v4/accounts/{acc}/ai/run/{model}", timeout=180,
+                                  headers={"Authorization": "Bearer " + ctok}, json={"messages": [{"role": "user", "content": nosearch}], "max_tokens": 6000})
+                r.raise_for_status()
+                res = r.json()["result"]
+                post = parse_json(res["response"] if isinstance(res.get("response"), str) else json.dumps(res.get("response")))
+                log("Cloudflare AI", model, "ok")
+                return post, []
+            except Exception as e:
+                log("Cloudflare AI", model, "fail:", str(e)[:120])
+    gh = os.environ.get("GITHUB_TOKEN")
+    if gh:   # sahara 4: GitHub Models (Actions ke saath free)
+        for model in ["openai/gpt-4.1-mini", "meta/Llama-3.3-70B-Instruct", "mistral-ai/Mistral-Small-2503"]:
+            try:
+                r = requests.post("https://models.github.ai/inference/chat/completions", timeout=180,
+                                  headers={"Authorization": "Bearer " + gh, "Accept": "application/vnd.github+json"},
+                                  json={"model": model, "messages": [{"role": "user", "content": nosearch}], "max_tokens": 6000})
+                r.raise_for_status()
+                post = parse_json(r.json()["choices"][0]["message"]["content"])
+                log("GitHub Models", model, "ok")
+                return post, []
+            except Exception as e:
+                log("GitHub Models", model, "fail:", str(e)[:120])
+    hf = os.environ.get("HF_TOKEN")
+    if hf:   # sahara 5: Hugging Face
+        for model in ["meta-llama/Llama-3.3-70B-Instruct", "Qwen/Qwen2.5-72B-Instruct"]:
+            try:
+                r = requests.post("https://router.huggingface.co/v1/chat/completions", timeout=180,
+                                  headers={"Authorization": "Bearer " + hf},
+                                  json={"model": model, "messages": [{"role": "user", "content": nosearch}], "max_tokens": 6000})
+                r.raise_for_status()
+                post = parse_json(r.json()["choices"][0]["message"]["content"])
+                log("HuggingFace", model, "ok")
+                return post, []
+            except Exception as e:
+                log("HuggingFace", model, "fail:", str(e)[:120])
     return None, []
 
 

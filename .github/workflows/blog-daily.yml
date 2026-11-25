@@ -15,6 +15,7 @@ on:
         default: "0"
 permissions:
   contents: write
+  models: read
 concurrency: blog-daily
 jobs:
   post:
@@ -27,6 +28,7 @@ jobs:
       - run: pip install -q --upgrade google-genai requests
       - name: Make today's posts
         env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
           BLOG_ID: ${{ secrets.BLOG_ID }}
