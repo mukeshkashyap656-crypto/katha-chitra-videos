@@ -43,7 +43,33 @@ def save_state(st):
     json.dump(st, open(STATE, "w", encoding="utf-8"), ensure_ascii=False, indent=1)
 
 
-GOOGLE_NEWS_BLOCKED = False   # GitHub ke server ko Google News 503 deta hai: ek baar fail hote hi baaki koshish chhod do
+GN_FAILS = 0   # Google News ke lagaataar fail sawaal; 3 baar fail hone par is run mein ise chhod dete hain (Bing / seedhe feed / Gemini chalte rehte hain)
+
+
+def google_news(q):
+    """Google News RSS ko seedha, apni sahi pehchaan (User-Agent) ke saath maango. 503/429 aaye to Retry-After maan ke ruk-ruk ke 3 baar koshish."""
+    global GN_FAILS
+    if GN_FAILS >= 3:
+        return []
+    url = "https://news.google.com/rss/search?" + urllib.parse.urlencode({"q": q + " when:1d", "hl": "hi", "gl": "IN", "ceid": "IN:hi"})
+    for a in range(3):
+        try:
+            r = requests.get(url, timeout=30, headers={"User-Agent": "Mozilla/5.0 (compatible; khabaradda-bot)"})
+            if r.status_code in (429, 500, 502, 503, 504):
+                wait = min(int(r.headers.get("Retry-After", "0") or 0), 30) or (5 * (a + 1))
+                log("  Google News", r.status_code, "-> %ds ruk ke dobara" % wait)
+                time.sleep(wait); continue
+            r.raise_for_status()
+            res = _parse_feed(r.content)
+            if res:
+                GN_FAILS = 0
+                return res
+            break
+        except Exception as e:
+            log("  Google News koshish", a + 1, "fail:", str(e)[:70]); time.sleep(3 * (a + 1))
+    GN_FAILS += 1
+    log("Google News se is sawaal par khabar nahi mili (lagaataar fail: %d/3)" % GN_FAILS)
+    return []
 
 # Seedhe khule khabar feed (Google News band ho tab bhi chalein). Koi feed na chale to baaki chalte hain.
 FEEDS = {
@@ -120,17 +146,9 @@ def gemini_headlines(cat, queries):
 
 def news_items(queries, cat=None):
     """Khabar ke raaste (ek ke baad ek): 1) Google News 2) Bing News 3) seedhe feed 4) Gemini search. Pehla jo kaam kare, wahi nahi, sab milake."""
-    global GOOGLE_NEWS_BLOCKED
     raw = []
     for q in queries:
-        if not GOOGLE_NEWS_BLOCKED:
-            url = "https://news.google.com/rss/search?" + urllib.parse.urlencode({"q": q + " when:1d", "hl": "hi", "gl": "IN", "ceid": "IN:hi"})
-            try:
-                r = requests.get(url, timeout=30, headers={"User-Agent": "Mozilla/5.0"})
-                r.raise_for_status()
-                raw += _parse_feed(r.content)
-            except Exception as e:
-                log("Google News fail (ab ise chhod rahe):", str(e)[:80]); GOOGLE_NEWS_BLOCKED = True
+        raw += google_news(q)
         burl = "https://www.bing.com/news/search?" + urllib.parse.urlencode({"q": q, "format": "rss", "setlang": "hi", "cc": "IN"})
         raw += _get_feed(burl, "Bing News", tries=1)
     log("Google/Bing se khabar:", len(raw))
