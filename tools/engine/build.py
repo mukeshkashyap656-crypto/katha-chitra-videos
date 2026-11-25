@@ -422,7 +422,7 @@ for k in ORDER:
 
 # ---------- sounds ----------
 AMB = {"morning": ("sfx_morning", 0.6), "cloudvan": ("sfx_morning", 0.6), "ashram": ("sfx_morning", 0.55), "river": ("sfx_morning", 0.55),
-       "ghorvan": ("sfx_dark", 0.75), "divine": ("sfx_pad", 0.6), "palace": ("sfx_pad", 0.4)}
+       "ghorvan": ("sfx_dark", 0.75), "kurukshetra": ("sfx_dark", 0.5), "divine": ("sfx_pad", 0.6), "palace": ("sfx_pad", 0.4)}
 aud = []; seg0 = 0
 for si in range(1, len(SHOTS) + 1):
     if si == len(SHOTS) or SHOTS[si]["bg"] != SHOTS[seg0]["bg"]:
