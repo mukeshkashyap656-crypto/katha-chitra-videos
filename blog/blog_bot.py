@@ -335,8 +335,9 @@ def publish_script(title, content, labels):
     last = None
     for attempt in range(4):
         try:
-            r = requests.post(os.environ["BLOG_POST_URL"], timeout=90, allow_redirects=True,
-                              json={"token": os.environ["BLOG_POST_TOKEN"], "title": title, "html": content, "labels": labels or []})
+            clean = lambda v: v.strip().rstrip(";").strip().strip("'\"`").strip()  # galti se ' ' ya ; ke saath daala ho to bhi chale
+            r = requests.post(clean(os.environ["BLOG_POST_URL"]), timeout=90, allow_redirects=True,
+                              json={"token": clean(os.environ["BLOG_POST_TOKEN"]), "title": title, "html": content, "labels": labels or []})
             r.raise_for_status()
             j = r.json()
             if not j.get("ok"):
