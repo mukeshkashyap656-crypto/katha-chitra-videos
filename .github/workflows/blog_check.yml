@@ -1,0 +1,48 @@
+name: Blog check (secrets aur photo token ki jaanch)
+# Sirf jaanch: keys ki value kabhi nahi chhapta, kuch likhta nahi. Haath se chalao (Run workflow).
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Secrets maujood hain ya nahi
+        env:
+          BLOG_POST_URL: ${{ secrets.BLOG_POST_URL }}
+          BLOG_POST_TOKEN: ${{ secrets.BLOG_POST_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+          BLOG_IMG_TOKEN: ${{ secrets.BLOG_IMG_TOKEN }}
+          PIXABAY_API_KEY: ${{ secrets.PIXABAY_API_KEY }}
+          PEXELS_API_KEY: ${{ secrets.PEXELS_API_KEY }}
+        run: |
+          for n in BLOG_POST_URL BLOG_POST_TOKEN GEMINI_API_KEY OPENROUTER_API_KEY CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_API_TOKEN HF_TOKEN BLOG_IMG_TOKEN PIXABAY_API_KEY PEXELS_API_KEY; do
+            if [ -n "${!n}" ]; then echo "HAI    $n"; else echo "NAHI   $n"; fi
+          done
+      - name: BLOG_IMG_TOKEN ki taakat (photo chadhane layak hai?)
+        env:
+          T: ${{ secrets.BLOG_IMG_TOKEN }}
+        run: |
+          [ -z "$T" ] && { echo "TOKEN NAHI MILA"; exit 0; }
+          code=$(curl -s -o r.json -w "%{http_code}" -H "Authorization: Bearer $T" https://api.github.com/repos/mukeshkashyap656-crypto/katha-chitra-voice)
+          echo "repo dekhne par HTTP $code"
+          python3 -c "import json;d=json.load(open('r.json'));print('push (likhne ki ijazat):',(d.get('permissions') or {}).get('push'))" || true
+      - name: Pixabay key chalti hai?
+        env:
+          K: ${{ secrets.PIXABAY_API_KEY }}
+        run: |
+          [ -z "$K" ] && { echo "PIXABAY KEY NAHI (koi baat nahi, baaki raaste chalenge)"; exit 0; }
+          curl -s "https://pixabay.com/api/?key=$K&q=smartphone&image_type=photo&per_page=3" | python3 -c "import sys,json;d=json.load(sys.stdin);print('Pixabay photos mili:',len(d.get('hits',[])))" || echo "Pixabay jawab sahi nahi"
+      - name: Cloudflare AI se likhna chalta hai?
+        env:
+          A: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          C: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+        run: |
+          [ -z "$A" ] && { echo "CLOUDFLARE NAHI"; exit 0; }
+          curl -s -X POST "https://api.cloudflare.com/client/v4/accounts/$A/ai/run/@cf/meta/llama-3.3-70b-instruct-fp8-fast" -H "Authorization: Bearer $C" -d '{"messages":[{"role":"user","content":"Ek line mein Hindi mein namaste likho"}],"max_tokens":60}' | python3 -c "import sys,json;d=json.load(sys.stdin);print('Cloudflare AI:', 'CHALA' if d.get('success') else 'FAIL '+str(d.get('errors'))[:150])"
