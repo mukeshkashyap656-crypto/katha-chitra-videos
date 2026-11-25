@@ -48,3 +48,35 @@ NIYAM.md section 4 "Tay roop (character bible)" mein hain. Har character ka alag
 - (25 Nov 2026) Poori video dekhe bina PASS/auto-post nahi; adhoori jaanch 'jaanch-baaki' list mein, sirf jaanch dobara.
 - (25 Nov 2026) GitHub Models 30 July 2026 ko band ho chuka, chain se hataya. gemini-2.5-pro naye user ke liye band, hataya. Free AI fail ho toh log mein HTTP code aur asli jawab dikhta hai.
 - (25 Nov 2026) Viral seekh se film/actor/comedy/AI-tool wale video chhante jaate hain.
+
+- ## Claude jaisa kaam karne ka tareeka (26 Nov 2026, owner ka hukm: "tum jaise kaam karte ho waise sab niyam sikhao")
+
+NIYAM.md ke saare niyam waise hi lagu hain. Neeche kaam karne ka kram hai.
+
+### A. Banane se pehle
+1. Valmiki Ramayan ka sarga padho. Kahani mein kuch jodna ya badalna nahi. Paath na mile ya shak ho to andaza mat lagao, dhoondh kar jaancho.
+2. Har line ke saamne likho: kaun dikhega, kitne log, sharir ki haalat, kya ho raha hai, chehre ka bhaav. Poora tay hone ke baad hi banao.
+3. Har kirdaar aur devta ka roop, rang, kapde pehle se tay roop se lo. Har scene mein wahi rahe.
+4. Koi pose ya cheez engine mein na ho to usse milti-julti cheez se kaam mat chalao. Naya pose banao. Na ban sake to owner ko saaf batao.
+
+### B. Scene aur awaaz ka mel
+5. "Sau" ya bheed bola jaye to bahut saare log dikhein, sirf ek-do nahi.
+6. Sharir mein badlav (kubda, behosh, ghayal, phir se theek) bola jaye to pehle aur baad ka fark saaf dikhe, sirf chehra badalna kaafi nahi.
+7. Jiska naam bola jaye (devta, raja, dulha) wo scene mein pehchaan mein aaye.
+8. Cover aur title ka sawaal video ke andar dikhaya jaye.
+9. Kirdaar gudiya jaise na lagein: poore haath aur ungliyan, jude hue jod, apni alag harkat. Bhaav chehre aur sharir se dikhein, cheezon se nahi.
+10. Awaaz: narrator = ElevenLabs Adam; baaki kirdaar = free awaazein. Adam na mile to chupchap awaaz mat badlo, owner ko batao.
+
+### C. Post se pehle jaanch
+11. Har line ke samay ka frame nikaalo aur A-2 wali list se ek-ek karke milao. Har line ke aage PASS ya FAIL likho. Ek bhi FAIL ho to video PASS nahi.
+12. Sirf score ya "sab theek" par bharosa mat karo. Jo frame mein sach mein dikhe wahi maano.
+13. Poori video dekho: overlap, kate hue log, badalta roop, jhatke wali chaal, khali ya kaale frame, subtitle, logo, subscribe widget, awaaz.
+14. Galti mile to theek karo, dobara banao aur dobara jaancho. Jo dekh ya sun nahi paaye use PASS mat maano.
+15. Pehle se "taiyaar" video bhi post se kaafi pehle isi tarah jaancho.
+16. Caption mein ek hi sawaal do baar na ho.
+17. YouTube se video ID na mile to "posted" mat maano. Dobara upload se pehle channel par dekho.
+
+### D. Seekhna aur sach batana
+18. Har nayi galti ke baad is file mein ek chhoti line jodo: galti, hal, aur agli baar kaise pakdein.
+19. Jo kaam nahi hua ya jo tum badal nahi sakte, use "ho gaya" mat likho. Owner ko saaf aur chhote shabdon mein Hinglish mein batao.
+20. Ek episode ek hi jagah banao.
