@@ -161,3 +161,10 @@ Pura seekh: ANIMATION.md ("Insaan kaise bolta hai"). Har video par lagta hai:
 ## 19. Viral seekh (25 Nov 2026, owner ka hukm: GitHub AI free mein viral topic, hook seekhe)
 - `VIRAL_LEARN.md` har hafte apne aap badalti hai (workflow `viral-learn`): chhote channel ke sabse chale Ramayan Shorts aur unke hook ka dhang. Naya episode likhne se pehle use padho aur pehli line wahi dhang se likho.
 - Kahani Valmiki se hi rehti hai; seekh sirf pehli line, title aur sawaal ke dhang ki hai.
+
+## 20. Waqt-waqt par khud update aur free jagah se seekhna (25 Nov 2026, owner ka hukm: "time to time system AI ko update karo taki zamane ke saath chal sake, dusron se seekho jahan free mauka mile")
+- Har hafte (viral-learn ke saath hi) ek update-check karo: naya free model, naya tool/version, behtar awaaz, naya GitHub Action. Jo kaam ka ho use pehle chhote test mein chalao; theek nikle tabhi apnao, warna purana hi rakho.
+- Update se pehle purana chalta version bacha ke rakho. Naya kuch bigade toh apne aap purane par wapas aao (section 18 ke saath).
+- Seekhna sirf free aur public jagah se: free tutorials, open-source projects, doosre channels ke public Shorts/Reels, chalte trends. Jahan paise lagein wahan owner se bina poochhe mat jao.
+- Doosron se sirf dhang seekho (hook, edit ka rhythm, tool, tareeka). Unki kahani, awaaz, drawing ya video copy mat karo. Ramayan ki kahani Valmiki se hi rahegi.
+- Har naye seekh ki ek chhoti line SEEKH.md mein likho. Owner ko sirf kaam ki baat batao (section 16): kya naya laga, usse kya behtar hua.
