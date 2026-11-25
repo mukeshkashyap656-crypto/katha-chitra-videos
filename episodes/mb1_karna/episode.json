@@ -1,0 +1,602 @@
+{
+ "NAME": "Mahabharat_Bhag1_Karna_ka_Antim_Daan",
+ "COVER_NAME": "Mahabharat_Bhag1_Cover",
+ "SERIES": "महाभारत",
+ "PART_WORD": "कथा",
+ "TAG": "लोककथा · महाभारत",
+ "BHAG": 1,
+ "QUESTION": "मरते हुए कर्ण से कृष्ण ने क्या माँगा",
+ "LINES": {
+  "n1": [
+   "मरते हुए कर्ण से, कृष्ण ने क्या माँगा?",
+   "+0%",
+   "+0Hz"
+  ],
+  "n2": [
+   "कुरुक्षेत्र का सत्रहवाँ दिन। अर्जुन के बाण से कर्ण ज़मीन पर गिर पड़े।",
+   "+0%",
+   "+0Hz"
+  ],
+  "n3": [
+   "पांडवों के शिविर में ख़ुशी थी, पर कृष्ण उदास थे।",
+   "+0%",
+   "+0Hz"
+  ],
+  "kr1": [
+   "आज संसार ने एक महान दानी खो दिया।",
+   "-15%",
+   "-25Hz"
+  ],
+  "kr2": [
+   "अर्जुन, चलो। मैं तुम्हें कर्ण का दान दिखाता हूँ।",
+   "-15%",
+   "-25Hz"
+  ],
+  "n5": [
+   "कृष्ण एक बूढ़े ब्राह्मण का रूप लेकर, कर्ण के पास पहुँचे।",
+   "+0%",
+   "+0Hz"
+  ],
+  "br1": [
+   "कर्ण! दानवीर कर्ण! मुझे दान चाहिए।",
+   "-6%",
+   "+8Hz"
+  ],
+  "ka1": [
+   "ब्राह्मण देवता, मेरे पास कुछ नहीं बचा। बस मेरे दाँतों में सोना है।",
+   "-10%",
+   "-10Hz"
+  ],
+  "br2": [
+   "क्या? एक ब्राह्मण से दाँत तुड़वाओगे? शर्म नहीं आती?",
+   "-6%",
+   "+8Hz"
+  ],
+  "n6": [
+   "कर्ण घिसटकर पत्थर तक गए, और अपने सोने के दाँत तोड़ दिए।",
+   "+0%",
+   "+0Hz"
+  ],
+  "n7": [
+   "फिर बाण चलाया, तो बारिश हुई, और सोना साफ़ हो गया।",
+   "+0%",
+   "+0Hz"
+  ],
+  "ka2": [
+   "लीजिए, मेरा यह अंतिम दान स्वीकार कीजिए।",
+   "-10%",
+   "-10Hz"
+  ],
+  "n8": [
+   "तब कृष्ण अपने असली रूप में आ गए, और अर्जुन देखते रह गए।",
+   "+0%",
+   "+0Hz"
+  ],
+  "kr3": [
+   "कर्ण, तुम सचमुच सबसे बड़े दानवीर हो।",
+   "-15%",
+   "-25Hz"
+  ],
+  "n9": [
+   "कर्ण ने हाथ जोड़े, और शांति से आँखें बंद कर लीं।",
+   "+0%",
+   "+0Hz"
+  ],
+  "n10": [
+   "आपकी नज़र में, सबसे बड़ा दानी कौन? कमेंट में लिखिए!",
+   "+0%",
+   "+0Hz"
+  ]
+ },
+ "SPEAKER": {
+  "kr1": "krishna",
+  "kr2": "krishna",
+  "kr3": "krishna",
+  "br1": "brahman",
+  "br2": "brahman",
+  "ka1": "karna",
+  "ka2": "karna"
+ },
+ "KEYWORDS": {
+  "n1": [
+   "कृष्ण",
+   "माँगा"
+  ],
+  "n2": [
+   "कर्ण"
+  ],
+  "n3": [
+   "उदास"
+  ],
+  "kr1": [
+   "दानी"
+  ],
+  "kr2": [
+   "दान"
+  ],
+  "n5": [
+   "ब्राह्मण"
+  ],
+  "br1": [
+   "दान"
+  ],
+  "ka1": [
+   "सोना"
+  ],
+  "br2": [
+   "दाँत"
+  ],
+  "n6": [
+   "दाँत"
+  ],
+  "n7": [
+   "बारिश"
+  ],
+  "ka2": [
+   "अंतिम",
+   "दान"
+  ],
+  "n8": [
+   "असली"
+  ],
+  "kr3": [
+   "दानवीर"
+  ],
+  "n9": [
+   "शांति"
+  ],
+  "n10": [
+   "कौन"
+  ]
+ },
+ "NEW_CHARS": {
+  "karna": {
+   "name": "कर्ण",
+   "kind": "m",
+   "skin": "#c58a58",
+   "hair": "#140c08",
+   "tunic": "#8a5a2a",
+   "sash": "#e8b730",
+   "upper": "#8a5a2a",
+   "lower": "#f6f0e2",
+   "hem": "#e8b730",
+   "mous": "#140c08",
+   "tilak": true,
+   "jewel": true,
+   "build": 1.05
+  },
+  "krishna": {
+   "name": "श्रीकृष्ण",
+   "kind": "m",
+   "big": true,
+   "glow": "gold",
+   "skin": "#3a6ab8",
+   "hair": "#140c08",
+   "tunic": "#f2c230",
+   "sash": "#c0392b",
+   "upper": "#f2c230",
+   "lower": "#f2c230",
+   "hem": "#c0392b",
+   "crown": true,
+   "jewel": true,
+   "bare": true,
+   "skirt": 1.4,
+   "mala": true,
+   "feather": true,
+   "mous": null
+  },
+  "brahman": {
+   "name": "बूढ़े ब्राह्मण",
+   "kind": "m",
+   "age": 3,
+   "stoop": 0.12,
+   "skin": "#d9a070",
+   "hair": "#f4f1ea",
+   "beard": "#f4f1ea",
+   "mous": "#f4f1ea",
+   "tunic": "#f6f0e2",
+   "sash": "#e8902a",
+   "upper": "#f6f0e2",
+   "lower": "#f6f0e2",
+   "hem": "#e8902a",
+   "tilak": true,
+   "mala": true,
+   "kamandalu": true,
+   "ajina": "#d8b07a"
+  },
+  "arjun": {
+   "name": "अर्जुन",
+   "kind": "m",
+   "skin": "#d6a070",
+   "hair": "#140c08",
+   "tunic": "#1f5a8a",
+   "sash": "#e8b730",
+   "upper": "#1f5a8a",
+   "lower": "#f6f0e2",
+   "hem": "#e8b730",
+   "crown": true,
+   "jewel": true,
+   "mous": null
+  }
+ },
+ "SHOTS": [
+  {
+   "line": "n1",
+   "bg": "kurukshetra",
+   "cam": "speaker",
+   "mood": "sorrow",
+   "chip": "कर्ण का आख़िरी दान",
+   "cast": [
+    {
+     "who": "karna",
+     "x": 680,
+     "pose": "sit",
+     "face": "sad",
+     "tilt": 10
+    }
+   ],
+   "show": "कर्ण घायल, ज़मीन पर बैठे, चेहरे पर दर्द और शांति; पीछे डूबता सूरज"
+  },
+  {
+   "line": "n2",
+   "bg": "kurukshetra",
+   "cam": "wide",
+   "mood": "sorrow",
+   "chip": "कुरुक्षेत्र, 17वाँ दिन",
+   "cast": [
+    {
+     "who": "karna",
+     "x": 680,
+     "pose": "sit",
+     "face": "sad",
+     "tilt": 14
+    }
+   ],
+   "show": "कुरुक्षेत्र की शाम, टूटा पहिया और बिखरे तीर, घायल कर्ण ज़मीन पर"
+  },
+  {
+   "line": "n3",
+   "bg": "kurukshetra",
+   "cam": "wide",
+   "mood": "none",
+   "chip": "पांडवों की ख़ुशी",
+   "cast": [
+    {
+     "who": "krishna",
+     "x": 420,
+     "pose": "stand",
+     "face": "sad"
+    },
+    {
+     "who": "arjun",
+     "x": 950,
+     "pose": "stand",
+     "face": "smile"
+    }
+   ],
+   "show": "अर्जुन विजय की ख़ुशी में मुस्कुरा रहे हैं, कृष्ण उदास और चुप खड़े हैं"
+  },
+  {
+   "line": "kr1",
+   "bg": "kurukshetra",
+   "cam": "two",
+   "mood": "sorrow",
+   "cast": [
+    {
+     "who": "krishna",
+     "x": 420,
+     "pose": "talk",
+     "face": "sad"
+    },
+    {
+     "who": "arjun",
+     "x": 950,
+     "pose": "stand",
+     "face": "shock"
+    }
+   ],
+   "show": "कृष्ण दुख से बोल रहे हैं, अर्जुन हैरान और आहत"
+  },
+  {
+   "line": "kr2",
+   "bg": "kurukshetra",
+   "cam": "two",
+   "mood": "none",
+   "cast": [
+    {
+     "who": "krishna",
+     "x": 420,
+     "pose": "point",
+     "face": "firm"
+    },
+    {
+     "who": "arjun",
+     "x": 950,
+     "pose": "stand",
+     "face": "worry"
+    }
+   ],
+   "show": "कृष्ण हाथ से आगे का इशारा करके अर्जुन को साथ चलने को कह रहे हैं"
+  },
+  {
+   "line": "n5",
+   "bg": "kurukshetra",
+   "cam": "wide",
+   "mood": "none",
+   "chip": "बूढ़े ब्राह्मण बनकर",
+   "cast": [
+    {
+     "who": "brahman",
+     "x": 300,
+     "pose": "walk",
+     "face": "neutral",
+     "to_x": 560
+    },
+    {
+     "who": "karna",
+     "x": 980,
+     "pose": "sit",
+     "face": "worry",
+     "tilt": 10
+    }
+   ],
+   "show": "बूढ़े ब्राह्मण बने कृष्ण धीरे-धीरे चलकर घायल कर्ण की ओर जा रहे हैं"
+  },
+  {
+   "line": "br1",
+   "bg": "kurukshetra",
+   "cam": "two",
+   "mood": "none",
+   "cast": [
+    {
+     "who": "brahman",
+     "x": 480,
+     "pose": "talk",
+     "face": "stern"
+    },
+    {
+     "who": "karna",
+     "x": 920,
+     "pose": "sit",
+     "face": "worry",
+     "tilt": 10
+    }
+   ],
+   "show": "ब्राह्मण ज़ोर से पुकारकर दान माँग रहे हैं, कर्ण सिर उठाकर सुन रहे हैं"
+  },
+  {
+   "line": "ka1",
+   "bg": "kurukshetra",
+   "cam": "speaker",
+   "mood": "sorrow",
+   "cast": [
+    {
+     "who": "brahman",
+     "x": 480,
+     "pose": "stand",
+     "face": "neutral"
+    },
+    {
+     "who": "karna",
+     "x": 920,
+     "pose": "sit",
+     "face": "sad",
+     "tilt": 10
+    }
+   ],
+   "show": "कर्ण लाचारी और विनम्रता से कह रहे हैं कि बस दाँतों में सोना बचा है"
+  },
+  {
+   "line": "br2",
+   "bg": "kurukshetra",
+   "cam": "speaker",
+   "mood": "anger",
+   "cast": [
+    {
+     "who": "brahman",
+     "x": 480,
+     "pose": "angry",
+     "face": "angry"
+    },
+    {
+     "who": "karna",
+     "x": 920,
+     "pose": "sit",
+     "face": "shock",
+     "tilt": 10
+    }
+   ],
+   "show": "ब्राह्मण नाराज़ होकर हाथ उठाकर डाँट रहे हैं, कर्ण सकपकाए हुए"
+  },
+  {
+   "line": "n6",
+   "bg": "kurukshetra",
+   "cam": "wide",
+   "mood": "sorrow",
+   "chip": "दानवीर कर्ण",
+   "cast": [
+    {
+     "who": "brahman",
+     "x": 430,
+     "pose": "stand",
+     "face": "worry"
+    },
+    {
+     "who": "karna",
+     "x": 900,
+     "pose": "bow",
+     "face": "firm",
+     "tilt": 22
+    }
+   ],
+   "show": "कर्ण झुककर पत्थर तक घिसटते हैं, चेहरे पर दृढ़ता, ब्राह्मण चिंता से देख रहे हैं"
+  },
+  {
+   "line": "n7",
+   "bg": "kurukshetra",
+   "cam": "wide",
+   "mood": "wonder",
+   "chip": "बारिश हुई",
+   "fx": [
+    {
+     "type": "rain",
+     "color": "#9fd8ff"
+    }
+   ],
+   "cast": [
+    {
+     "who": "brahman",
+     "x": 430,
+     "pose": "stand",
+     "face": "shock"
+    },
+    {
+     "who": "karna",
+     "x": 900,
+     "pose": "sit",
+     "face": "firm",
+     "tilt": 10
+    }
+   ],
+   "show": "बाण से बारिश होती है, सोना धुलकर चमकता है, ब्राह्मण हैरान"
+  },
+  {
+   "line": "ka2",
+   "bg": "kurukshetra",
+   "cam": "two",
+   "mood": "wonder",
+   "cast": [
+    {
+     "who": "brahman",
+     "x": 450,
+     "pose": "bless",
+     "face": "smile"
+    },
+    {
+     "who": "karna",
+     "x": 900,
+     "pose": "sit",
+     "face": "smile",
+     "tilt": 8
+    }
+   ],
+   "show": "कर्ण विनम्रता से सोना अर्पण करते हैं, ब्राह्मण हाथ बढ़ाकर आशीर्वाद की मुद्रा में"
+  },
+  {
+   "line": "n8",
+   "bg": "divine",
+   "cam": "wide",
+   "mood": "wonder",
+   "chip": "असली रूप",
+   "cast": [
+    {
+     "who": "karna",
+     "x": 250,
+     "pose": "sit",
+     "face": "smile",
+     "tilt": 8
+    },
+    {
+     "who": "krishna",
+     "x": 680,
+     "pose": "bless",
+     "face": "smile"
+    },
+    {
+     "who": "arjun",
+     "x": 1110,
+     "pose": "stand",
+     "face": "shock"
+    }
+   ],
+   "show": "कृष्ण सुनहरी चमक के साथ असली रूप में, अर्जुन आश्चर्य से मुँह खोले, कर्ण मुस्कुराते"
+  },
+  {
+   "line": "kr3",
+   "bg": "divine",
+   "cam": "speaker",
+   "mood": "wonder",
+   "cast": [
+    {
+     "who": "karna",
+     "x": 250,
+     "pose": "sit",
+     "face": "smile",
+     "tilt": 8
+    },
+    {
+     "who": "krishna",
+     "x": 680,
+     "pose": "talk",
+     "face": "smile"
+    },
+    {
+     "who": "arjun",
+     "x": 1110,
+     "pose": "stand",
+     "face": "joy"
+    }
+   ],
+   "show": "कृष्ण प्रेम से कर्ण की प्रशंसा कर रहे हैं, अर्जुन का चेहरा श्रद्धा से भरा"
+  },
+  {
+   "line": "n9",
+   "bg": "divine",
+   "cam": "speaker",
+   "mood": "wonder",
+   "cast": [
+    {
+     "who": "karna",
+     "x": 680,
+     "pose": "sit",
+     "face": "smile",
+     "tilt": 6
+    }
+   ],
+   "show": "कर्ण शांत मुस्कान के साथ आँखें बंद कर रहे हैं, चारों ओर सुनहरी रोशनी"
+  },
+  {
+   "line": "n10",
+   "bg": "divine",
+   "cam": "wide",
+   "mood": "wonder",
+   "chip": "कमेंट में लिखिए",
+   "cast": [
+    {
+     "who": "krishna",
+     "x": 900,
+     "pose": "bless",
+     "face": "smile"
+    },
+    {
+     "who": "karna",
+     "x": 420,
+     "pose": "sit",
+     "face": "smile",
+     "tilt": 6
+    }
+   ],
+   "show": "कृष्ण और कर्ण मुस्कुराते हैं, सवाल दर्शकों से"
+  }
+ ],
+ "COVER": {
+  "bg": "kurukshetra",
+  "tag": "आख़िरी दान",
+  "cast": [
+   {
+    "who": "karna",
+    "x": 430,
+    "pose": "sit",
+    "face": "sad",
+    "tilt": 8
+   },
+   {
+    "who": "brahman",
+    "x": 930,
+    "pose": "stand",
+    "face": "stern"
+   }
+  ]
+ },
+ "VERSION": 1
+}

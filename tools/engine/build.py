@@ -240,6 +240,8 @@ for si, sh in enumerate(SHOTS):
             _spk = (max(t0, T[k]), min(t1, E[k])) if sp == e["who"] else None
             moves.extend(arm_js(cid, e, t0, t1, _spk, rs, body_style(e, SP.char_meta(p["who"], EPI) | SP.char_meta(e["who"], EPI))))
         html_c.append(f'<div class="char" id="{cid}" style="left:{e["x"] - w_ / 2:.0f}px;top:{top}px;width:{w_}px;height:{h_}px"><div id="{cid}i" style="position:absolute;left:0;top:0;width:{w_}px;height:{h_}px;transform-origin:50% 96%">{imgs}{arms_html}</div></div>')
+        if e.get("tilt"):      # wounded / leaning: the whole person leans a little (about the feet), e.g. a dying warrior propped on the ground
+            moves.append(f'tl.set("#{cid}",{{rotation:{e["tilt"]},transformOrigin:"50% 96%"}},{t0:.3f});')
         # ---- life (puppet fix): breathing, slow weight sway, and a small nod on every beat while this person speaks ----
         _dur = max(0.4, t1 - t0); _bs = body_style(e, SP.char_meta(p["who"], EPI) | SP.char_meta(e["who"], EPI))
         _pb = (1.9 + 0.35 * ((ci + si) % 3)) * _bs["tempo"]     # each person breathes at his own pace
@@ -494,7 +496,7 @@ doc = f"""<!DOCTYPE html>
   <div class="lay" id="qbox"><img src="assets/q_glow.png"><div>?</div></div>
  </div><div id="tint"></div></div>
  <img id="frame" src="assets/frame_b3.png">
- <div id="t1">रामायण · भाग {EPI["BHAG"]}</div>
+ <div id="t1">{html.escape(EPI.get("SERIES", "रामायण"))} · {EPI.get("PART_WORD", "भाग")} {EPI["BHAG"]}</div>
  <div id="t2">{html.escape(Q)}<b>?</b></div>
  <img id="logo" src="assets/katha_chitra_logo.png">
  {''.join(chip_html)}
@@ -557,12 +559,12 @@ cov = f"""<!DOCTYPE html>
   {''.join(cimgs)}
  </div>
  <img id="frame" src="assets/frame_b3.png">
- <div id="t1">रामायण · भाग {EPI["BHAG"]}</div>
+ <div id="t1">{html.escape(EPI.get("SERIES", "रामायण"))} · {EPI.get("PART_WORD", "भाग")} {EPI["BHAG"]}</div>
  <div id="t2">{html.escape(Q)}<b>?</b></div>
  <div id="q">?</div>
  <img id="logo" src="assets/katha_chitra_logo.png">
  <div id="tag">{html.escape(cv.get("tag", ""))}</div>
- <div id="tag2">वाल्मीकि रामायण</div>
+ <div id="tag2">{html.escape(EPI.get("TAG", "वाल्मीकि रामायण"))}</div>
 </div>
 <script src="fonts/gsap/dist/gsap.min.js"></script>
 <script>const tl=gsap.timeline({{paused:true}});tl.set({{}},{{}},1);window.__timelines={{cover:tl}};</script>

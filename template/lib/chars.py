@@ -617,6 +617,13 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
         for sx in (-0.22, 0.22):
             ctx.arc(hx + sx * u, cy - 0.08 * u, 0.04 * u, 0, 6.3); fill_stroke(ctx, "#2f8a4a", 3)
         ctx.arc(hx, cy - 0.66 * u, 0.04 * u, 0, 6.3); fill_stroke(ctx, "#c0392b", 3)
+        if c.get("feather"):   # mor pankh (Krishna): thin stem + eye-shaped feather leaning to the right of the crown
+            fx0, fy0 = hx + 0.1 * u, cy - 0.6 * u
+            ctx.move_to(fx0, fy0); ctx.curve_to(fx0 + 0.08 * u, fy0 - 0.25 * u, fx0 + 0.16 * u, fy0 - 0.4 * u, fx0 + 0.22 * u, fy0 - 0.55 * u)
+            ctx.set_source_rgb(*OL); ctx.set_line_width(0.035 * u + 3); ctx.stroke()
+            ellipse(ctx, fx0 + 0.24 * u, fy0 - 0.66 * u, 0.1 * u, 0.17 * u); fill_stroke(ctx, "#1f9a8a", 3)
+            ellipse(ctx, fx0 + 0.24 * u, fy0 - 0.66 * u, 0.055 * u, 0.1 * u); fill_stroke(ctx, "#2a58b8", 2)
+            ellipse(ctx, fx0 + 0.24 * u, fy0 - 0.66 * u, 0.025 * u, 0.045 * u); fill_stroke(ctx, "#f2c230", 1.5)
     elif c.get("jata"):
         cy = hy - 0.32 * u
         ctx.move_to(hx - 0.42 * u, cy + 0.1 * u)

@@ -197,8 +197,49 @@ def bg_palace(file):
         for r, col in ((70, "#c0392b"), (50, "#f2c230"), (30, "#2f8a4a")): ellipse(c, x, 1500, r, r * 0.4); fill_stroke(c, col, 3)
     s.write_to_png(f"{OUT}/{file}.png")
 
+
+def bg_kurukshetra(file):
+    """Kurukshetra at dusk (Mahabharat): red-orange sky, big setting sun, dark hills, scorched ground, arrows stuck in the soil,
+    a broken chariot wheel, a fallen flag and the far camp-fires. Folk-art outlines like the other backgrounds (no blood, no bodies)."""
+    rnd = random.Random(23); s, c = canvas()
+    g = cairo.LinearGradient(0, 0, 0, 1100)
+    g.add_color_stop_rgb(0, *hexc("#4a2a6a")); g.add_color_stop_rgb(0.45, *hexc("#c4476a")); g.add_color_stop_rgb(1, *hexc("#f59a3c"))
+    c.set_source(g); c.paint()
+    bglib.glowdisc(c, 1000, 900, 330, "#ffd37a", 0.55)
+    c.arc(1000, 900, 120, 0, 6.3); fill_stroke(c, "#ffe9a8", 5)
+    for x, y, sc in ((260, 300, 110), (760, 200, 85)): bglib.swirl_cloud(c, x, y, sc, col="#e7a3b8")
+    for (x0, hgt, col) in ((-100, 260, "#6a2f55"), (500, 340, "#58264a")):     # far dark hills
+        c.move_to(x0, 1180); c.curve_to(x0 + 250, 1180 - hgt, x0 + 700, 1180 - hgt, x0 + 1000, 1180); c.close_path(); fill_stroke(c, col, 4)
+    for k in range(9):                                                         # silhouette of the far army: spears + flags
+        x = 60 + k * 150 + rnd.uniform(-20, 20)
+        c.move_to(x, 1190); c.line_to(x, 1190 - rnd.uniform(110, 190)); c.set_source_rgb(*hexc("#2a1030")); c.set_line_width(7); c.stroke()
+        if k % 3 == 0: poly(c, [(x, 1010), (x + 60, 1030), (x, 1055)]); fill_stroke(c, "#8e1b2b", 3)
+    for x in (140, 520, 1180):                                                 # far camp-fires
+        bglib.glowdisc(c, x, 1215, 70, "#ffb347", 0.6)
+        poly(c, [(x - 22, 1235), (x, 1170), (x + 22, 1235)]); fill_stroke(c, "#f2711c", 3)
+    c.rectangle(0, 1240, WW, WH - 1240); g2 = cairo.LinearGradient(0, 1240, 0, WH)
+    g2.add_color_stop_rgb(0, *hexc("#8a4a3a")); g2.add_color_stop_rgb(1, *hexc("#4a2418")); c.set_source(g2); c.fill()
+    c.move_to(0, 1240); c.line_to(WW, 1240); c.set_source_rgb(*OL); c.set_line_width(5); c.stroke()
+    for k in range(40):                                                        # soil cracks / stones
+        x = rnd.uniform(0, WW); y = rnd.uniform(1290, 1620); ellipse(c, x, y, rnd.uniform(8, 20), rnd.uniform(4, 9)); fill_stroke(c, "#6a3326", 2)
+    for k in range(16):                                                        # arrows standing in the ground, leaning
+        x = rnd.uniform(40, WW - 40); y = rnd.uniform(1300, 1600); a = rnd.uniform(-0.5, 0.5); ln = rnd.uniform(110, 190)
+        tx, ty = x + ln * math.sin(a), y - ln * math.cos(a)
+        c.move_to(x, y); c.line_to(tx, ty); c.set_source_rgb(*OL); c.set_line_width(9); c.stroke_preserve(); c.set_source_rgb(*hexc("#d9b47a")); c.set_line_width(5); c.stroke()
+        for d in (-1, 1):
+            poly(c, [(tx, ty), (tx + d * 16 * math.cos(a) - 10 * math.sin(a), ty + d * 16 * math.sin(a) - 22 * math.cos(a)), (tx - 6 * math.sin(a), ty + 18 * math.cos(a))]); fill_stroke(c, "#c0392b", 2)
+    wx, wy, r = 230, 1560, 110                                                 # broken chariot wheel lying in front
+    ellipse(c, wx, wy, r, r * 0.55); fill_stroke(c, "#8a5a2a", 6)
+    ellipse(c, wx, wy, r * 0.82, r * 0.42); fill_stroke(c, "#6a3326", 3)
+    for k in range(8):
+        a = k * math.pi / 4; c.move_to(wx, wy); c.line_to(wx + r * 0.82 * math.cos(a), wy + r * 0.42 * math.sin(a)); c.set_source_rgb(*OL); c.set_line_width(7); c.stroke()
+    ellipse(c, wx, wy, r * 0.2, r * 0.11); fill_stroke(c, "#e8b730", 3)
+    c.move_to(1060, 1530); c.line_to(1260, 1500); c.set_source_rgb(*OL); c.set_line_width(9); c.stroke()    # fallen flag pole + cloth
+    poly(c, [(1060, 1530), (1010, 1560), (1100, 1580)]); fill_stroke(c, "#e8b730", 3)
+    s.write_to_png(f"{OUT}/{file}.png")
+
 BG_FUNCS = {"morning": bglib.bg_morning, "divine": bglib.bg_divine, "cloudvan": bglib.bg_cloudvan,
-            "ghorvan": lambda f: bglib.forest(f), "ashram": bg_ashram, "river": bg_river, "palace": bg_palace}
+            "ghorvan": lambda f: bglib.forest(f), "ashram": bg_ashram, "river": bg_river, "palace": bg_palace, "kurukshetra": bg_kurukshetra}
 
 # ---------------- what has to be drawn (from the shot list) ----------------
 for bg in sorted({sh["bg"] for sh in EPI["SHOTS"]} | {EPI["COVER"]["bg"]}):

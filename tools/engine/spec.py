@@ -7,7 +7,8 @@ import hashlib, json, re
 
 BGS = {"morning": "subah ka jungle", "cloudvan": "pahad ke paas baadal jaisa van", "divine": "sunehra divya aakash",
        "ghorvan": "ghana andhera jungle (rakshas wala)", "ashram": "rishiyon ka ashram + yagya kund",
-       "river": "nadi ka kinara (Ganga/Sarayu/Shon)", "palace": "raj-darbar (gaddi + chhatra)"}
+       "river": "nadi ka kinara (Ganga/Sarayu/Shon)", "palace": "raj-darbar (gaddi + chhatra)",
+       "kurukshetra": "Kurukshetra ka yudh-maidan, dhalti shaam (tuta rath ka pahiya, bikhre teer)"}
 POSES = {"stand": "khada", "namaste": "haath jode", "talk": "baat karte hue haath", "bless": "aashirvaad ka haath",
          "point": "haath se ishara", "raise": "haath upar", "walk": "chalna (to_x tak)", "sit": "baitha (paalthi)",
          "bow": "jhuk kar pranam", "angry": "gusse mein haath"}
@@ -37,7 +38,7 @@ SPEAKER_PREFIX = [("ram", "ram"), ("lak", "lakshman"), ("vm", "vishwamitra"), ("
 KIT_COLOURS = {"kind", "skin", "hair", "tunic", "sash", "upper", "lower", "hem", "fw", "fh", "build", "tall", "eye", "nose",
                "crown", "jewel", "bare", "skirt", "mous", "beard", "age", "belly", "browt", "halo", "ajina", "jata", "child",
                "saree", "blouse", "border", "stoop", "hook", "jowl", "eyeh", "browcol", "bandcol", "pagdi", "pagdi2",
-               "beardlen", "jatabun", "tilak", "mala", "kamandalu"}
+               "beardlen", "jatabun", "tilak", "mala", "kamandalu", "feather"}
 
 
 def load(path):
@@ -203,6 +204,7 @@ def check(epi):
             if not isinstance(e.get("x"), (int, float)) or not 150 <= e["x"] <= 1210: P.append(f"shot {i}: {w} ka x 150 se 1210 ke beech ho")
             if e.get("pose", "stand") not in POSES: P.append(f"shot {i}: {w} ka pose inme se: {list(POSES)}")
             if e.get("face", "neutral") not in FACES: P.append(f"shot {i}: {w} ka face inme se: {FACES}")
+            if not -35 <= e.get("tilt", 0) <= 35: P.append(f"shot {i}: {w} ka tilt -35 se 35 degree ke beech ho (zakhmi/tirchha khada)")
             if not 0 <= e.get("lift", 0) <= 400: P.append(f"shot {i}: {w} ka lift 0-400 ho (aasmaan mein udna)")
             if e.get("pose") == "walk" and not isinstance(e.get("to_x"), (int, float)): P.append(f"shot {i}: {w} walk kar raha hai to to_x do")
         xs = sorted((e["x"], e["who"]) for e in cast if isinstance(e.get("x"), (int, float)) and e.get("who") in known)
