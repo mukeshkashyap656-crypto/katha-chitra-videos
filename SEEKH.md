@@ -15,6 +15,8 @@ Ye wo galtiyan aur sudhaar hain jo pichhle episodes (Bhag 2, 3, 4, 5) mein mile.
 - (24 Nov 2026) Chalna ab engine mein: asli mocap ke 12 frame, side-view, dono haath jhoolte, raftaar se paer match, pahunch ke ruko, phir sar samne. Detail BODY.md "Abhi baaki". Purane episodes ko dobara mat banao.
 - Seekh: ARMS list chalte waqt haath dabaa deti thi (haath body se chipak gaye) -> chalte waqt arms=None. Dheemi raftaar + tez chakkar = paer phisalte dikhte hain -> raftaar 3.2*u/sec hi rakho.
 
+- (25 Nov 2026) HAATH: user ne kaha puppet jaisa lagta hai, ungli nahi dikhti. `draw_hand` (template/lib/chars.py) ab poora insaani haath hai: moti 3-jod ungliyan + knuckle line, palm kalaai se chauda, angootha palm se ugta hua, mutthi mein mudi ungliyan, namaste mein gol sire waali patti. Naya haath/pose banao to isi tarah: ek jura hua haath, gol goli + teeli ungliyan nahi. Styles: relaxed/open/point/fist/join. Test: kirdaar par person() se tasveer nikaal kar ungli zoom karke dekho.
+
 ## Jagah (background)
 - "Ghor van" sach mein andhera aur ghana: bel, ullu, panchhi, kisi jaanwar ki chamakti aankhein; koi chamakdaar phal ke dot nahi. Rakshas ka naam aate hi laal-kaala ho jaaye.
 - Peechhe ki cheezein (jaise ullu) poori frame ke andar, kinare par aadhi kati nahi.

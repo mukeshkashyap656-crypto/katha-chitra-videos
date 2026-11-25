@@ -175,3 +175,5 @@ Ye khaas hamare kaam ka hai kyunki wo cut-out/puppet rig ki walk hai (humari eng
 - Animation niyam: anticipation (harkat se pehle halka peeche/neeche), follow-through + overlapping (sharir pehle, haath, phir sir, kuch der se), slow-in/slow-out, arcs. Sir har baat par alag se thoda jhukta hai (`head_js`).
 - Koi cheez ek saath nahi rukti; dono haath ek jaise nahi hilte; har character ki apni matra (`nod`, `talkel`, `gs`).
 - Jod (kohni) par ring/outline nahi: `tlimb(..., open_start=True)`; haath chehre jitna lamba (draw_hand scale 1.28).
+
+- (25 Nov 2026) HAATH: user ne kaha puppet jaisa lagta hai, ungli nahi dikhti. `draw_hand` (template/lib/chars.py) ab poora insaani haath hai: moti 3-jod ungliyan + knuckle line, palm kalaai se chauda, angootha palm se ugta hua, mutthi mein mudi ungliyan, namaste mein gol sire waali patti. Naya haath/pose banao to isi tarah: ek jura hua haath, gol goli + teeli ungliyan nahi. Styles: relaxed/open/point/fist/join. Test: kirdaar par person() se tasveer nikaal kar ungli zoom karke dekho.
