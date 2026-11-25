@@ -131,6 +131,9 @@ def live_gemini_models(c):
     return _LIVE["m"]
 
 
+FAST = False    # sirf chhote sawal ka jawab: sabse halka model pehle, atke to jaldi hato
+
+
 _DEAD = set()   # jo model 404 "no longer available" bole (jaise gemini-2.5-pro): is run mein dobara kabhi nahi
 
 
@@ -141,11 +144,13 @@ def gemini_model_list(c, hard=False):
             out.append(m)
     if hard:     # mushkil kaam (episode likhna, jaanch, video dekhna): pehle sabse zyada sochne wala "pro" model, free limit kam hai toh flash par
         out = [m for m in _LIVE.get("pro", []) if m not in out[:0]] + out
+    if FAST:
+        out = sorted(out, key=lambda m: "lite" not in m)
     return [m for m in out if m not in _DEAD] or out
 
 
 def gemini(contents, want_json, hard=False):
-    c = genai.Client(api_key=os.environ["GEMINI_API_KEY"].strip(), http_options=types.HttpOptions(timeout=120000))
+    c = genai.Client(api_key=os.environ["GEMINI_API_KEY"].strip(), http_options=types.HttpOptions(timeout=20000 if FAST else 120000))
     mlist = gemini_model_list(c, hard)
     cfg = types.GenerateContentConfig(temperature=0.3, max_output_tokens=32768,
                                       response_mime_type="application/json" if want_json else None)
@@ -167,7 +172,7 @@ def gemini(contents, want_json, hard=False):
                 print(f"Gemini {m} ab nahi milta: hata diya.")
                 continue
             busy = any(x in str(e) for x in ("503", "UNAVAILABLE", "429", "RESOURCE_EXHAUSTED", "overloaded"))
-            w = min(90, (20 if busy else 8) * (attempt + 1)) if patient else (3 if busy else 2) * (attempt + 1)
+            w = min(90, (20 if busy else 8) * (attempt + 1)) if patient else (0 if FAST else (3 if busy else 2) * (attempt + 1))
             print(f"Gemini koshish {attempt + 1} ({m}) nahi chali: {str(e)[:160]}. {w}s baad phir...")
             time.sleep(w)
     raise Busy(f"Gemini: {str(last)[:200]}")
@@ -927,6 +932,35 @@ def task_extra(st):
     return FOLLOW_UP if st.get("episode") else autopost_brief()
 
 
+# chhota sawal / salaam pehchano. Zara bhi kaam wala shabd ho to ye NAHI (poora, dhyan wala raasta).
+_ASKING = re.compile(r"\?|\b(kya|kab|kahan|kaun|kaunsa|kitn[aei]|kaise|kyu|kyun|hello|namaste|hi)\b|क्या|कब|कहाँ|कहां|कौन|कितन|कैसे|क्यों|नमस्ते|हेलो", re.I)
+_DOING = re.compile(r"bana|banao|banado|theek|thik|sudh[aa]r|badl|badal|render|likh|jod|hata|mita|delete|post|upload|publish|plan|bhag|episode|video|"
+                    r"karo|kar do|kardo|\bkar\b|chalao|bhejo|dobara|phir se|jaanch|check|fix|change|add|remove|"
+                    r"बना|ठीक|सुधार|बदल|लिख|जोड़|हटा|मिटा|डिलीट|पोस्ट|अपलोड|प्लान|भाग|एपिसोड|वीडियो|करो|कर दो|चलाओ|भेजो|दोबारा|फिर से|जाँच|जांच", re.I)
+
+
+def quick_question(request):
+    t = request.split("---- Pichli baat-cheet")[0]
+    t = re.sub(r"@ai\b", " ", t, flags=re.I).strip()
+    return bool(t) and len(t) <= 120 and bool(_ASKING.search(t)) and not _DOING.search(t)
+
+
+def quick_answer(task):
+    """Chhote sawal ka tez jawab. Agar AI ko lage ki kuch badalna ya banana hai to None: tab poora raasta."""
+    global FAST
+    files = context_files()
+    block = "\n\n".join(f"===== FILE: {p} =====\n{c}" for p, c in files.items())
+    FAST = True
+    try:
+        data = ask(f"{RULES}\n\n# FILES\n{block}\n\n# TASK\n{task}")
+    finally:
+        FAST = False
+    if data["action"] != "none" or data.get("render"):
+        return None
+    data["files"] = []
+    return data
+
+
 def mode_task():
     if "JAANCH-VIDEO" in os.environ.get("REQUEST", "").upper():
         return mode_review()
@@ -942,7 +976,11 @@ def mode_task():
     task = (f"Issue title: {os.environ.get('ISSUE_TITLE', '')}\n"
             f"Owner's message (Hinglish): {os.environ.get('REQUEST', '')}\n"
             f"Earlier work on this issue's branch: {json.dumps(st, ensure_ascii=False)}" + task_extra(st))
-    data = solve(task)
+    data = None
+    if quick_question(os.environ.get("REQUEST", "")):
+        data = quick_answer(task)
+    if data is None:
+        data = solve(task)
     msg = data["summary"] or "Ho gaya."
     extra = data.get("remember")
     saved = [i for ok, i in (YD.save(REPO, x) for x in (extra if isinstance(extra, list) else [])[:2]) if ok]
