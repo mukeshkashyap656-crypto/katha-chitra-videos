@@ -83,7 +83,7 @@ Niyam (zaroori):
 - Sehat/ilaaj, paisa/share/nivesh, chunaav/rajneeti, hatya/hadsa, dharm-vivaad par kuch mat likho. Aisi khabar aaye to {{"skip": true}} do.
 - Gaming mein KABHI mat likho: cheat, hack, mod APK, pirated/crack game, free diamond/UC/redeem code ke jhoothe daave, ya account becha-kharida. Sirf khabar, update, review, tips jo game ke niyam ke andar hon.
 - Game ke screenshot/logo ki baat sirf shabdon mein; tasveer tum nahi doge.
-Sirf ek JSON do: {{"title": "...", "description": "150 akshar ka saar", "labels": ["...", "..."], "image_query": "english 2-3 words, generic (jaise smartphone gaming)", "banner_title": "English, max 4 shabd, jaise BGMI 4.7 UPDATE", "banner_sub": "English, max 6 shabd", "chips": ["English, 3 tak: 24 NOV: GALA REGISTRATION ENDS"], "official_video_url": "is event/update ka OFFICIAL YouTube trailer ka link (game company ke apne channel ka), na mile to khaali", "body_html": "..."}}"""
+Sirf ek JSON do: {{"title": "...", "description": "150 akshar ka saar", "labels": ["...", "..."], "image_query": "english 2-3 words, generic (jaise smartphone gaming)", "photo_queries": ["english 2-4 shabd, post ki har mukhya cheez/vishay ke liye alag asli photo ki khoj (3 se 5), jaise smartphone battery, 5G network, gaming phone"], "banner_title": "English, max 4 shabd, jaise BGMI 4.7 UPDATE", "banner_sub": "English, max 6 shabd", "chips": ["English, 3 tak: 24 NOV: GALA REGISTRATION ENDS"], "official_video_url": "is event/update ka OFFICIAL YouTube trailer ka link (game company ke apne channel ka), na mile to khaali", "body_html": "..."}}"""
 
 
 def gemini_models(client):
@@ -285,6 +285,75 @@ def host_image(path):
     return None
 
 
+def _dl(url, path, hdr=None):
+    r = requests.get(url, timeout=60, headers=hdr or {"User-Agent": "khabaradda-bot"})
+    r.raise_for_status()
+    if not r.headers.get("content-type", "").startswith("image") or len(r.content) < 20000:
+        raise RuntimeError("tasveer kaam ki nahi")
+    open(path, "wb").write(r.content)
+    return path
+
+
+def fetch_photos(queries, n=5):
+    """Post ke vishay ki ASLI, copyright-free photos. Raaste (ek ke baad ek): Pexels -> Pixabay -> Openverse (CC0/PDM).
+    Har photo hosted karke (jsDelivr) lagti hai; credit saath. Env: PEXELS_API_KEY, PIXABAY_API_KEY (dono free), BLOG_IMG_TOKEN (hosting)."""
+    out, used = [], set()
+    for qi, q in enumerate([str(x).strip()[:60] for x in (queries or []) if str(x).strip()][:n]):
+        got = None
+        for prov in ("pexels", "pixabay", "openverse"):
+            try:
+                cand = []
+                if prov == "pexels" and os.environ.get("PEXELS_API_KEY"):
+                    r = requests.get("https://api.pexels.com/v1/search", timeout=30, headers={"Authorization": os.environ["PEXELS_API_KEY"]},
+                                     params={"query": q, "per_page": 8, "orientation": "landscape"})
+                    for ph in r.json().get("photos", []):
+                        cand.append((ph["id"], ph["src"].get("large2x") or ph["src"]["large"], "Photo: %s / Pexels" % ph.get("photographer", ""), ph.get("url")))
+                elif prov == "pixabay" and os.environ.get("PIXABAY_API_KEY"):
+                    r = requests.get("https://pixabay.com/api/", timeout=30, params={"key": os.environ["PIXABAY_API_KEY"], "q": q,
+                                     "image_type": "photo", "orientation": "horizontal", "safesearch": "true", "per_page": 8})
+                    for h in r.json().get("hits", []):
+                        cand.append((h["id"], h.get("largeImageURL"), "Photo: %s / Pixabay" % h.get("user", ""), h.get("pageURL")))
+                elif prov == "openverse":
+                    r = requests.get("https://api.openverse.org/v1/images/", timeout=30, params={"q": q, "license": "cc0,pdm", "page_size": 10, "aspect_ratio": "wide"})
+                    for im in r.json().get("results", []):
+                        if (im.get("width") or 0) >= 1000 and im.get("url"):
+                            cand.append((im["id"], im["url"], "Tasveer: %s (CC0/Public Domain)" % (im.get("title") or q), im.get("foreign_landing_url")))
+                for pid, url, credit, page in cand:
+                    key = (prov, pid)
+                    if key in used or not url: continue
+                    path = os.path.join(OUT, f"ph-{time.strftime('%Y%m%d')}-{abs(hash((prov, pid))) % 10**7}.jpg")
+                    try:
+                        _dl(url, path)
+                    except Exception as e:
+                        log("photo utarne mein dikkat:", str(e)[:80]); continue
+                    hosted = host_image(path)
+                    if not hosted and prov == "pixabay": continue   # Pixabay: seedha link nahi, hosted hi chahiye
+                    got = {"url": hosted or url, "credit": credit, "page": page or url, "q": q}
+                    used.add(key); break
+            except Exception as e:
+                log("photo raasta", prov, "fail:", str(e)[:100])
+            if got: break
+        if got: out.append(got)
+        else: log("is vishay ki photo nahi mili:", q)
+    return out
+
+
+def insert_photos(body_html, photos):
+    """Har heading (h2/h3) ke theek baad ek photo + credit. Photos kam hon to baaki headings bina photo ke."""
+    if not photos: return body_html
+    it = iter(photos)
+    def rep(m):
+        ph = next(it, None)
+        if not ph: return m.group(0)
+        return (m.group(0) + f'<p><img src="{html.escape(ph["url"])}" alt="{html.escape(ph["q"])}" style="width:100%;max-width:640px;height:auto"/>'
+                f'<br/><small><a href="{html.escape(ph["page"])}" rel="nofollow noopener">{html.escape(ph["credit"])}</a></small></p>')
+    new = re.sub(r"</h[23]>", rep, body_html, flags=re.I)
+    rest = list(it)
+    if rest and new == body_html:   # koi heading nahi: shuru mein rakh do
+        return "".join(f'<p><img src="{html.escape(ph["url"])}" alt="{html.escape(ph["q"])}" style="width:100%;max-width:640px"/><br/><small>{html.escape(ph["credit"])}</small></p>' for ph in rest[:3]) + body_html
+    return new
+
+
 OFFICIAL = [x.strip().lower() for x in os.environ.get(
     "OFFICIAL_CHANNELS", "battlegrounds mobile india,bgmi,krafton,free fire,garena,pubg mobile,supercell,activision,riot games,epic games").split(",")]
 
@@ -441,6 +510,10 @@ def main():
             except Exception as e:
                 log("banner nahi bana:", e)
             img = None if banner_url else find_image(post.get("image_query") or "news")
+            try:
+                post["body_html"] = insert_photos(post["body_html"], fetch_photos(post.get("photo_queries")))
+            except Exception as e:
+                log("vishay wali photos nahi lagi:", e)
             content = build_html(post, srcs, item, img, banner_url, ai_used)
             open(os.path.join(OUT, f"{time.strftime('%Y%m%d')}-{slug}.html"), "w", encoding="utf-8").write(content)
             url = publish(post["title"], content, post["labels"])
