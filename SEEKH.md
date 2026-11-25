@@ -1,5 +1,7 @@
 # Katha Chitra — Seekh ki Kitaab (ab tak ke saare sudhaar)
 
+> Kahani ka niyam 26 Nov 2026 ko badla hai: NIYAM.md section 2 dekho (wahi sabse upar).
+
 Ye wo galtiyan aur sudhaar hain jo pichhle episodes (Bhag 2, 3, 4, 5) mein mile. **Har naye episode par ye sab pehle se lagte hain** (user ne kaha: "har video mein bolna nahi padna chahiye"). NIYAM.md aur VIRAL.md ke saath padho. Naya sudhaar mile toh yahin joddo.
 
 ## Hinsa/Harkat (movement)

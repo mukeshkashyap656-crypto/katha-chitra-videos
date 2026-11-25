@@ -1,5 +1,7 @@
 # Katha Chitra — Ramayan videos (GitHub par apne aap)
 
+> Kahani ka niyam 26 Nov 2026 ko badla hai: NIYAM.md section 2 dekho (wahi sabse upar).
+
 User se Hinglish mein, aam bolchaal ke shabdon mein baat karo. Memory ke saare Ramayan niyam (Valmiki, character bible, logo, subscribe widget, director check, delivery) yahan bhi lagte hain.
 
 ## Folder

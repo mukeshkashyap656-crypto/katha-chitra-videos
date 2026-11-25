@@ -14,7 +14,16 @@ Ye file kisi bhi AI (Gemini, DeepSeek, ChatGPT, Claude...) ko do aur bolo:
 - Kisi ek video ke liye bataya gaya sudhaar **har video** par lagta hai (purane remake aur har naye) — dobara bolna na pade.
 
 ## 2. Kahani (sabse zaroori)
-- Sirf **Valmiki Ramayan** (Tulsidas nahi). Viral topic ke liye bhi Valmiki se bahar ki kahani nahi.
+### Naya niyam (26 Nov 2026, owner ka hukm)
+- Kahani aur andaaz **1987 wale Ramanand Sagar ke Ramayan serial** ko dekh kar. Ye "sirf Valmiki" wale purane niyam ki jagah leta hai. Baaki files (SEEKH, VIRAL, KNOWLEDGE, FESTIVAL, CLAUDE) mein Ramayan ke liye "sirf Valmiki" likha ho toh ye niyam upar hai.
+- **Kab se:** jab `plans/STORY_QUEUE.json` ki nayi serial wali list aur `tools/ramayan_ai.py` ki jaanch badal jaaye. Tab tak purani list wale bhaag Valmiki se hi banenge (neeche ki Valmiki wali lines un par lagti hain).
+- Har bhaag se pehle us hisse ki likhi hui jaankari dhoondo. Jis scene ki pakki jaankari na mile, use apne mann se mat jodo; owner ko batao aur auto-post mat karo. (Ye "owner se sawaal nahi" wale tareeke se upar hai.)
+- Dialogue aur narration naye likho. Serial ke video, gaane, dialogue aur actors ke chehre mat lo. Serial ke apne jode hue khaas scene hoobahoo mat utaaro. Title/tags mein serial ya actor ka naam nahi.
+- Andaaz: bhaavuk pal par thehrav, chehre aur aankhon se bhaav, izzat wali aasaan Hindi.
+- Serial wale bhaag par screen, caption ya tags mein "वाल्मीकि रामायण" / "valmiki" mat likho.
+
+### Purani list wale bhaag (badlaav tak)
+- Valmiki Ramayan (Tulsidas nahi). Viral topic ke liye bhi Valmiki se bahar ki kahani nahi.
 - Kahani **bilkul waisi** jaisi Valmiki mein hai, episode-dar-episode aage. **Apni taraf se kuch mat jodo, kuch mat badlo.**
 - Pehle us bhaag ka sarga padho, phir likho.
 - Script **aaj ki bolchaal wali saaf, sahi Hindi** mein (bhaari kitaabi shabd nahi), aur line se line smooth flow.

@@ -1,5 +1,7 @@
 # Katha Chitra — Poori jaankari (KNOWLEDGE.md)
 
+> Kahani ka niyam 26 Nov 2026 ko badla hai: NIYAM.md section 2 dekho (wahi sabse upar).
+
 Ye file Claude ke paas jo bhi jaankari hai (owner se baatcheet, channel ka asli data, system ki baatein, seekh) ek jagah deti hai. NIYAM.md = kya banana; VIRAL.md = kaise chale; BODY.md / ANIMATION.md = harkat; SEEKH.md = galtiyan. Ye file un sab ke upar ka poora naksha hai. Naya pakka tathya mile toh yahin joddo. (Koi key/password yahan kabhi nahi likhna.)
 
 ## 1. Owner kaun aur kaise kaam karta hai
