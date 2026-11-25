@@ -16,6 +16,10 @@ Ye file kisi bhi AI (Gemini, DeepSeek, ChatGPT, Claude...) ko do aur bolo:
 6. Har kirdaar har scene mein ek jaisa dikhe. Naye kirdaar ka roop pehle tay karo.
 7. Serial wale bhaag par "Valmiki" mat likho. "रामायण कथा" likho.
 8. Video poora jaanche bina post mat karo.
+9. Haath kahani ke hisaab se (owner, 26 Nov 2026). Kohni neeche aur halki mudi rahe, kalai seedhi, ungliyan dikhein.
+   Aaram/sunna = `stand` (haath kamar ke aage dheele). Pranam/aabhaar = `namaste` (hatheliyan seene par judi, cross kabhi nahi).
+   Baat samjhana = `talk`. Aashirvaad/dilasa = `bless` (chehra naram: smile). Dukh = `dukh` (ek haath seene par).
+   Do logon ke beech kam se kam 300 ki jagah, taaki haath ya kapde ek-doosre par na chadhein.
 Neeche saare niyam vistaar se hain.
 
 ---

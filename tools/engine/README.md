@@ -30,7 +30,7 @@ Poora udaharan: `episodes/bhag6/episode.json`.
 - `show`: (Bhag 9 se zaroori) ek line mein: is line mein jo bola ja raha hai wo screen par kya dikhega — kaun kya kar raha hai + chehre/sharir ka bhaav. Jo line mein hai wahi dikhna chahiye (NIYAM.md section 13).
 - `cast`: 0-4 log: `{"who": "ram", "x": 620, "pose": "stand", "face": "neutral", "look": "auto"}`
   - `x`: 150-1210 (beech 680). Do logon mein kam se kam 260 ka faasla (bade devta/rakshas ke saath 330) — koi kisi par na chadhe.
-  - `pose`: `stand, namaste, talk, bless, point, raise, walk (+ "to_x"), sit, bow, angry`.
+  - `pose`: `stand, namaste, talk, bless, point, raise, walk (+ "to_x"), sit, bow, angry, dukh` (ek haath seene par). Aashirvaad/dilasa = `bless` (kohni neeche, hatheli kandhe ke paas).
   - `face`: `neutral, smile, joy, sad, worry, angry, firm, stern, shock` — kahani ke us pal ke hisaab se, peechhe walon ka bhi.
   - `look`: `auto` (bolne wale ki taraf) | `left` | `right` | `front`.
   - `shadow: true` — rakshas pehli baar: kaali parchhai + laal aankhen. Agle shot mein bina shadow ke dikhao.

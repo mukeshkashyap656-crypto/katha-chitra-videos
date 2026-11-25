@@ -67,12 +67,13 @@ ends = starts[1:] + [END]
 
 # ---------- arms as separate pieces: shoulder + elbow rotate smoothly (real cut-out animation) ----------
 PIVOTS = json.load(open(f"{P}/assets/pivots.json")) if os.path.exists(f"{P}/assets/pivots.json") else {}
-POSE_ARMS = {"stand": (0.10, 0.06, -0.10, -0.06), "talk": (0.10, 0.10, 0.55, -0.95), "bless": (0.10, 0.10, 0.55, -0.95),
-             "point": (0.10, 0.10, 1.25, 0.25), "raise": (0.10, 0.10, 2.45, 0.25), "namaste": (-0.1, 2.18, 0.1, -2.18),
-             "angry": (0.6, 0.9, -0.6, -0.9)}
-# talking gestures: (left a1,a2) / (right a1,a2); None = stay at rest
-GESTURES = [(None, (0.60, -0.95)), ((0.30, 0.60), (0.95, -0.55)), (None, (1.05, -1.30)), ((-0.45, 0.85), (0.45, -0.85)),
-            (None, (0.35, -1.35)), ((0.15, 1.0), (0.2, -1.0))]
+POSE_ARMS = {"stand": (-0.28, 1.17, 0.28, -1.17), "talk": (-0.28, 1.17, 0.25, 1.45), "bless": (-0.28, 1.17, 0.42, 2.2),
+             "point": (-0.28, 1.17, 1.25, 0.25), "raise": (-0.28, 1.17, 0.42, 2.2), "namaste": (-0.3, 1.75, 0.3, -1.75),
+             "dukh": (-0.4, 1.2, 0.3, -2.0), "angry": (0.6, 0.9, -0.6, -0.9)}
+# baat karte haath (left a1,a2) / (right a1,a2); None = aaram par. Kohni neeche rehti hai, hatheli pet se seene ke beech khulti hai;
+# dono haath wale ishare mein dono barabar nahi (judwa harkat nahi).
+GESTURES = [(None, (0.25, 1.45)), (None, (0.35, 1.2)), (None, (0.28, 1.8)), ((-0.2, -1.2), (0.3, 1.55)),
+            (None, (0.45, 1.35)), ((-0.3, -1.45), (0.22, 1.25))]
 def deg(a): return -a * 180 / math.pi
 
 # Har character ka apna body-language (insaan sab alag hote hain): aaram ka pose, ishare ki gati/badai, saans, jhukaav.
@@ -80,11 +81,11 @@ def deg(a): return -a * 180 / math.pi
 #   sway = hilna; tempo = saans ki gati (bada = dheema); lean = degree mein tirchha khada hona
 STYLES = {
     "vishwamitra": dict(rest=(0.10, 0.22, -0.09, -0.10), gest=(0, 2), gap=2.4, gs=1.0, sway=0.5, tempo=1.3, lean=0.0, talkel=0.55, nod=0.6),   # kathor, kam ishare, kamandalu baayein haath mein
-    "ram":         dict(rest=(0.10, 0.34, -0.10, -0.34), gest=(0, 4), gap=2.9, gs=0.7, sway=0.6, tempo=1.2, lean=0.0, talkel=0.6, nod=0.7),    # shaant, sanyat, haath dheele aage
+    "ram":         dict(rest=(-0.28, 1.17, 0.28, -1.17), gest=(1, 0), gap=2.9, gs=0.7, sway=0.6, tempo=1.2, lean=0.0, talkel=0.6, nod=0.7),    # shaant, sanyat, haath dheele aage
     "lakshman":    dict(rest=(0.13, 0.10, -0.13, -0.10), gest=(0, 1, 3, 2), gap=1.2, gs=1.2, sway=1.4, tempo=0.8, lean=0.0, talkel=1.0, nod=1.4),  # tez, chaukanna
     "vasishtha":   dict(rest=(0.09, 0.16, -0.10, -0.18), gest=(0, 2), gap=3.2, gs=0.8, sway=0.4, tempo=1.6, lean=0.0, talkel=0.45, nod=0.5),   # buzurg, dheere
     "dasharatha":  dict(rest=(0.12, 0.28, -0.12, -0.28), gest=(1, 3), gap=2.6, gs=1.1, sway=0.5, tempo=1.4, lean=0.0, talkel=0.6, nod=0.8),    # raja, bhaari
-    "_female":     dict(rest=(0.08, 0.40, -0.08, -0.40), gest=(4, 5, 0), gap=2.2, gs=0.8, sway=1.0, tempo=1.0, lean=0.0, talkel=0.85, nod=1.0),  # komal, haath aage
+    "_female":     dict(rest=(-0.37, 1.22, 0.37, -1.22), gest=(0, 2, 5), gap=2.2, gs=0.8, sway=1.0, tempo=1.0, lean=0.0, talkel=0.85, nod=1.0),  # komal, haath aage
     "_devta":      dict(rest=(0.18, 0.08, -0.18, -0.08), gest=(3, 2, 0), gap=2.0, gs=1.25, sway=0.4, tempo=1.5, lean=0.0, talkel=0.4, nod=0.6), # bhavya, khule haath
     "_rakshas":    dict(rest=(0.30, 0.22, -0.30, -0.22), gest=(2, 1), gap=1.4, gs=1.3, sway=1.2, tempo=0.9, lean=0.0, talkel=0.7, nod=1.3),      # bhaari
     "_elder":      dict(rest=(0.09, 0.16, -0.10, -0.18), gest=(0, 2), gap=3.0, gs=0.8, sway=0.5, tempo=1.5, lean=0.0, talkel=0.5, nod=0.6),
@@ -100,7 +101,7 @@ def body_style(e, meta):
     if nc.get("age", 0) >= 2 or who.startswith("rishi") or who in ("mantri",): return STYLES["_elder"]
     return STYLES["_man"]
 
-def arm_js(cid, e, t0, t1, speak, rest_style, style=None):
+def arm_js(cid, e, t0, t1, speak, rest_style, style=None, join=None):
     """GSAP for the 4 joints of one person: gentle idle sway + (while speaking) hand gestures with a smooth go / hold / return,
     all in this character's own style (STYLES)."""
     st = style or STYLES["_man"]
@@ -109,8 +110,9 @@ def arm_js(cid, e, t0, t1, speak, rest_style, style=None):
         r0 = list(st["rest"])
         if pose == "stand": rest = r0
         else: rest = [r0[0], r0[1]] + rest[2:]            # talk/bless: right arm stays raised, left follows the character's own rest
+    if pose == "namaste" and join: rest = list(join)
     joints = ["uL", "fL", "uR", "fR"]; amp = {"u": 0.03 * st["sway"], "f": 0.055 * st["sway"]}
-    if pose == "namaste": amp = {"u": 0.006, "f": 0.008}
+    if pose in ("namaste", "dukh"): amp = {"u": 0.006, "f": 0.008}
     wp = {j: [(t0, rest[i])] for i, j in enumerate(joints)}      # waypoints (time, angle) per joint
     gest = []                                                      # (start, end) windows
     base_ = rest; talking = bool(speak and pose in ("stand", "talk", "bless") and speak[1] - speak[0] > 1.0)
@@ -240,7 +242,7 @@ for si, sh in enumerate(SHOTS):
                               f'<img class="ci" src="assets/arm_{kit}_u{sd}.png" style="width:{w_}px;height:{h_}px">'
                               f'<div id="{cid}f{sd}" style="position:absolute;left:0;top:0;width:{w_}px;height:{h_}px;transform-origin:{ex:.1f}px {ey:.1f}px">{fimgs}</div></div>')
             _spk = (max(t0, T[k]), min(t1, E[k])) if sp == e["who"] else None
-            moves.extend(arm_js(cid, e, t0, t1, _spk, rs, body_style(e, SP.char_meta(p["who"], EPI) | SP.char_meta(e["who"], EPI))))
+            moves.extend(arm_js(cid, e, t0, t1, _spk, rs, body_style(e, SP.char_meta(p["who"], EPI) | SP.char_meta(e["who"], EPI)), pv.get("namaste")))
         html_c.append(f'<div class="char" id="{cid}" style="left:{e["x"] - w_ / 2:.0f}px;top:{top}px;width:{w_}px;height:{h_}px"><div id="{cid}i" style="position:absolute;left:0;top:0;width:{w_}px;height:{h_}px;transform-origin:50% 96%">{imgs}{arms_html}</div></div>')
         if e.get("lie"):       # lying on the ground (wounded Karna): the whole figure turns about its middle, head to the left, body resting on the ground
             moves.append(f'tl.set("#{cid}",{{rotation:-88,y:{LIE_DY},transformOrigin:"50% 50%"}},{t0:.3f});')

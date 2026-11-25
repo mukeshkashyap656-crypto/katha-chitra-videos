@@ -41,13 +41,49 @@ for k, v in EPI.get("NEW_CHARS", {}).items():          # new characters describe
     C.CHARS[k] = {kk: vv for kk, vv in v.items() if kk not in SP.NEWCHAR_META}
 
 KS = 2.4615
-ARMS = {"stand": (0.12, 0.05, -0.12, -0.05), "namaste": (-0.1, 2.18, 0.1, -2.18), "talk": (0.12, 0.05, 0.55, -0.9),
-        "bless": (0.12, 0.05, 0.55, -0.9), "point": (0.12, 0.05, 1.25, 0.25), "raise": (0.12, 0.05, 2.45, 0.25),
-        "walk": (0.12, 0.05, -0.12, -0.05), "sit": (-0.1, 2.18, 0.1, -2.18), "bow": (-0.1, 2.18, 0.1, -2.18),
-        "angry": (0.6, 0.9, -0.6, -0.9)}
+ARMS = {"stand": (-0.28, 1.17, 0.28, -1.17), "namaste": (-0.3, 1.75, 0.3, -1.75), "talk": (-0.28, 1.17, 0.25, 1.45),
+        "bless": (-0.28, 1.17, 0.42, 2.2), "point": (-0.28, 1.17, 1.25, 0.25), "raise": (-0.28, 1.17, 0.42, 2.2),
+        "dukh": (-0.4, 1.2, 0.3, -2.0), "walk": (0.12, 0.05, -0.12, -0.05), "sit": (-0.3, 1.75, 0.3, -1.75),
+        "bow": (-0.3, 1.75, 0.3, -1.75), "angry": (0.6, 0.9, -0.6, -0.9)}
 HANDS = {"stand": ("relaxed", "relaxed"), "walk": ("relaxed", "relaxed"), "talk": ("relaxed", "open"), "bless": ("relaxed", "open"),
          "point": ("relaxed", "point"), "raise": ("relaxed", "open"), "namaste": ("join", "join"), "sit": ("join", "join"),
-         "bow": ("join", "join"), "angry": ("fist", "fist")}
+         "bow": ("join", "join"), "angry": ("fist", "fist"), "dukh": ("seena", "seena")}
+HSCALE = 0.8                       # haath pehle se chhote (bade dastane jaise na lagein)
+JOIN_POSES = ("namaste", "sit", "bow")
+
+
+def join_arms(who):
+    """Namaste: har character ke kandhe ki chaudai ke hisaab se kohni mod kar dono kalaiyan seene ke beech (cross nahi)."""
+    H = 520; u = H / 5.0
+    dummy = cairo.Context(cairo.ImageSurface(cairo.FORMAT_ARGB32, 560, 760))
+    piv = person(dummy, who, 280, 730, H, arms=(0, 0, 0, 0))["pivots"]
+    out = []
+    for k, side in enumerate((-1, 1)):
+        sx, sy = piv[k][0], piv[k][1]
+        L1, L2 = 0.75 * u, 0.7 * u
+        dx, dy = 280 + side * 0.035 * u - sx, piv[0][1] + 0.80 * u - sy
+        d = max(abs(L1 - L2) + 1, min(L1 + L2 - 1, math.hypot(dx, dy)))
+        base = math.atan2(dx, dy); a = math.acos((L1 * L1 + d * d - L2 * L2) / (2 * L1 * d))
+        def score(a1): return math.cos(a1) * L1 + 0.45 * side * math.sin(a1) * L1      # kohni neeche aur halki bahar
+        a1 = max((base + a, base - a), key=score)
+        a2 = math.atan2(dx - math.sin(a1) * L1, dy - math.cos(a1) * L1) - a1
+        out += [a1, (a2 + math.pi) % (2 * math.pi) - math.pi]
+    return tuple(out)
+
+
+def wrist_rel(who, style, side):
+    """Kalai ka mod: haath ki disha, baanh ke aage wale hisse ke muqable. side -1 baayan, +1 daayan."""
+    if style == "join":
+        ja = join_arms(who); i = 0 if side < 0 else 2
+        want = math.pi + side * 0.03 if side < 0 else -math.pi + side * 0.03
+        return (want - (ja[i] + ja[i + 1]) + math.pi) % (2 * math.pi) - math.pi
+    if style == "open":
+        return 0.35 * side
+    if style == "relaxed":
+        return -0.45 if side < 0 else 0.45
+    if style == "seena":
+        return -0.45 if side < 0 else -0.65
+    return 0.0
 MOUTHS = ["X", "A", "B", "E", "O", "M"]
 
 
@@ -78,7 +114,7 @@ def glow(c, x, hy, u, kind):
 PIV = {}
 
 
-def draw_state(file, who, pose="stand", face="neutral", look=0.0, mouth="X", blink=False, shadow=False, walk=None, big=False, part="all", hstyle="relaxed"):
+def draw_state(file, who, pose="stand", face="neutral", look=0.0, mouth="X", blink=False, shadow=False, walk=None, big=False, part="all", hstyle="relaxed", side=0):
     meta = SP.char_meta(who, EPI)
     big = big or meta.get("big", False)
     CW, CH, HS = (680, 900, 650) if big else (560, 760, 520)
@@ -90,12 +126,21 @@ def draw_state(file, who, pose="stand", face="neutral", look=0.0, mouth="X", bli
     if who in ("ram", "lakshman") and part in ("all", "body"):
         bglib.bow_back(c, x, feet - HS, HS / 5); bglib.quiver(c, x, feet - HS, HS / 5)
     C.WALK = walk
-    info = person(c, who, x, feet, HS, pose="sit" if pose == "sit" else "stand", arms=ARMS.get(pose, ARMS["stand"]), mouth=mouth,
+    C.SIDE = side if walk is not None else 0
+    arms = join_arms(who) if pose in JOIN_POSES else ARMS.get(pose, ARMS["stand"])
+    pair = (hstyle, hstyle) if part not in ("all", "body") else HANDS.get(pose, ("relaxed", "relaxed"))
+    rel = [wrist_rel(who, pair[0], -1), wrist_rel(who, pair[1], 1)]
+    if part in ("all", "body"):                  # poora chitra: haath ki disha = baanh + kalai ka mod
+        wr = [arms[0] + arms[1] + rel[0], arms[2] + arms[3] + rel[1]]
+    else:                                        # alag tukda seedha latka banta hai; ghumane par mod wahi rehta hai
+        wr = rel
+    hand = tuple("relaxed" if h == "seena" else h for h in pair)
+    info = person(c, who, x, feet, HS, pose="sit" if pose == "sit" else "stand", arms=arms, mouth=mouth,
            blink=blink, emo=face, look=look, bow=1.0 if pose == "bow" else 0.0,
            turn=(1.0 if look > 0.4 else -1.0 if look < -0.4 else 0.0) if (pose != "sit" and walk is None) else None,
-           hand=(hstyle, hstyle) if part not in ("all", "body") else HANDS.get(pose, ("relaxed", "relaxed")), part=part)
-    PIV[who] = {"scale": (1.0), "cw": CW, "piv": [list(map(float, t)) for t in info["pivots"]], "head": list(map(float, info["headpiv"]))}
-    C.WALK = None
+           hand=hand, part=part, wrist=None if walk is not None else wr, hscale=HSCALE)
+    PIV[who] = {"scale": (1.0), "cw": CW, "namaste": [float(v) for v in join_arms(who)], "piv": [list(map(float, t)) for t in info["pivots"]], "head": list(map(float, info["headpiv"]))}
+    C.WALK = None; C.SIDE = 0
     if meta.get("rakshas") and part in ("all", "body"):
         horns_fangs(c, x, top, u)
     if shadow:   # first entry of a rakshasa: black shadow with glowing red eyes

@@ -435,7 +435,7 @@ def face(ctx, c, hx, hy, u, mouth="X", blink=False, emo="neutral", look=0.0, tur
 
 
 def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=False, emo="neutral",
-           look=0.0, bow=0.0, prop=None, t=0.0, turn=None, bend=0.0, fixarms=False, hand=None, part="all"):
+           look=0.0, bow=0.0, prop=None, t=0.0, turn=None, bend=0.0, fixarms=False, hand=None, part="all", wrist=None, hscale=1.0):
     """arms = (l_sh, l_el, r_sh, r_el) radians from straight-down; positive -> screen right."""
     c = CHARS[cname]
     # part: "all" (whole picture) | "body" (everything but the arms) | "uL","uR" (upper arm, hanging straight) | "fL","fR" (forearm+hand, hanging straight).
@@ -757,7 +757,10 @@ def person(ctx, cname, x, feet, H, pose="stand", arms=None, mouth="X", blink=Fal
             ctx.arc(bx, by, 0.08 * u if kind == "f" else 0.1 * u, 0, 6.3); ctx.set_source_rgb(*hexc(col)); ctx.set_line_width(5); ctx.stroke()
         _hs = (hand[0] if s < 0 else hand[1]) if isinstance(hand, (tuple, list)) else hand
         if _hs:
-            draw_hand(ctx, hx2, hy2, a1 + a2, u, _skn, _hs, s)
+            _wa = wrist[0 if s < 0 else 1] if wrist else None      # hand's own direction (None = in line with the forearm)
+            ctx.save(); ctx.translate(hx2, hy2); ctx.scale(hscale, hscale); ctx.translate(-hx2, -hy2)
+            draw_hand(ctx, hx2, hy2, a1 + a2 if _wa is None else _wa, u, _skn, _hs, s)
+            ctx.restore()
         else:
             ctx.arc(hx2, hy2, 0.11 * u, 0, 6.3); fill_stroke(ctx, _skn, 4)
         hands.append((hx2, hy2))

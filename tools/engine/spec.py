@@ -11,7 +11,7 @@ BGS = {"morning": "subah ka jungle", "cloudvan": "pahad ke paas baadal jaisa van
        "kurukshetra": "Kurukshetra ka yudh-maidan, dhalti shaam (tuta rath ka pahiya, bikhre teer)"}
 POSES = {"stand": "khada", "namaste": "haath jode", "talk": "baat karte hue haath", "bless": "aashirvaad ka haath",
          "point": "haath se ishara", "raise": "haath upar", "walk": "chalna (to_x tak)", "sit": "baitha (paalthi)",
-         "bow": "jhuk kar pranam", "angry": "gusse mein haath"}
+         "bow": "jhuk kar pranam", "angry": "gusse mein haath", "dukh": "dukh: ek haath seene par"}
 FACES = ["neutral", "smile", "joy", "sad", "worry", "angry", "firm", "stern", "shock"]
 CAMS = ["auto", "wide", "speaker", "two", "face"]
 MOODS = ["none", "joy", "sorrow", "anger", "fear", "wonder", "night"]
@@ -89,8 +89,8 @@ def look_value(entry, shot, epi):
     return 0.8 if tgt["x"] > entry["x"] else -0.8
 
 
-LAYER_POSES = ("stand", "talk", "bless", "point", "raise", "namaste", "angry")   # arms are separate pieces (rotate smoothly)
-HAND_BY_POSE = {"stand": "relaxed", "talk": "relaxed", "bless": "relaxed", "point": "point", "raise": "open", "namaste": "join", "angry": "fist"}
+LAYER_POSES = ("stand", "talk", "bless", "point", "raise", "namaste", "angry", "dukh")   # arms are separate pieces (rotate smoothly)
+HAND_BY_POSE = {"stand": "relaxed", "talk": "relaxed", "bless": "relaxed", "point": "point", "raise": "open", "namaste": "join", "angry": "fist", "dukh": "seena"}
 
 
 def layered(entry, shot):
@@ -117,6 +117,8 @@ def state_base(entry, shot, epi):
     """Parameters that define one look of one character in one shot."""
     p = {"who": kit_name(entry["who"]), "pose": entry.get("pose", "stand"), "face": entry.get("face", "neutral"),
          "look": look_value(entry, shot, epi), "shadow": bool(entry.get("shadow", False))}
+    if p["pose"] == "walk":          # chalte waqt chehra aur sharir raaste ki taraf
+        p["side"] = 1 if entry.get("to_x", entry.get("x", 0) + 1) >= entry.get("x", 0) else -1
     if layered(entry, shot):
         p["pose"] = "stand"; p["part"] = "body"        # the arms are drawn separately (arm_states); same body for every layered pose
     h = hashlib.md5(json.dumps(p, sort_keys=True).encode()).hexdigest()[:6]
