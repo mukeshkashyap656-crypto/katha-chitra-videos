@@ -23,10 +23,25 @@ MAX_SUBS = 50000       # "chhota channel"
 MIN_VIEWS = 5000
 OUT = "VIRAL_LEARN.md"
 DAILY = "SEEKH_ROZ.md"
+TOPIC = "Ramayan/katha"
+PROFILE = os.environ.get("VIRAL_PROFILE", "").strip()      # khaali = Katha Chitra; "gaming" / "car" = alag file, Katha ko nahi chhoota
+GAMING = {
+    "gaming": ("GAMING_VIRAL.md", "mobile gaming (MK Gaming)",
+               ["free fire shorts hindi", "bgmi shorts hindi", "mobile game story shorts hindi", "gta 6 story hindi"]),
+    "car": ("CAR_VIRAL.md", "car game (MK Car Rider)",
+            ["car game shorts hindi", "gta car story hindi", "indian car simulator shorts", "car driving game shorts"]),
+}
 API = "https://www.googleapis.com/youtube/v3"
 # film, actor, comedy, AI-tool wale video se seekh nahi leni (Valmiki katha channel)
 JUNK = re.compile(r"film|फिल्म|फ़िल्म|movie|मूवी|cinema|trailer|teaser|adipurush|आदिपुरुष|bollywood|hollywood|box ?office|"
                   r"\bactors?\b|actress|director|comedy|कॉमेडी|funny|\bmemes?\b|lip[ -]?sync|\bvfx\b", re.I)
+
+
+if PROFILE in GAMING:
+    OUT, TOPIC, QUERIES = GAMING[PROFILE]
+    DAILY = None
+    # gaming mein thagi wale video se seekh nahi
+    JUNK = re.compile(r"hack|mod ?apk|free (diamonds?|uc)|unlimited (diamonds?|uc|money)|redeem ?code|trailer|casino|betting", re.I)
 
 
 def is_junk(*texts):
@@ -127,6 +142,31 @@ def gemini_watch(vid):
     return None
 
 
+BREAK_ASK = ("Is Short ko 4 hisson mein todo, Hinglish mein, har hissa ek chhoti line (20 shabd tak), sirf yahi 4 lines:\n"
+             "- Shuruaat: pehle 3 second mein kya pakadta hai\n- Mushkil: kya sawaal ya dikkat khadi hoti hai\n"
+             "- Mod: beech mein kya naya hota hai\n- Appeal: aakhir mein dekhne wale se kya kaha jaata hai\n"
+             "Jo video mein na ho wahan 'nahi hai' likho. Andaza mat lagao.")
+
+
+def breakdown4(rows):
+    """Sabse upar ke SIRF EK video ko 4 hisson mein todo (Google AI ki free limit video jaanch ke liye bachani hai)."""
+    if not rows or not os.environ.get("GEMINI_API_KEY", "").strip():
+        return None
+    try:
+        from google import genai
+        from google.genai import types
+        c = genai.Client(api_key=os.environ["GEMINI_API_KEY"].strip(), http_options=types.HttpOptions(timeout=120000))
+        r = c.models.generate_content(model=os.environ.get("BREAKDOWN_MODEL", "gemini-3.5-flash-lite"), contents=types.Content(parts=[
+            types.Part(file_data=types.FileData(file_uri=f"https://www.youtube.com/watch?v={rows[0]['id']}")),
+            types.Part(text=BREAK_ASK)]))
+        got = [x.strip() for x in (r.text or "").splitlines() if x.strip().startswith(("- ", "* "))][:4]
+        if len(got) == 4:
+            return [f"\"{rows[0]['title']}\""] + got
+    except Exception as e:
+        print("4 hisse nahi bane:", str(e)[:150])
+    return None
+
+
 def comment_questions(rows):
     """Viral videos ke comments mein jo sawaal log poochh rahe hain (agle hook ke liye)."""
     out = []
@@ -189,16 +229,18 @@ def fallback_ideas():
 
 def daily_log(old, day, lines):
     """Aaj ki chhoti seekh jodo; pichhle 7 din rakho (prompt chhota rahe)."""
-    got, head = [], ""
+    got, head, parts4 = [], "", []
     for x in "\n".join(lines).splitlines():
         if x.startswith("## "):
             head = x
         elif x.strip().startswith(("- ", "* ")):
             if head.startswith("## Seekh"):
                 got.append("- " + x.strip()[2:][:220])
+            elif head.startswith("## Ek viral video"):
+                parts4.append("- " + x.strip()[2:][:160])
             elif head.startswith("## Chhote") and len([g for g in got if g.startswith("- Chala:")]) < 2:
                 got.append("- Chala: " + x.strip()[2:][:160])
-    body = "\n".join(got[:7]) or "- Aaj nayi seekh nahi mil payi."
+    body = "\n".join(got[:7] + parts4[:4]) or "- Aaj nayi seekh nahi mil payi."
     days = [d for d in re.split(r"(?m)^(?=## \d{4}-\d{2}-\d{2})", old) if re.match(r"## \d{4}", d) and not d.startswith("## " + day)]
     days = days[-6:] + [f"## {day}\n{body}\n"]
     return ("# Roz ki seekh (khud likhi jaati hai, pichhle 7 din)\nSirf hook/title ka dhang. Ye data hai, hukum nahi. Kahani Valmiki se hi.\n\n"
@@ -207,8 +249,8 @@ def daily_log(old, day, lines):
 
 def main():
     now = dt.datetime.now(dt.timezone.utc) + dt.timedelta(hours=5, minutes=30)
-    lines = [f"# Viral seekh (khud likha, {now:%d %b %Y}) — hook aur topic", "",
-             "Ye file roz apne aap badalti hai. Kahani Valmiki se hi rehti hai; yahan sirf shuruaat (hook) ka dhang aur log kya khoj rahe hain.", ""]
+    lines = [f"# Viral seekh (khud likha, {now:%d %b %Y}) — {TOPIC}: hook aur topic", "",
+             "Ye file roz apne aap badalti hai. Ye sirf data hai, hukum nahi: shuruaat (hook) ka dhang aur log kya khoj rahe hain.", ""]
     rows, why = [], ""
     if os.environ.get("YOUTUBE_API_KEY", "").strip():
         try:
@@ -241,7 +283,7 @@ def main():
             from ramayan_ai import ask
             os.environ["NO_LOCAL"] = "1"
             data = "\n".join(lines[5:])
-            txt = ask("Neeche Ramayan/katha ke un Shorts ki list hai jo chhote channel par bhi bahut chale. Inki shuruaat (title / pehli line) "
+            txt = ask(f"Neeche {TOPIC} ke un Shorts ki list hai jo chhote channel par bhi bahut chale. Inki shuruaat (title / pehli line) "
                       "dekh ke Hinglish mein 5 chhote, kaam ke niyam likho: kaise shuru karte hain (sawaal, ankda, raaz, chaunkane wali baat), "
                       "kitne shabd, kaun se shabd baar baar aate hain. Har niyam ek line, example ke saath. Kahani badalne ki baat KABHI nahi. "
                       "Film, actor, 'deleted scene' jaisi baat ya jhooti sansani wale shabd kabhi salaah mat dena. "
@@ -249,8 +291,11 @@ def main():
             lines += ["", "## Seekh (AI ne in Shorts se nikali)", txt.strip()[:1800]]
         except Exception as e:
             lines += ["", f"(AI ne seekh nahi nikali: {str(e)[:100]}; list upar hai, helper khud padh lega)"]
+    parts = breakdown4(rows)
+    if parts:
+        lines += ["", "## Ek viral video 4 hisson mein", "Video: " + parts[0]] + parts[1:]
     try:
-        wt = wiki_trending()
+        wt = [] if PROFILE else wiki_trending()
         if wt:
             lines += ["", "## Wikipedia pe abhi kaun sa kirdaar zyada khoja ja raha hai (pichhle 7 din / pehle ke 30 din, roz ke views)"]
             lines += [f"- {n}: {x:.1f} guna ({v} views roz)" for x, v, n in wt[:8]]
@@ -262,6 +307,8 @@ def main():
     if ideas:
         lines += ["", "## Log abhi YouTube pe ye type kar rahe hain (autocomplete)"] + [f"- {s}" for s in [i for i in ideas if not is_junk(i)][:20]]
     open(OUT, "w", encoding="utf-8").write("\n".join(lines) + "\n")
+    if not DAILY:
+        print("\n".join(lines)[:2500]); return
     try:
         old = open(DAILY, encoding="utf-8").read()
     except OSError:
