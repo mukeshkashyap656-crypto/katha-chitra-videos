@@ -206,6 +206,21 @@ def parse_json(txt):
     return json.loads(m.group(0))
 
 
+def openrouter_free():
+    """OpenRouter ke abhi ke free model (naam badalte rehte hain, isliye list khud mangwao); na mile toh purane naam."""
+    try:
+        data = requests.get("https://openrouter.ai/api/v1/models", timeout=30).json()["data"]
+        free = [m for m in data if m["id"].endswith(":free") and (m.get("context_length") or 0) >= 30000]
+        pref = ("deepseek", "qwen", "llama", "mistral", "gemma", "gpt-oss")
+        free.sort(key=lambda m: next((i for i, p in enumerate(pref) if p in m["id"]), 9))
+        ids = [m["id"] for m in free[:6]]
+        if ids:
+            return ids
+    except Exception as e:
+        log("OpenRouter list nahi mili:", str(e)[:80])
+    return ["meta-llama/llama-3.3-70b-instruct:free", "google/gemma-3-27b-it:free", "mistralai/mistral-small-3.2-24b-instruct:free"]
+
+
 GEM_SKIP_UNTIL = 0     # Gemini ka free quota khatam (429) hone par is run mein 10 minute tak use na aazmao (sab post mein samay barbaad hota tha)
 GEM_DEAD = set()       # jo model "no longer available" (404) bole, use is run mein dobara na aazmao
 
@@ -223,17 +238,18 @@ def write_post(item):
             from google import genai
             from google.genai import types
             c = genai.Client(api_key=key)
-            quota_out = False
+            quota_out = False; n429 = 0
             for model in gemini_models(c):
                 if model in GEM_DEAD:
                     continue
                 if quota_out:
                     break
-                for attempt in range(2):
+                got_429 = False
+                for grounded in (True, False):      # pehle search ke saath; 429 aaye toh bina search ke (uska quota alag hota hai)
                     try:
-                        r = c.models.generate_content(
-                            model=model, contents=prompt,
-                            config=types.GenerateContentConfig(tools=[types.Tool(google_search=types.GoogleSearch())]))
+                        cfg = types.GenerateContentConfig(tools=[types.Tool(google_search=types.GoogleSearch())]) if grounded else None
+                        pr = prompt if grounded else prompt + "\nDhyan: tumhare paas search nahi hai, isliye sirf wahi likho jo khabar ke shirshak se pakka ho."
+                        r = c.models.generate_content(model=model, contents=pr, config=cfg)
                         post = parse_json(r.text)
                         srcs = []
                         try:
@@ -242,24 +258,28 @@ def write_post(item):
                                     srcs.append((ch.web.title or ch.web.uri, ch.web.uri))
                         except Exception:
                             pass
-                        log("Gemini", model, "ok, srot:", len(srcs))
+                        log("Gemini", model, "ok" + ("" if grounded else " (bina search)"), "srot:", len(srcs))
                         return post, srcs
                     except Exception as e:
                         msg = str(e)
-                        log("Gemini", model, "fail:", msg[:150])
+                        log("Gemini", model, "search" if grounded else "bina search", "fail:", msg[:150])
                         if "429" in msg or "RESOURCE_EXHAUSTED" in msg:
-                            GEM_SKIP_UNTIL = time.time() + 600
-                            quota_out = True      # quota poori key ka hota hai: baaki Gemini models bhi bekaar, seedha doosre AI par
-                            break
+                            got_429 = True
+                            continue
                         if "404" in msg or "NOT_FOUND" in msg:
                             GEM_DEAD.add(model)
                             break   # model nahi: isi model par dobara koshish bekaar
-                        time.sleep(8)
+                        time.sleep(3)
+                if got_429:
+                    n429 += 1
+                    if n429 >= 2:      # 2 alag model par 429 (dono tarah) = key ka quota khatam: seedha doosre AI par
+                        GEM_SKIP_UNTIL = time.time() + 600
+                        quota_out = True
         except Exception as e:
             log("Gemini poora fail:", e)
     okey = os.environ.get("OPENROUTER_API_KEY")
     if okey:   # sahara: bina search ke, isliye srot sirf wahi jo khabar ka link hai
-        for model in ["meta-llama/llama-3.3-70b-instruct:free", "google/gemma-3-27b-it:free", "mistralai/mistral-small-3.2-24b-instruct:free"]:
+        for model in openrouter_free():
             try:
                 r = requests.post("https://openrouter.ai/api/v1/chat/completions", timeout=180,
                                   headers={"Authorization": "Bearer " + okey},
@@ -288,12 +308,13 @@ def write_post(item):
                 log("Cloudflare AI", model, "fail:", str(e)[:120])
     gh = os.environ.get("GITHUB_TOKEN")
     if gh:   # sahara 4: GitHub Models (Actions ke saath free)
-        for model in ["openai/gpt-4.1-mini", "meta/Llama-3.3-70B-Instruct", "mistral-ai/Mistral-Small-2503"]:
+        for model in ["openai/gpt-4.1-mini", "openai/gpt-4o-mini", "meta/Llama-3.3-70B-Instruct", "deepseek/DeepSeek-V3-0324", "mistral-ai/Mistral-Small-2503"]:
             try:
                 r = requests.post("https://models.github.ai/inference/chat/completions", timeout=180,
                                   headers={"Authorization": "Bearer " + gh, "Accept": "application/vnd.github+json"},
                                   json={"model": model, "messages": [{"role": "user", "content": nosearch}], "max_tokens": 6000})
-                r.raise_for_status()
+                if r.status_code != 200 or not r.text.strip():
+                    raise RuntimeError(f"HTTP {r.status_code}: {r.text[:100]!r}")
                 post = parse_json(r.json()["choices"][0]["message"]["content"])
                 log("GitHub Models", model, "ok")
                 return post, []
@@ -312,6 +333,7 @@ def write_post(item):
                 return post, []
             except Exception as e:
                 log("HuggingFace", model, "fail:", str(e)[:120])
+                if "402" in str(e): break
     return None, []
 
 
