@@ -1,0 +1,23 @@
+{
+ "question": "क्या देवी गंगा और पार्वती सगी बहनें थीं?",
+ "alternatives": [
+  "देवी गंगा स्वर्ग कैसे पहुँचीं?",
+  "राजा हिमवान की दो बेटियाँ कौन थीं?"
+ ],
+ "search_words": [
+  "valmiki ramayan ganga maiya",
+  "ramayan ganga janm katha"
+ ],
+ "angle": "Ganga aur Parvati (Uma) ke behen hone ka anokha tathya",
+ "reason": "Autocomplete 'ramayan ganga' aur 'ramayan janm' par aadharit; Sarga 35 ka sabse chaunkane wala sach jo scroll rokta hai.",
+ "signals_used": {
+  "autocomplete_seeds": [
+   "valmiki ramayan",
+   "ramayan Ganga",
+   "ramayan janm",
+   "ramayan Himavan"
+  ],
+  "trends": 10,
+  "stats": true
+ }
+}

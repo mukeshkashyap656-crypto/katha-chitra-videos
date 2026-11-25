@@ -1,0 +1,422 @@
+{
+ "NAME": "Ramayan_Bhag9_Ganga_Uma_Sagi_Bahen",
+ "COVER_NAME": "Ramayan_Bhag9_Cover",
+ "BHAG": 9,
+ "VERSION": 14,
+ "QUESTION": "क्या देवी गंगा और पार्वती सगी बहनें थीं?",
+ "LINES": {
+  "n1": [
+   "क्या देवी गंगा और पार्वती सगी बहनें थीं?",
+   "+0%",
+   "+0Hz"
+  ],
+  "vm1": [
+   "राम, हिमवान यानी हिमालय पर्वत थे।",
+   "-12%",
+   "-16Hz"
+  ],
+  "vm2": [
+   "वे पर्वतों के राजा थे।",
+   "-12%",
+   "-16Hz"
+  ],
+  "n2": [
+   "उनकी दो बेटियाँ थीं—गंगा और उमा।",
+   "+0%",
+   "+0Hz"
+  ],
+  "n3": [
+   "बड़ी बेटी थीं गंगा।",
+   "+0%",
+   "+0Hz"
+  ],
+  "n4": [
+   "छोटी बेटी थीं उमा।",
+   "+0%",
+   "+0Hz"
+  ],
+  "vm3": [
+   "उमा ही पार्वती हैं।",
+   "-12%",
+   "-16Hz"
+  ],
+  "n5": [
+   "इसलिए गंगा और पार्वती एक ही पिता की बेटियाँ थीं।",
+   "+0%",
+   "+0Hz"
+  ],
+  "n6": [
+   "उमा के पुत्र कौन? अगले भाग में! सब्सक्राइब कीजिए, कमेंट में लिखिए: जय श्री राम",
+   "+0%",
+   "+0Hz"
+  ]
+ },
+ "SPEAKER": {
+  "vm1": "vishwamitra",
+  "vm2": "vishwamitra",
+  "vm3": "vishwamitra"
+ },
+ "KEYWORDS": {
+  "n1": [
+   "गंगा",
+   "पार्वती"
+  ],
+  "vm1": [
+   "हिमवान"
+  ],
+  "vm2": [
+   "राजा"
+  ],
+  "n2": [
+   "बेटियाँ"
+  ],
+  "n3": [
+   "गंगा"
+  ],
+  "n4": [
+   "उमा"
+  ],
+  "vm3": [
+   "पार्वती"
+  ],
+  "n5": [
+   "पिता"
+  ],
+  "n6": [
+   "पुत्र"
+  ]
+ },
+ "NEW_CHARS": {
+  "himavan": {
+   "name": "हिमवान",
+   "kind": "m",
+   "crown": true,
+   "jewel": true,
+   "beard": "#e8e0d0",
+   "mous": "#e8e0d0",
+   "bare": true,
+   "skin": "#c89878",
+   "hair": "#e8e0d0",
+   "tunic": "#6b4a2a",
+   "sash": "#f2c230",
+   "upper": "#f6f0e2",
+   "lower": "#6b4a2a",
+   "hem": "#f2c230",
+   "skirt": 1.4,
+   "age": 1
+  },
+  "ganga": {
+   "name": "देवी गंगा",
+   "kind": "f",
+   "big": true,
+   "glow": "gold",
+   "skin": "#f0c890",
+   "hair": "#140c08",
+   "saree": "#9ec8e0",
+   "blouse": "#f6f0e2",
+   "border": "#f2c230",
+   "jewel": true,
+   "tilak": true,
+   "mala": true,
+   "tall": 1.05,
+   "fw": 1.0,
+   "fh": 1.04
+  },
+  "uma": {
+   "name": "देवी उमा",
+   "kind": "f",
+   "big": true,
+   "glow": "gold",
+   "skin": "#e8b887",
+   "hair": "#140c08",
+   "saree": "#d9342b",
+   "blouse": "#f2c230",
+   "border": "#f6f0e2",
+   "jewel": true,
+   "tilak": true,
+   "mala": false,
+   "jatabun": "#140c08",
+   "tall": 0.96,
+   "fw": 0.94,
+   "fh": 0.97
+  }
+ },
+ "SHOTS": [
+  {
+   "line": "n1",
+   "bg": "divine",
+   "cam": "wide",
+   "mood": "wonder",
+   "chip": "सगी बहनें?",
+   "show": "गंगा उमा की ओर इशारा करती हैं, उमा हाथ जोड़ती हैं; दोनों के चेहरे पर हल्की मुस्कान।",
+   "cast": [
+    {
+     "who": "ganga",
+     "x": 420,
+     "pose": "point",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "uma",
+     "x": 940,
+     "pose": "namaste",
+     "face": "smile",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "vm1",
+   "bg": "cloudvan",
+   "cam": "speaker",
+   "chip": "हिमवान",
+   "show": "विश्वामित्र राम को बताते हैं, राम चौंककर सुनते हैं।",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 300,
+     "pose": "stand",
+     "face": "shock",
+     "look": "right"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 760,
+     "pose": "talk",
+     "face": "smile",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "vm1",
+   "at_word": "हिमालय",
+   "bg": "cloudvan",
+   "cam": "wide",
+   "chip": "हिमालय",
+   "show": "हिमवान शांत और गंभीर खड़े हैं, मुकुट और दाढ़ी से पर्वत राजा जैसा।",
+   "cast": [
+    {
+     "who": "himavan",
+     "x": 680,
+     "pose": "stand",
+     "face": "smile",
+     "look": "front"
+    }
+   ]
+  },
+  {
+   "line": "vm2",
+   "bg": "cloudvan",
+   "cam": "speaker",
+   "chip": "पर्वतों के राजा",
+   "show": "विश्वामित्र हाथ से पर्वत की ओर इशारा करते हैं, राम ध्यान से सुनते हैं।",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 300,
+     "pose": "stand",
+     "face": "neutral",
+     "look": "right"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 760,
+     "pose": "talk",
+     "face": "firm",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "vm2",
+   "at_word": "राजा",
+   "bg": "cloudvan",
+   "cam": "auto",
+   "chip": "राजा",
+   "show": "हिमवान राजा की तरह एक हाथ आशीर्वाद में खड़े हैं, चेहरा दृढ़।",
+   "cast": [
+    {
+     "who": "himavan",
+     "x": 680,
+     "pose": "bless",
+     "face": "firm",
+     "look": "front"
+    }
+   ]
+  },
+  {
+   "line": "n2",
+   "bg": "divine",
+   "cam": "wide",
+   "mood": "wonder",
+   "chip": "दो बेटियाँ",
+   "show": "हिमवान के साथ गंगा और उमा; गंगा लंबी कद और खुले बाल, उमा छोटी कद और जूड़ा।",
+   "cast": [
+    {
+     "who": "himavan",
+     "x": 260,
+     "pose": "stand",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "ganga",
+     "x": 640,
+     "pose": "bless",
+     "face": "smile",
+     "look": "front"
+    },
+    {
+     "who": "uma",
+     "x": 980,
+     "pose": "stand",
+     "face": "joy",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "n3",
+   "bg": "divine",
+   "cam": "auto",
+   "chip": "बड़ी बेटी",
+   "show": "बड़ी बेटी गंगा शांत और तेज चेहरे के साथ खड़ी हैं।",
+   "cast": [
+    {
+     "who": "ganga",
+     "x": 680,
+     "pose": "stand",
+     "face": "smile",
+     "look": "front"
+    }
+   ]
+  },
+  {
+   "line": "n4",
+   "bg": "divine",
+   "cam": "auto",
+   "chip": "छोटी बेटी",
+   "show": "छोटी बेटी उमा हल्की मुस्कान के साथ हाथ जोड़े खड़ी हैं।",
+   "cast": [
+    {
+     "who": "uma",
+     "x": 680,
+     "pose": "namaste",
+     "face": "smile",
+     "look": "front"
+    }
+   ]
+  },
+  {
+   "line": "vm3",
+   "bg": "cloudvan",
+   "cam": "two",
+   "chip": "उमा",
+   "show": "विश्वामित्र मुस्कुराकर बताते हैं, राम आश्चर्य से सुनते हैं।",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 420,
+     "pose": "stand",
+     "face": "shock",
+     "look": "right"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 940,
+     "pose": "talk",
+     "face": "smile",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "vm3",
+   "at_word": "पार्वती",
+   "bg": "divine",
+   "cam": "speaker",
+   "mood": "wonder",
+   "chip": "उमा = पार्वती",
+   "show": "उमा कोमल चमक के साथ हाथ उठाए खड़ी हैं, चेहरा खुश।",
+   "cast": [
+    {
+     "who": "uma",
+     "x": 680,
+     "pose": "raise",
+     "face": "joy",
+     "look": "front"
+    }
+   ]
+  },
+  {
+   "line": "n5",
+   "bg": "cloudvan",
+   "cam": "wide",
+   "mood": "joy",
+   "chip": "एक ही पिता",
+   "show": "गंगा और उमा साथ खड़ी हैं, गंगा आशीर्वाद में और उमा हाथ जोड़े, चेहरे पर खुशी।",
+   "cast": [
+    {
+     "who": "ganga",
+     "x": 420,
+     "pose": "bless",
+     "face": "joy",
+     "look": "front"
+    },
+    {
+     "who": "uma",
+     "x": 940,
+     "pose": "namaste",
+     "face": "joy",
+     "look": "front"
+    }
+   ]
+  },
+  {
+   "line": "n6",
+   "bg": "divine",
+   "cam": "two",
+   "mood": "wonder",
+   "chip": "जय श्री राम",
+   "show": "राम हाथ जोड़कर प्रसन्नता से सुनते हैं, विश्वामित्र मुस्कुराकर आशीर्वाद देते हैं।",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 420,
+     "pose": "namaste",
+     "face": "joy",
+     "look": "right"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 940,
+     "pose": "bless",
+     "face": "smile",
+     "look": "left"
+    }
+   ]
+  }
+ ],
+ "COVER": {
+  "bg": "divine",
+  "tag": "सगी बहनें?",
+  "cast": [
+   {
+    "who": "ganga",
+    "x": 420,
+    "pose": "point",
+    "face": "smile",
+    "look": "right"
+   },
+   {
+    "who": "uma",
+    "x": 940,
+    "pose": "namaste",
+    "face": "smile",
+    "look": "left"
+   }
+  ]
+ }
+}
