@@ -1,0 +1,27 @@
+name: Free awaaz ke namoone
+# Haath se chalao. Namoone 'voice-samples' branch par jaate hain. Koi video/post nahi.
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  samples:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: auto-video
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq espeak-ng ffmpeg >/dev/null && pip install -q edge-tts soundfile numpy
+      - run: pip install -q kokoro || echo "kokoro nahi laga"
+      - run: python -u tools/voice_test.py
+      - name: Namoone bhejo
+        run: |
+          cp -r voice_out /tmp/voice_out && cd /tmp/voice_out
+          git init -q && git checkout -q -b voice-samples
+          git config user.name katha-chitra-bot && git config user.email bot@users.noreply.github.com
+          git add -A && git commit -q -m "Awaaz ke namoone"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" voice-samples

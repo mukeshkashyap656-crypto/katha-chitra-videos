@@ -32,11 +32,34 @@ jobs:
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: python -u tools/viral_learn.py
+      - name: MK Gaming ki seekh (alag file)
+        if: always()
+        continue-on-error: true
+        env:
+          VIRAL_PROFILE: gaming
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY_GAMING || secrets.YOUTUBE_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY_GAMING }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY_GAMING || secrets.OPENROUTER_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: python -u tools/viral_learn.py
+      - name: MK Car ki seekh (alag file)
+        if: always()
+        continue-on-error: true
+        env:
+          VIRAL_PROFILE: car
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY_GAMING || secrets.YOUTUBE_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY_GAMING }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY_GAMING || secrets.OPENROUTER_API_KEY }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: python -u tools/viral_learn.py
       - name: Save
         run: |
           git config user.name katha-chitra-bot
           git config user.email bot@users.noreply.github.com
           git add VIRAL_LEARN.md SEEKH_ROZ.md
+          for f in GAMING_VIRAL.md CAR_VIRAL.md; do if [ -f $f ]; then git add $f; fi; done
           if git diff --cached --quiet; then echo "kuch badla nahi"; else
             git commit -m "Roz ki viral seekh"
             for i in 1 2 3; do git push origin HEAD:auto-video && break; git pull --rebase origin auto-video; done
