@@ -224,16 +224,16 @@
   {
    "line": "n1",
    "bg": "kurukshetra",
-   "cam": "speaker",
+   "cam": "face",
    "mood": "sorrow",
    "chip": "कर्ण का आख़िरी दान",
    "cast": [
     {
      "who": "karna",
      "x": 680,
-     "pose": "sit",
+     "pose": "stand",
      "face": "sad",
-     "tilt": 10
+     "lie": true
     }
    ],
    "show": "कर्ण घायल, ज़मीन पर बैठे, चेहरे पर दर्द और शांति; पीछे डूबता सूरज"
@@ -248,9 +248,9 @@
     {
      "who": "karna",
      "x": 680,
-     "pose": "sit",
+     "pose": "stand",
      "face": "sad",
-     "tilt": 14
+     "lie": true
     }
    ],
    "show": "कुरुक्षेत्र की शाम, टूटा पहिया और बिखरे तीर, घायल कर्ण ज़मीन पर"
@@ -264,13 +264,13 @@
    "cast": [
     {
      "who": "krishna",
-     "x": 420,
+     "x": 520,
      "pose": "stand",
      "face": "sad"
     },
     {
      "who": "arjun",
-     "x": 950,
+     "x": 980,
      "pose": "stand",
      "face": "smile"
     }
@@ -285,13 +285,13 @@
    "cast": [
     {
      "who": "krishna",
-     "x": 420,
+     "x": 520,
      "pose": "talk",
      "face": "sad"
     },
     {
      "who": "arjun",
-     "x": 950,
+     "x": 980,
      "pose": "stand",
      "face": "shock"
     }
@@ -306,13 +306,13 @@
    "cast": [
     {
      "who": "krishna",
-     "x": 420,
+     "x": 520,
      "pose": "point",
      "face": "firm"
     },
     {
      "who": "arjun",
-     "x": 950,
+     "x": 980,
      "pose": "stand",
      "face": "worry"
     }
@@ -328,17 +328,17 @@
    "cast": [
     {
      "who": "brahman",
-     "x": 300,
+     "x": 150,
      "pose": "walk",
      "face": "neutral",
-     "to_x": 560
+     "to_x": 300
     },
     {
      "who": "karna",
-     "x": 980,
-     "pose": "sit",
+     "x": 900,
+     "pose": "stand",
      "face": "worry",
-     "tilt": 10
+     "lie": true
     }
    ],
    "show": "बूढ़े ब्राह्मण बने कृष्ण धीरे-धीरे चलकर घायल कर्ण की ओर जा रहे हैं"
@@ -351,16 +351,16 @@
    "cast": [
     {
      "who": "brahman",
-     "x": 480,
+     "x": 300,
      "pose": "talk",
      "face": "stern"
     },
     {
      "who": "karna",
-     "x": 920,
-     "pose": "sit",
+     "x": 900,
+     "pose": "stand",
      "face": "worry",
-     "tilt": 10
+     "lie": true
     }
    ],
    "show": "ब्राह्मण ज़ोर से पुकारकर दान माँग रहे हैं, कर्ण सिर उठाकर सुन रहे हैं"
@@ -373,16 +373,16 @@
    "cast": [
     {
      "who": "brahman",
-     "x": 480,
+     "x": 300,
      "pose": "stand",
      "face": "neutral"
     },
     {
      "who": "karna",
-     "x": 920,
-     "pose": "sit",
+     "x": 900,
+     "pose": "stand",
      "face": "sad",
-     "tilt": 10
+     "lie": true
     }
    ],
    "show": "कर्ण लाचारी और विनम्रता से कह रहे हैं कि बस दाँतों में सोना बचा है"
@@ -395,16 +395,16 @@
    "cast": [
     {
      "who": "brahman",
-     "x": 480,
+     "x": 300,
      "pose": "angry",
      "face": "angry"
     },
     {
      "who": "karna",
-     "x": 920,
-     "pose": "sit",
+     "x": 900,
+     "pose": "stand",
      "face": "shock",
-     "tilt": 10
+     "lie": true
     }
    ],
    "show": "ब्राह्मण नाराज़ होकर हाथ उठाकर डाँट रहे हैं, कर्ण सकपकाए हुए"
@@ -418,16 +418,16 @@
    "cast": [
     {
      "who": "brahman",
-     "x": 430,
+     "x": 300,
      "pose": "stand",
      "face": "worry"
     },
     {
      "who": "karna",
      "x": 900,
-     "pose": "bow",
+     "pose": "raise",
      "face": "firm",
-     "tilt": 22
+     "lie": true
     }
    ],
    "show": "कर्ण झुककर पत्थर तक घिसटते हैं, चेहरे पर दृढ़ता, ब्राह्मण चिंता से देख रहे हैं"
@@ -447,16 +447,16 @@
    "cast": [
     {
      "who": "brahman",
-     "x": 430,
+     "x": 300,
      "pose": "stand",
      "face": "shock"
     },
     {
      "who": "karna",
      "x": 900,
-     "pose": "sit",
+     "pose": "stand",
      "face": "firm",
-     "tilt": 10
+     "lie": true
     }
    ],
    "show": "बाण से बारिश होती है, सोना धुलकर चमकता है, ब्राह्मण हैरान"
@@ -469,16 +469,16 @@
    "cast": [
     {
      "who": "brahman",
-     "x": 450,
+     "x": 300,
      "pose": "bless",
      "face": "smile"
     },
     {
      "who": "karna",
      "x": 900,
-     "pose": "sit",
+     "pose": "namaste",
      "face": "smile",
-     "tilt": 8
+     "lie": true
     }
    ],
    "show": "कर्ण विनम्रता से सोना अर्पण करते हैं, ब्राह्मण हाथ बढ़ाकर आशीर्वाद की मुद्रा में"
@@ -491,21 +491,14 @@
    "chip": "असली रूप",
    "cast": [
     {
-     "who": "karna",
-     "x": 250,
-     "pose": "sit",
-     "face": "smile",
-     "tilt": 8
-    },
-    {
      "who": "krishna",
-     "x": 680,
+     "x": 520,
      "pose": "bless",
      "face": "smile"
     },
     {
      "who": "arjun",
-     "x": 1110,
+     "x": 980,
      "pose": "stand",
      "face": "shock"
     }
@@ -519,21 +512,14 @@
    "mood": "wonder",
    "cast": [
     {
-     "who": "karna",
-     "x": 250,
-     "pose": "sit",
-     "face": "smile",
-     "tilt": 8
-    },
-    {
      "who": "krishna",
-     "x": 680,
+     "x": 520,
      "pose": "talk",
      "face": "smile"
     },
     {
      "who": "arjun",
-     "x": 1110,
+     "x": 980,
      "pose": "stand",
      "face": "joy"
     }
@@ -543,15 +529,15 @@
   {
    "line": "n9",
    "bg": "divine",
-   "cam": "speaker",
+   "cam": "face",
    "mood": "wonder",
    "cast": [
     {
      "who": "karna",
      "x": 680,
-     "pose": "sit",
+     "pose": "namaste",
      "face": "smile",
-     "tilt": 6
+     "lie": true
     }
    ],
    "show": "कर्ण शांत मुस्कान के साथ आँखें बंद कर रहे हैं, चारों ओर सुनहरी रोशनी"
@@ -565,16 +551,9 @@
    "cast": [
     {
      "who": "krishna",
-     "x": 900,
+     "x": 680,
      "pose": "bless",
      "face": "smile"
-    },
-    {
-     "who": "karna",
-     "x": 420,
-     "pose": "sit",
-     "face": "smile",
-     "tilt": 6
     }
    ],
    "show": "कृष्ण और कर्ण मुस्कुराते हैं, सवाल दर्शकों से"
@@ -586,18 +565,17 @@
   "cast": [
    {
     "who": "karna",
-    "x": 430,
-    "pose": "sit",
-    "face": "sad",
-    "tilt": 8
+    "x": 400,
+    "pose": "stand",
+    "face": "sad"
    },
    {
     "who": "brahman",
-    "x": 930,
+    "x": 900,
     "pose": "stand",
     "face": "stern"
    }
   ]
  },
- "VERSION": 3
+ "VERSION": 4
 }

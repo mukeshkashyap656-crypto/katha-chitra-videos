@@ -240,6 +240,8 @@ for si, sh in enumerate(SHOTS):
             _spk = (max(t0, T[k]), min(t1, E[k])) if sp == e["who"] else None
             moves.extend(arm_js(cid, e, t0, t1, _spk, rs, body_style(e, SP.char_meta(p["who"], EPI) | SP.char_meta(e["who"], EPI))))
         html_c.append(f'<div class="char" id="{cid}" style="left:{e["x"] - w_ / 2:.0f}px;top:{top}px;width:{w_}px;height:{h_}px"><div id="{cid}i" style="position:absolute;left:0;top:0;width:{w_}px;height:{h_}px;transform-origin:50% 96%">{imgs}{arms_html}</div></div>')
+        if e.get("lie"):       # lying on the ground (wounded Karna): the whole figure turns about its middle, head to the left, body resting on the ground
+            moves.append(f'tl.set("#{cid}",{{rotation:-88,y:{LIE_DY},transformOrigin:"50% 50%"}},{t0:.3f});')
         if e.get("tilt"):      # wounded / leaning: the whole person leans a little (about the feet), e.g. a dying warrior propped on the ground
             moves.append(f'tl.set("#{cid}",{{rotation:{e["tilt"]},transformOrigin:"50% 96%"}},{t0:.3f});')
         # ---- life (puppet fix): breathing, slow weight sway, and a small nod on every beat while this person speaks ----
@@ -313,12 +315,15 @@ def cam(px, py, z):
     s = S0 * z; x = VW / 2 - s * px; y = VH / 2 - s * py
     x = min(0, max(VW - WW * s, x)); y = min(0, max(VH - WH * s, y))
     return f"x:{x:.1f},y:{y:.1f},scale:{s:.4f}"
+LIE_DY = 280          # a lying person: centre moved down so the body rests on the ground (feet line y=1480)
+LIE_HEAD_DX = -300    # lying head (head to the left): this far left of the person's x
 def half_w(who): return 145 if is_big(who) else 118
+def ehw(e): return 480 if e.get("lie") else half_w(e["who"])
 def wide(cast, z_max=1.25):
     if not cast: return (680, 830, 1.0)
     # walkers: the whole path (start and end) stays in frame; lifted (flying) people: their raised top too
-    lo = min(min(e["x"], e.get("to_x", e["x"])) - half_w(e["who"]) for e in cast) - 70
-    hi = max(max(e["x"], e.get("to_x", e["x"])) + half_w(e["who"]) for e in cast) + 70
+    lo = min(min(e["x"], e.get("to_x", e["x"])) - ehw(e) for e in cast) - 70
+    hi = max(max(e["x"], e.get("to_x", e["x"])) + ehw(e) for e in cast) + 70
     z = max(1.0, min(z_max, WW / max(1, hi - lo)))
     vh = VH / (S0 * z); top_need = min((BTOP if is_big(e["who"]) else DTOP + 180) - e.get("lift", 0) for e in cast)   # whole body + crown inside
     cy = min(1480 + 60 - vh / 2, max(top_need - 40 + vh / 2, 830))
@@ -326,13 +331,17 @@ def wide(cast, z_max=1.25):
 def closeup(e, cast, zs=(2.6, 2.8, 3.0, 3.3, 3.6, 3.9)):
     big = is_big(e["who"]); u, hy = (U_B, HEAD_B) if big else (U_H, HEAD_H)
     sx, sb = e["x"], half_w(e["who"])
+    if e.get("lie"): sx, sb, hy = e["x"] + LIE_HEAD_DX, 100, 1480 - 150     # head of a lying person: left end of the body, near the ground
     for z in zs:
         hw = VW / (S0 * z) / 2; vh = VH / (S0 * z)
         lo, hi = sx + sb - hw, sx - sb + hw          # camera x range keeping the speaker inside
         for o in cast:
             if o is e: continue
             ob = half_w(o["who"]) + 60       # bow tips / raised arms stick out beyond the body
-            if o["x"] > sx: hi = min(hi, o["x"] - ob - hw)   # neighbour on the right fully out
+            if o.get("lie"):                               # a lying neighbour: head end 400 left of x, feet end 480 right of x
+                if o["x"] > sx: hi = min(hi, o["x"] - 400 - 40 - hw)
+                else: lo = max(lo, o["x"] + 480 + 40 + hw)
+            elif o["x"] > sx: hi = min(hi, o["x"] - ob - hw)   # neighbour on the right fully out
             else: lo = max(lo, o["x"] + ob + hw)             # neighbour on the left fully out
         if lo <= hi:
             cx = min(max(sx, lo), hi)
@@ -355,6 +364,7 @@ for si, sh in enumerate(SHOTS):
         new_place = si == 0 or SHOTS[si - 1]["bg"] != sh["bg"]
         mode = "speaker" if spe and not new_place and len(cast) > 1 else ("speaker" if spe and len(cast) == 1 else "wide")
     target = None
+    if mode == "face" and main is not None: target = closeup(main, cast)    # close-up of the main person even on a narrator line (hook shots)
     if mode == "speaker" and spe: target = closeup(spe, cast)
     if mode == "two" and spe: target = two(spe, cast)
     if target is None: target = wide(cast)

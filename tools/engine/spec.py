@@ -13,7 +13,7 @@ POSES = {"stand": "khada", "namaste": "haath jode", "talk": "baat karte hue haat
          "point": "haath se ishara", "raise": "haath upar", "walk": "chalna (to_x tak)", "sit": "baitha (paalthi)",
          "bow": "jhuk kar pranam", "angry": "gusse mein haath"}
 FACES = ["neutral", "smile", "joy", "sad", "worry", "angry", "firm", "stern", "shock"]
-CAMS = ["auto", "wide", "speaker", "two"]
+CAMS = ["auto", "wide", "speaker", "two", "face"]
 MOODS = ["none", "joy", "sorrow", "anger", "fear", "wonder", "night"]
 FX = {"astra": "chamakta baan/astra: from -> to, result: thrown (door ud jaana) | fall (gir jaana) | none",
       "rain": "barish (color: laal = rakt varsha)"}
@@ -204,12 +204,14 @@ def check(epi):
             if not isinstance(e.get("x"), (int, float)) or not 150 <= e["x"] <= 1210: P.append(f"shot {i}: {w} ka x 150 se 1210 ke beech ho")
             if e.get("pose", "stand") not in POSES: P.append(f"shot {i}: {w} ka pose inme se: {list(POSES)}")
             if e.get("face", "neutral") not in FACES: P.append(f"shot {i}: {w} ka face inme se: {FACES}")
+            if e.get("lie") and e.get("pose", "stand") not in ("stand", "talk", "raise", "namaste", "bless"): P.append(f"shot {i}: {w} lie=true ke saath pose stand/talk/raise/namaste/bless mein se ho")
             if not -35 <= e.get("tilt", 0) <= 35: P.append(f"shot {i}: {w} ka tilt -35 se 35 degree ke beech ho (zakhmi/tirchha khada)")
             if not 0 <= e.get("lift", 0) <= 400: P.append(f"shot {i}: {w} ka lift 0-400 ho (aasmaan mein udna)")
             if e.get("pose") == "walk" and not isinstance(e.get("to_x"), (int, float)): P.append(f"shot {i}: {w} walk kar raha hai to to_x do")
         xs = sorted((e["x"], e["who"]) for e in cast if isinstance(e.get("x"), (int, float)) and e.get("who") in known)
         for (x1, w1), (x2, w2) in zip(xs, xs[1:]):
             gap = 330 if (char_meta(w1, epi).get("big") or char_meta(w2, epi).get("big")) else 260
+            if any(e.get("lie") for e in cast if e.get("who") in (w1, w2)): gap = 540      # a lying person is as long as a body is tall
             if x2 - x1 < gap: P.append(f"shot {i}: {w1} aur {w2} bahut paas hain (kam se kam {gap} ka faasla), ek doosre par chadh jaayenge")
     for ln in order:
         if ln not in seen: P.append(f"line '{ln}' kisi shot mein nahi hai")
