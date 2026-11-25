@@ -7,3 +7,4 @@ Ye file public hai: password, token, number, email yahan nahi. Ye baatein pasand
 - (26 Nov 2026) Ab se har episode YouTube par ek din pehle, aur Instagram par ek din baad aayega — taaki Instagram wale log YouTube channel subscribe karein.
 - (26 Nov 2026) YouTube par episode 1 din pehle aur Instagram par 1 din baad upload hoga.
 - (26 Nov 2026) YouTube par episode 1 din pehle aur Instagram par 1 din baad aayega
+- (26 Nov 2026) Aakhri line mein Adam ki aawaz mein YouTube subscribe ke liye bola jayega
