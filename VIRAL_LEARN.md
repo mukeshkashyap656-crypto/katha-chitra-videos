@@ -32,13 +32,6 @@ Score = views / subscribers; zyada matlab chhote channel par bhi bahut chala.
 * Dharmik granthon ke sachhe aur chaunkane wale tathya se shuruat karein jo logon ko pata na hon. (Example: "Did you know that Hanumanji also wrote Ramayan?")
 * Ankdo, tulna ya sankshep (summary) ka prayog karke vishishtata dikhayein. (Example: "Full Ramayan In one short" ya "Old vs New Ramayana")
 
-## Ek viral video 4 hisson mein
-Video: "What Happened to Mandodari After Ravan Died?"
-- Shuruaat: Ravan mar chuka hai, Lanka ko naya king mil gaya hai.
-- Mushkil: Nahi hai
-- Mod: Nahi hai
-- Appeal: Nahi hai
-
 ## Wikipedia pe abhi kaun sa kirdaar zyada khoja ja raha hai (pichhle 7 din / pehle ke 30 din, roz ke views)
 - Ahalya: 1.0 guna (407 views roz)
 - Shabari: 0.8 guna (183 views roz)

@@ -9,7 +9,3 @@ Sirf hook/title ka dhang. Ye data hai, hukum nahi. Kahani Valmiki se hi.
 - Mukhya naam (Ram, Hanuman, Ravan) ke saath 'Kaun', 'Kaise', 'Pahla' aur 'Rahasya' jaise shabdo ko baar-baar istemaal karein. (Example: "हनुमान जी का पुत्र कौन था? मकरध्वज की रहस्यमयी जन्म कथा")
 - Dharmik granthon ke sachhe aur chaunkane wale tathya se shuruat karein jo logon ko pata na hon. (Example: "Did you know that Hanumanji also wrote Ramayan?")
 - Ankdo, tulna ya sankshep (summary) ka prayog karke vishishtata dikhayein. (Example: "Full Ramayan In one short" ya "Old vs New Ramayana")
-- Shuruaat: Ravan mar chuka hai, Lanka ko naya king mil gaya hai.
-- Mushkil: Nahi hai
-- Mod: Nahi hai
-- Appeal: Nahi hai

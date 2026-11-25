@@ -160,7 +160,8 @@ def breakdown4(rows):
             types.Part(file_data=types.FileData(file_uri=f"https://www.youtube.com/watch?v={rows[0]['id']}")),
             types.Part(text=BREAK_ASK)]))
         got = [x.strip() for x in (r.text or "").splitlines() if x.strip().startswith(("- ", "* "))][:4]
-        if len(got) == 4:
+        # khokhla jawab (2+ hisse "nahi hai") seekh mein nahi jaayega
+        if len(got) == 4 and sum("nahi hai" in x.lower() for x in got) < 2:
             return [f"\"{rows[0]['title']}\""] + got
     except Exception as e:
         print("4 hisse nahi bane:", str(e)[:150])
