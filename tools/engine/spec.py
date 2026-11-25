@@ -6,7 +6,8 @@ episode.json BEFORE it is pushed). check(epi) returns a list of problems in plai
 import hashlib, json, re
 
 BGS = {"morning": "subah ka jungle", "cloudvan": "pahad ke paas baadal jaisa van", "divine": "sunehra divya aakash",
-       "ghorvan": "ghana andhera jungle (rakshas wala)", "ashram": "rishiyon ka ashram + yagya kund",
+       "ghorvan": "ghana andhera jungle (rakshas wala)", "ashram": "rishiyon ka ashram + yagya kund (beech mein aag; wahan kisi ko mat khada karo)",
+       "ashram_soona": "khaali/sunsaan ashram, beech mein koi kund nahi",
        "river": "nadi ka kinara (Ganga/Sarayu/Shon)", "palace": "raj-darbar (gaddi + chhatra)",
        "kurukshetra": "Kurukshetra ka yudh-maidan, dhalti shaam (tuta rath ka pahiya, bikhre teer)"}
 POSES = {"stand": "khada", "namaste": "haath jode", "talk": "baat karte hue haath", "bless": "aashirvaad ka haath",
@@ -16,7 +17,8 @@ FACES = ["neutral", "smile", "joy", "sad", "worry", "angry", "firm", "stern", "s
 CAMS = ["auto", "wide", "speaker", "two", "face"]
 MOODS = ["none", "joy", "sorrow", "anger", "fear", "wonder", "night"]
 FX = {"astra": "chamakta baan/astra: from -> to, result: thrown (door ud jaana) | fall (gir jaana) | none",
-      "rain": "barish (color: laal = rakt varsha)"}
+      "rain": "barish (color: laal = rakt varsha)",
+      "light": "to wale kirdaar ke peeche sunehri roshni (shraap tootna, vardaan, chamatkar)"}
 NEWCHAR_META = {"name", "big", "glow", "rakshas"}
 
 # built-in cast: id -> (drawing-kit name, Hindi name, meta)
@@ -198,6 +200,7 @@ def check(epi):
             if fx["type"] == "astra":
                 if fx.get("from") not in whos or fx.get("to") not in whos: P.append(f"shot {i}: astra ka from/to us shot ke cast mein ho")
                 if fx.get("result", "none") not in ("thrown", "fall", "none"): P.append(f"shot {i}: astra result: thrown | fall | none")
+            if fx["type"] == "light" and fx.get("to") not in whos: P.append(f"shot {i}: light ka 'to' us shot ke cast mein ho")
             if "at_word" in fx and fx["at_word"] not in lines[ln][0]: P.append(f"shot {i}: fx at_word '{fx['at_word']}' us line mein nahi hai")
         if len(cast) > 4: P.append(f"shot {i}: ek shot mein 4 se zyada log nahi")
         for e in cast:

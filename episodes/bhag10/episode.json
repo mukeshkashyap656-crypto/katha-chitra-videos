@@ -3,7 +3,7 @@
  "COVER_NAME": "Ramayan_Bhag10_Cover",
  "TAG": "रामायण कथा",
  "BHAG": 10,
- "VERSION": 2,
+ "VERSION": 3,
  "QUESTION": "अहिल्या को श्राप से किसने मुक्त किया?",
  "LINES": {
   "n1": [
@@ -85,7 +85,7 @@
  "SHOTS": [
   {
    "line": "n1",
-   "bg": "ashram",
+   "bg": "ashram_soona",
    "mood": "sorrow",
    "chip": "श्राप",
    "cast": [
@@ -101,7 +101,7 @@
   },
   {
    "line": "n2",
-   "bg": "ashram",
+   "bg": "ashram_soona",
    "mood": "sorrow",
    "cast": [
     {
@@ -150,7 +150,7 @@
   },
   {
    "line": "n4",
-   "bg": "ashram",
+   "bg": "ashram_soona",
    "mood": "wonder",
    "chip": "श्राप टूटा",
    "cast": [
@@ -179,16 +179,23 @@
      "who": "ahalya",
      "x": 1150,
      "pose": "stand",
-     "face": "shock",
+     "face": "joy",
      "look": "left"
     }
    ],
-   "show": "राम आशीर्वाद के हाथ से; अहिल्या चकित; विश्वामित्र और लक्ष्मण साथ",
-   "cam": "wide"
+   "show": "राम आशीर्वाद के हाथ से; अहिल्या के पीछे सुनहरी रोशनी, चेहरे पर आनंद; विश्वामित्र और लक्ष्मण साथ",
+   "cam": "wide",
+   "fx": [
+    {
+     "type": "light",
+     "to": "ahalya",
+     "at_word": "श्राप"
+    }
+   ]
   },
   {
    "line": "ah1",
-   "bg": "ashram",
+   "bg": "ashram_soona",
    "mood": "joy",
    "cam": "two",
    "cast": [
@@ -211,7 +218,7 @@
   },
   {
    "line": "ram1",
-   "bg": "ashram",
+   "bg": "ashram_soona",
    "mood": "none",
    "cam": "speaker",
    "cast": [
@@ -234,7 +241,7 @@
   },
   {
    "line": "n5",
-   "bg": "ashram",
+   "bg": "ashram_soona",
    "mood": "wonder",
    "chip": "अगला भाग",
    "cast": [
@@ -272,7 +279,7 @@
   }
  ],
  "COVER": {
-  "bg": "ashram",
+  "bg": "ashram_soona",
   "tag": "अहिल्या का श्राप!",
   "cast": [
    {

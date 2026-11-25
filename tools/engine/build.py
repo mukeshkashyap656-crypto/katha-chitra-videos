@@ -67,8 +67,8 @@ ends = starts[1:] + [END]
 
 # ---------- arms as separate pieces: shoulder + elbow rotate smoothly (real cut-out animation) ----------
 PIVOTS = json.load(open(f"{P}/assets/pivots.json")) if os.path.exists(f"{P}/assets/pivots.json") else {}
-POSE_ARMS = {"stand": (-0.28, 1.17, 0.28, -1.17), "talk": (-0.28, 1.17, 0.25, 1.45), "bless": (-0.28, 1.17, 0.42, 2.2),
-             "point": (-0.28, 1.17, 1.25, 0.25), "raise": (-0.28, 1.17, 0.42, 2.2), "namaste": (-0.3, 1.75, 0.3, -1.75),
+POSE_ARMS = {"stand": (-0.28, 0.9, 0.28, -0.9), "talk": (-0.28, 0.9, 0.25, 1.45), "bless": (-0.28, 0.9, 0.42, 2.2),
+             "point": (-0.28, 0.9, 1.25, 0.25), "raise": (-0.28, 0.9, 0.42, 2.2), "namaste": (-0.3, 1.75, 0.3, -1.75),
              "dukh": (-0.4, 1.2, 0.3, -2.0), "angry": (0.6, 0.9, -0.6, -0.9)}
 # baat karte haath (left a1,a2) / (right a1,a2); None = aaram par. Kohni neeche rehti hai, hatheli pet se seene ke beech khulti hai;
 # dono haath wale ishare mein dono barabar nahi (judwa harkat nahi).
@@ -80,16 +80,16 @@ def deg(a): return -a * 180 / math.pi
 #   rest = (la, le, ra, re); gest = GESTURES ke index; gap = ishare ke beech ka samay (sec); gs = ishare ki badai;
 #   sway = hilna; tempo = saans ki gati (bada = dheema); lean = degree mein tirchha khada hona
 STYLES = {
-    "vishwamitra": dict(rest=(0.10, 0.22, -0.09, -0.10), gest=(0, 2), gap=2.4, gs=1.0, sway=0.5, tempo=1.3, lean=0.0, talkel=0.55, nod=0.6),   # kathor, kam ishare, kamandalu baayein haath mein
-    "ram":         dict(rest=(-0.28, 1.17, 0.28, -1.17), gest=(1, 0), gap=2.9, gs=0.7, sway=0.6, tempo=1.2, lean=0.0, talkel=0.6, nod=0.7),    # shaant, sanyat, haath dheele aage
-    "lakshman":    dict(rest=(0.13, 0.10, -0.13, -0.10), gest=(0, 1, 3, 2), gap=1.2, gs=1.2, sway=1.4, tempo=0.8, lean=0.0, talkel=1.0, nod=1.4),  # tez, chaukanna
-    "vasishtha":   dict(rest=(0.09, 0.16, -0.10, -0.18), gest=(0, 2), gap=3.2, gs=0.8, sway=0.4, tempo=1.6, lean=0.0, talkel=0.45, nod=0.5),   # buzurg, dheere
-    "dasharatha":  dict(rest=(0.12, 0.28, -0.12, -0.28), gest=(1, 3), gap=2.6, gs=1.1, sway=0.5, tempo=1.4, lean=0.0, talkel=0.6, nod=0.8),    # raja, bhaari
-    "_female":     dict(rest=(-0.37, 1.22, 0.37, -1.22), gest=(0, 2, 5), gap=2.2, gs=0.8, sway=1.0, tempo=1.0, lean=0.0, talkel=0.85, nod=1.0),  # komal, haath aage
-    "_devta":      dict(rest=(0.18, 0.08, -0.18, -0.08), gest=(3, 2, 0), gap=2.0, gs=1.25, sway=0.4, tempo=1.5, lean=0.0, talkel=0.4, nod=0.6), # bhavya, khule haath
-    "_rakshas":    dict(rest=(0.30, 0.22, -0.30, -0.22), gest=(2, 1), gap=1.4, gs=1.3, sway=1.2, tempo=0.9, lean=0.0, talkel=0.7, nod=1.3),      # bhaari
-    "_elder":      dict(rest=(0.09, 0.16, -0.10, -0.18), gest=(0, 2), gap=3.0, gs=0.8, sway=0.5, tempo=1.5, lean=0.0, talkel=0.5, nod=0.6),
-    "_man":        dict(rest=(0.10, 0.12, -0.10, -0.12), gest=(0, 1, 2), gap=1.9, gs=1.0, sway=1.0, tempo=1.0, lean=0.0, talkel=0.7, nod=1.0),
+    "vishwamitra": dict(rest=(-0.10, 0.22, 0.09, -0.10), gest=(0, 2), gap=2.4, gs=1.0, sway=0.5, tempo=1.3, lean=0.0, talkel=0.55, nod=0.6),   # kathor, kam ishare, kamandalu baayein haath mein
+    "ram":         dict(rest=(-0.28, 0.9, 0.28, -0.9), gest=(1, 0), gap=2.9, gs=0.7, sway=0.6, tempo=1.2, lean=0.0, talkel=0.6, nod=0.7),    # shaant, sanyat, haath dheele aage
+    "lakshman":    dict(rest=(-0.13, 0.12, 0.13, -0.12), gest=(0, 1, 3, 2), gap=1.2, gs=1.2, sway=1.4, tempo=0.8, lean=0.0, talkel=1.0, nod=1.4),  # tez, chaukanna
+    "vasishtha":   dict(rest=(-0.09, 0.16, 0.10, -0.18), gest=(0, 2), gap=3.2, gs=0.8, sway=0.4, tempo=1.6, lean=0.0, talkel=0.45, nod=0.5),   # buzurg, dheere
+    "dasharatha":  dict(rest=(-0.12, 0.24, 0.12, -0.24), gest=(1, 3), gap=2.6, gs=1.1, sway=0.5, tempo=1.4, lean=0.0, talkel=0.6, nod=0.8),    # raja, bhaari
+    "_female":     dict(rest=(-0.37, 1.05, 0.37, -1.05), gest=(0, 2, 5), gap=2.2, gs=0.8, sway=1.0, tempo=1.0, lean=0.0, talkel=0.85, nod=1.0),  # komal, haath aage
+    "_devta":      dict(rest=(-0.18, 0.08, 0.18, -0.08), gest=(3, 2, 0), gap=2.0, gs=1.25, sway=0.4, tempo=1.5, lean=0.0, talkel=0.4, nod=0.6), # bhavya, khule haath
+    "_rakshas":    dict(rest=(-0.30, 0.22, 0.30, -0.22), gest=(2, 1), gap=1.4, gs=1.3, sway=1.2, tempo=0.9, lean=0.0, talkel=0.7, nod=1.3),      # bhaari
+    "_elder":      dict(rest=(-0.09, 0.16, 0.10, -0.18), gest=(0, 2), gap=3.0, gs=0.8, sway=0.5, tempo=1.5, lean=0.0, talkel=0.5, nod=0.6),
+    "_man":        dict(rest=(-0.10, 0.12, 0.10, -0.12), gest=(0, 1, 2), gap=1.9, gs=1.0, sway=1.0, tempo=1.0, lean=0.0, talkel=0.7, nod=1.0),
 }
 def body_style(e, meta):
     who = e["who"]
@@ -120,7 +120,8 @@ def arm_js(cid, e, t0, t1, speak, rest_style, style=None, join=None):
         # HUMAN RULE: while talking, forearms come UP to belly / chest height (hands hanging down = a doll). Lift before the first word,
         # keep it while speaking, lower after the last word.
         el = st.get("talkel", 0.7)
-        base_ = [rest[0] + 0.04, max(rest[1], el), rest[2] - 0.04, min(rest[3], -el)]
+        if pose == "stand": base_ = [rest[0] + 0.04, max(rest[1], el), rest[2] - 0.04, min(rest[3], -el)]
+        else: base_ = list(rest)          # talk/bless: haath pehle se sahi jagah par hai, use ulta mat modo
         a_, b_ = max(t0 + 0.05, speak[0] - 0.12), speak[0] + 0.30
         for i, j in enumerate(joints): wp[j] += [(a_, rest[i]), (b_, base_[i])]
         c_, d_ = speak[1], min(t1 - 0.02, speak[1] + 0.55)
@@ -128,10 +129,10 @@ def arm_js(cid, e, t0, t1, speak, rest_style, style=None, join=None):
             for i, j in enumerate(joints): wp[j] += [(c_, base_[i]), (d_, rest[i])]
         t = b_ + 0.45; k = 0                                       # BEATS: small flick of one forearm on the stress of the words, hands take turns
         while t < c_ - 0.4:
-            jb = ("fL", "fR")[(k + zlib.crc32(cid.encode())) % 2]; ib = joints.index(jb); sgn = 1 if ib == 1 else -1
+            jb = ("fL", "fR")[(k + zlib.crc32(cid.encode())) % 2] if pose != "bless" else "fL"   # aashirvaad ka haath sthir; ib = joints.index(jb); sgn = 1 if ib == 1 else -1
             wp[jb] += [(t, base_[ib]), (t + 0.11, base_[ib] + sgn * 0.20), (t + 0.34, base_[ib])]
             t += 0.55 + rnd.random() * 0.6; k += 1
-    if talking:
+    if talking and pose == "stand":
         g = speak[0] + 0.7 + rnd.random() * 0.3; n = 0
         while g + 1.35 < speak[1]:
             gl, gr = GESTURES[st["gest"][(n + zlib.crc32(cid.encode())) % len(st["gest"])]]; n += 1
@@ -271,7 +272,7 @@ for si, sh in enumerate(SHOTS):
     layers.append(f'<div class="lay shot" id="shot{si}" style="opacity:{1 if si == 0 else 0}"><img class="wfull" src="assets/bg_{sh["bg"]}.png">{"".join(html_c)}</div>')
 
 # ---------- fx: astra (glowing arrow) with result, rain ----------
-fx_html = {}; fx_js = []; fx_aud = []
+fx_html = {}; fx_js = []; fx_aud = []; behind = {}
 def chest(e):
     lift = e.get("lift", 0)
     return (e["x"], (950 if is_big(e["who"]) else 1090) - lift)
@@ -287,6 +288,12 @@ for si, sh in enumerate(SHOTS):
                 did = f"rn{si}_{fi}_{d}"
                 parts.append(f'<div id="{did}" style="position:absolute;left:{x0:.0f}px;top:-80px;width:5px;height:{ln:.0f}px;border-radius:3px;background:{col};opacity:.85;transform:rotate(8deg)"></div>')
                 fx_js.append(f'tl.fromTo("#{did}",{{y:0}},{{y:1760,duration:0.75,ease:"none",repeat:{max(1, int((t1 - t0) / 0.75))},immediateRender:false}},{t0 + dl:.3f});')
+            continue
+        if fx["type"] == "light":          # sunehri roshni, kirdaar ke PEECHE (chehra na dhake)
+            dst = next(e for e in cast if e["who"] == fx["to"]); lx, ly = chest(dst); gid = f"lt{si}_{fi}"
+            behind.setdefault(si, []).append(f'<div id="{gid}" style="position:absolute;left:{lx - 330:.0f}px;top:{ly - 430:.0f}px;width:660px;height:860px;border-radius:50%;'
+                         f'background:radial-gradient(ellipse,#fff 0%,rgba(255,221,90,.95) 32%,rgba(255,200,60,0) 70%);opacity:0"></div>')
+            fx_js.append(f'tl.fromTo("#{gid}",{{opacity:0,scale:0.25}},{{opacity:1,scale:1.15,duration:0.7,ease:"power2.out",immediateRender:false}},{tf:.3f});tl.to("#{gid}",{{opacity:0.45,scale:1,duration:{max(0.3, t1 - tf - 0.75):.2f},ease:"sine.inOut"}},{tf + 0.72:.3f});')
             continue
         src = next(e for e in cast if e["who"] == fx["from"]); dst = next(e for e in cast if e["who"] == fx["to"])
         (ax, ay), (bx, by) = chest(src), chest(dst)
@@ -310,6 +317,8 @@ for si, sh in enumerate(SHOTS):
             fx_js.append(f'tl.to("#{cid}",{{rotation:{d * 82},transformOrigin:"50% 92%",duration:0.75,ease:"power2.in"}},{hit + 0.1:.3f});tl.to("#{cid}",{{opacity:0,duration:0.7}},{hit + 1.0:.3f});')
             fx_aud.append(f'<audio id="th{si}_{fi}" src="assets/sfx_thunder.wav" data-start="{hit + 0.8:.3f}" data-duration="1.5" data-volume="0.5"></audio>')
     if parts: fx_html[si] = "".join(parts)
+for si, extra in behind.items():          # background ke baad, logon se pehle
+    cut = layers[si].index('<div class="char"'); layers[si] = layers[si][:cut] + "".join(extra) + layers[si][cut:]
 for si, extra in fx_html.items():
     l = layers[si]; layers[si] = l[:-len("</div>")] + extra + "</div>"
 
@@ -371,7 +380,7 @@ for si, sh in enumerate(SHOTS):
     if mode == "two" and spe: target = two(spe, cast)
     if target is None: target = wide(cast)
     alt = None             # second framing for long shots
-    action = sh.get("fx") or any(e.get("pose") == "walk" for e in cast)
+    action = any(f["type"] != "light" for f in sh.get("fx", [])) or any(e.get("pose") == "walk" for e in cast)
     if action: target = wide(cast)   # astra / walking: everyone (and the whole path) stays in view
     if main is not None and not action:
         alt = (medium(main, cast) or closeup(main, cast)) if target[2] < 1.6 else wide(cast)
@@ -382,7 +391,7 @@ for si, sh in enumerate(SHOTS):
         a = t0 + dur * g / n; b = t0 + dur * (g + 1) / n
         odd = ((n - 1 - g) if last else g) % 2 == 1          # last shot ends on its main (wide) framing, big '?' visible
         x, y, z = (alt if (odd and alt) else target)
-        if not alt and odd and not action: z *= 1.18        # nobody to cut to: gentle push-in instead
+        if not alt and odd and not action and len(cast) <= 1: z *= 1.18        # nobody to cut to: gentle push-in instead
         if last and g == n - 1 and z < 2:                     # last framing: feet above the subscribe widget
             y = WH - VH / (S0 * z) / 2
         cam_js.append(f'tl.set("#cam",{{{cam(x, y, z)}}},{a:.3f});tl.to("#cam",{{{cam(x, y - 6, z * 1.05)},duration:{max(0.1, b - a - 0.02):.3f},ease:"none"}},{a:.3f});')
@@ -398,7 +407,7 @@ for si, sh in enumerate(SHOTS):
     if sh.get("chip"):
         chip_html.append(f'<div class="chip" id="chip{si}">{html.escape(sh["chip"])}</div>')
         shot_js.append(f'tl.fromTo("#chip{si}",{{opacity:0,x:-40}},{{opacity:1,x:0,duration:0.25,immediateRender:false}},{t0 + 0.1:.3f});tl.set("#chip{si}",{{opacity:0}},{t1:.3f});')
-    if sh["bg"] in ("morning", "cloudvan", "ashram", "river") and (si == 0 or SHOTS[si - 1]["bg"] != sh["bg"]):
+    if sh["bg"] in ("morning", "cloudvan", "ashram", "ashram_soona", "river") and (si == 0 or SHOTS[si - 1]["bg"] != sh["bg"]):
         shot_js.append(f'tl.fromTo("#birds",{{x:0,y:0,opacity:1}},{{x:1750,y:-120,opacity:1,duration:5,ease:"none",immediateRender:false}},{t0:.3f});')
 
 # ---------- subtitles: speaker name + karaoke words ----------
@@ -445,7 +454,7 @@ for k in ORDER:
     for i, (w, tt) in enumerate(WT[k]): sub_js.append(f'tl.to("#w{k}{i}",{{opacity:1,duration:0.08}},{tt:.3f});')
 
 # ---------- sounds ----------
-AMB = {"morning": ("sfx_morning", 0.6), "cloudvan": ("sfx_morning", 0.6), "ashram": ("sfx_morning", 0.55), "river": ("sfx_morning", 0.55),
+AMB = {"morning": ("sfx_morning", 0.6), "cloudvan": ("sfx_morning", 0.6), "ashram": ("sfx_morning", 0.55), "ashram_soona": ("sfx_morning", 0.45), "river": ("sfx_morning", 0.55),
        "ghorvan": ("sfx_dark", 0.75), "kurukshetra": ("sfx_dark", 0.5), "divine": ("sfx_pad", 0.6), "palace": ("sfx_pad", 0.4)}
 aud = []; seg0 = 0
 for si in range(1, len(SHOTS) + 1):

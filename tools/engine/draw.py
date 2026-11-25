@@ -41,8 +41,8 @@ for k, v in EPI.get("NEW_CHARS", {}).items():          # new characters describe
     C.CHARS[k] = {kk: vv for kk, vv in v.items() if kk not in SP.NEWCHAR_META}
 
 KS = 2.4615
-ARMS = {"stand": (-0.28, 1.17, 0.28, -1.17), "namaste": (-0.3, 1.75, 0.3, -1.75), "talk": (-0.28, 1.17, 0.25, 1.45),
-        "bless": (-0.28, 1.17, 0.42, 2.2), "point": (-0.28, 1.17, 1.25, 0.25), "raise": (-0.28, 1.17, 0.42, 2.2),
+ARMS = {"stand": (-0.28, 0.9, 0.28, -0.9), "namaste": (-0.3, 1.75, 0.3, -1.75), "talk": (-0.28, 0.9, 0.25, 1.45),
+        "bless": (-0.28, 0.9, 0.42, 2.2), "point": (-0.28, 0.9, 1.25, 0.25), "raise": (-0.28, 0.9, 0.42, 2.2),
         "dukh": (-0.4, 1.2, 0.3, -2.0), "walk": (0.12, 0.05, -0.12, -0.05), "sit": (-0.3, 1.75, 0.3, -1.75),
         "bow": (-0.3, 1.75, 0.3, -1.75), "angry": (0.6, 0.9, -0.6, -0.9)}
 HANDS = {"stand": ("relaxed", "relaxed"), "walk": ("relaxed", "relaxed"), "talk": ("relaxed", "open"), "bless": ("relaxed", "open"),
@@ -177,7 +177,7 @@ def yagya_kund(c, x, y, w=150, fire=True):
             c.curve_to(x + dx * w, y - hh * w, x + (dx + 0.3) * w, y - 0.8 * w, x + (dx + 0.25) * w, y - 0.35 * w); c.close_path()
             fill_stroke(c, col, 3)
 
-def bg_ashram(file):
+def bg_ashram(file, kund=True):
     """Rishis' ashram in the forest: huts, tulsi, a yagya kund with fire in the middle."""
     rnd = random.Random(13); s, c = canvas()
     g = cairo.LinearGradient(0, 0, 0, 1100); g.add_color_stop_rgb(0, *hexc("#9cc9e0")); g.add_color_stop_rgb(1, *hexc("#f6dca8")); c.set_source(g); c.paint()
@@ -188,8 +188,8 @@ def bg_ashram(file):
             bglib.tree(c, rnd, -60 + k * ((WW + 120) / (n - 1)) + rnd.uniform(-40, 40), y, sc * rnd.uniform(0.9, 1.1), col, leaf)
     for x, w in ((170, 120), (1190, 130)): hut(c, x, 1290, w)
     bglib.ground(c, rnd, 1380, "#9a7a4a", "#d9b47a", "#5a7a2a")
-    yagya_kund(c, 680, 1500, 130)
-    for x in (430, 930):   # tulsi on a small chaura
+    if kund: yagya_kund(c, 680, 1500, 130)
+    for x in ((430, 930) if kund else ()):   # tulsi on a small chaura
         c.rectangle(x - 45, 1430, 90, 60); fill_stroke(c, "#c0392b", 3)
         for k in range(7):
             ellipse(c, x + (k - 3) * 11, 1395 - abs(k - 3) * 8, 13, 22); fill_stroke(c, "#2f7a3a", 2)
@@ -284,7 +284,7 @@ def bg_kurukshetra(file):
     s.write_to_png(f"{OUT}/{file}.png")
 
 BG_FUNCS = {"morning": bglib.bg_morning, "divine": bglib.bg_divine, "cloudvan": bglib.bg_cloudvan,
-            "ghorvan": lambda f: bglib.forest(f), "ashram": bg_ashram, "river": bg_river, "palace": bg_palace, "kurukshetra": bg_kurukshetra}
+            "ghorvan": lambda f: bglib.forest(f), "ashram": bg_ashram, "ashram_soona": lambda f: bg_ashram(f, kund=False), "river": bg_river, "palace": bg_palace, "kurukshetra": bg_kurukshetra}
 
 # ---------------- what has to be drawn (from the shot list) ----------------
 for bg in sorted({sh["bg"] for sh in EPI["SHOTS"]} | {EPI["COVER"]["bg"]}):
