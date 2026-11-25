@@ -130,14 +130,17 @@ def live_gemini_models(c):
     return _LIVE["m"]
 
 
+_DEAD = set()   # jo model 404 "no longer available" bole (jaise gemini-2.5-pro): is run mein dobara kabhi nahi
+
+
 def gemini_model_list(c, hard=False):
-    out = list(MODELS)
+    out = [m for m in MODELS if m not in _DEAD]
     for m in live_gemini_models(c):
         if m not in out:
             out.append(m)
     if hard:     # mushkil kaam (episode likhna, jaanch, video dekhna): pehle sabse zyada sochne wala "pro" model, free limit kam hai toh flash par
         out = [m for m in _LIVE.get("pro", []) if m not in out[:0]] + out
-    return out
+    return [m for m in out if m not in _DEAD] or out
 
 
 def gemini(contents, want_json, hard=False):
@@ -157,6 +160,11 @@ def gemini(contents, want_json, hard=False):
             raise ValueError("khaali jawab")
         except Exception as e:
             last = e
+            if "404" in str(e) or "NOT_FOUND" in str(e):
+                _DEAD.add(m)
+                mlist = [x for x in mlist if x not in _DEAD] or mlist
+                print(f"Gemini {m} ab nahi milta: hata diya.")
+                continue
             busy = any(x in str(e) for x in ("503", "UNAVAILABLE", "429", "RESOURCE_EXHAUSTED", "overloaded"))
             w = min(90, (20 if busy else 8) * (attempt + 1)) if patient else (3 if busy else 2) * (attempt + 1)
             print(f"Gemini koshish {attempt + 1} ({m}) nahi chali: {str(e)[:160]}. {w}s baad phir...")
