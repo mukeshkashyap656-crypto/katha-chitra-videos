@@ -4,3 +4,4 @@ Ye file public hai: password, token, number, email yahan nahi. Ye baatein pasand
 
 - (25 Nov 2026) Owner se aam bolchaal ki Hinglish/Hindi mein, chhoti aur seedhi baat karo.
 - (25 Nov 2026) Roz free raaste se seekhte raho; paise wali cheez bina poochhe nahi.
+- (26 Nov 2026) Ab se har episode YouTube par ek din pehle, aur Instagram par ek din baad aayega — taaki Instagram wale log YouTube channel subscribe karein.
