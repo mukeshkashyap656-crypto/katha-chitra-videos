@@ -157,3 +157,7 @@ Pura seekh: ANIMATION.md ("Insaan kaise bolta hai"). Har video par lagta hai:
 - Koi bhi AI model, awaaz, tool ya GitHub Action ka naam/version purana ho jaye (404, "no longer available", "deprecated" ki chetavani) toh use khud naye se badlo; purane ko list se hata do.
 - Model ki list pehle se tay mat rakho: pehle Google/OpenRouter/GitHub Models ki abhi ki list mangwao, phir chuno (hardcoded naam sirf aakhri sahara).
 - Jab bhi koi masla theek ho, seekh SEEKH.md mein ek chhoti line likho, aur code GitHub mein update karo. Owner ko har baar poochhna na pade.
+
+## 19. Viral seekh (25 Nov 2026, owner ka hukm: GitHub AI free mein viral topic, hook seekhe)
+- `VIRAL_LEARN.md` har hafte apne aap badalti hai (workflow `viral-learn`): chhote channel ke sabse chale Ramayan Shorts aur unke hook ka dhang. Naya episode likhne se pehle use padho aur pehli line wahi dhang se likho.
+- Kahani Valmiki se hi rehti hai; seekh sirf pehli line, title aur sawaal ke dhang ki hai.
