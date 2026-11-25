@@ -81,7 +81,7 @@
    "ramayan bhag 10"
   ],
   "date": "2026-11-28",
-  "auto": true,
-  "status": "ready"
+  "auto": false,
+  "status": "hold"
  }
 }
