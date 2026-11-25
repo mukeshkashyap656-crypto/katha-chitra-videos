@@ -859,6 +859,16 @@ def mode_review():
     comment(issue, msg)
 
 
+FOLLOW_UP = ("\n\nThis is a FOLLOW-UP message on an episode that is already built. If it is only a greeting, chat, question or a check "
+             "(like 'kya tum sun rahe ho', 'system check karo'), reply with action none, render false, files []. Change files or "
+             "render ONLY when the owner's own message clearly asks for a change, a rebuild or a retry.")
+
+
+def task_extra(st):
+    """AUTOPOST ka 'banao' wala hukm sirf tab tak jab episode bana nahi; baad ke message par sawaal se video dobara nahi."""
+    return FOLLOW_UP if st.get("episode") else autopost_brief()
+
+
 def mode_task():
     if "JAANCH-VIDEO" in os.environ.get("REQUEST", "").upper():
         return mode_review()
@@ -873,7 +883,7 @@ def mode_task():
     st = load_state()
     task = (f"Issue title: {os.environ.get('ISSUE_TITLE', '')}\n"
             f"Owner's message (Hinglish): {os.environ.get('REQUEST', '')}\n"
-            f"Earlier work on this issue's branch: {json.dumps(st, ensure_ascii=False)}" + autopost_brief())
+            f"Earlier work on this issue's branch: {json.dumps(st, ensure_ascii=False)}" + task_extra(st))
     data = solve(task)
     msg = data["summary"] or "Ho gaya."
     extra = data.get("remember")
