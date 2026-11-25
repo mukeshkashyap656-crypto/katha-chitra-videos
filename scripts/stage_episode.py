@@ -37,6 +37,11 @@ caption = (f"🎬 रामायण भाग {bhag} (वाल्मीकि 
            "👉 कमेंट करें: जय श्री राम 🚩\n🔔 Follow करें — रोज़ शाम 7 बजे रामायण का नया भाग!\n\n"
            "#ramayan #valmikiramayan #jaishriram #ramayanshorts #kathachitra")
 tags = ["valmiki ramayan", "ramayana facts", "ramayan story", "ramayan in hindi", "jai shri ram", "katha chitra", "ramayan shorts", f"ramayan bhag {bhag}"]
+if item and item.get("source") == "serial1987":   # serial wale bhaag par Valmiki ka naam nahi
+    caption = (f"🎬 रामायण भाग {bhag}\n{question} 😱\n\n{first}\n\n📖 रामायण कथा | भाग {bhag}\n"
+               "👉 कमेंट करें: जय श्री राम 🚩\n🔔 Follow करें — रोज़ शाम 7 बजे रामायण का नया भाग!\n\n"
+               "#ramayan #ramayankatha #jaishriram #ramayanshorts #kathachitra")
+    tags[0] = "ramayan katha"
 eps = json.load(open("episodes.json", encoding="utf-8"))
 old = eps.get(bhag, {})
 if old.get("status") == "posted" or old.get("youtube_id") or old.get("instagram_id"):
