@@ -224,7 +224,7 @@
   {
    "line": "n1",
    "bg": "kurukshetra",
-   "cam": "face",
+   "cam": "wide",
    "mood": "sorrow",
    "chip": "कर्ण का आख़िरी दान",
    "cast": [
@@ -368,7 +368,7 @@
   {
    "line": "ka1",
    "bg": "kurukshetra",
-   "cam": "speaker",
+   "cam": "wide",
    "mood": "sorrow",
    "cast": [
     {
@@ -390,7 +390,7 @@
   {
    "line": "br2",
    "bg": "kurukshetra",
-   "cam": "speaker",
+   "cam": "wide",
    "mood": "anger",
    "cast": [
     {
@@ -529,7 +529,7 @@
   {
    "line": "n9",
    "bg": "divine",
-   "cam": "face",
+   "cam": "wide",
    "mood": "wonder",
    "cast": [
     {
@@ -577,5 +577,5 @@
    }
   ]
  },
- "VERSION": 5
+ "VERSION": 6
 }
