@@ -44,7 +44,7 @@ jobs:
       - name: Run Aider
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY_KATHA || secrets.GEMINI_API_KEY }}
           # Model badalna ho to repo Variable AIDER_MODEL set karo (default neeche).
           AIDER_MODEL: ${{ vars.AIDER_MODEL || 'gemini/gemini-2.5-flash' }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
