@@ -1,0 +1,56 @@
+name: Blog daily (mobile gaming news, Hindi)
+# Roz 2 baar (subah 7:30 aur shaam 6:30 IST), har baar 1 post: aaj ki mobile gaming khabar -> verify -> apne shabdon mein post -> Blogger.
+# Pehle DRAFT mode (MODE=draft). Aap dekhkar manual run mein mode=live karo ya repo variable BLOG_MODE=live set karo.
+on:
+  schedule:
+    - cron: '0 2 * * *'    # subah 7:30 IST: pehli post
+    - cron: '0 13 * * *'   # shaam 6:30 IST: doosri post
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "draft (Blogger mein draft) ya live (seedha publish)"
+        default: "draft"
+      dry_run:
+        description: "1 = Blogger ko kuch mat bhejo, sirf blog/out mein rakho"
+        default: "0"
+permissions:
+  contents: write
+concurrency: blog-daily
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: '3.12' }
+      - run: pip install -q --upgrade google-genai requests
+      - name: Make today's posts
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          BLOG_ID: ${{ secrets.BLOG_ID }}
+          BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
+          BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
+          BLOGGER_REFRESH_TOKEN: ${{ secrets.BLOGGER_REFRESH_TOKEN }}
+          MODE: ${{ github.event.inputs.mode || vars.BLOG_MODE || 'draft' }}
+          DRY_RUN: ${{ github.event.inputs.dry_run || '0' }}
+          N_POSTS: '1'
+          BLOGGER_MAIL_TO: ${{ secrets.BLOGGER_MAIL_TO }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_APP_PASSWORD: ${{ secrets.SMTP_APP_PASSWORD }}
+          BLOG_IMG_TOKEN: ${{ secrets.BLOG_IMG_TOKEN }}
+          BLOG_POST_URL: ${{ secrets.BLOG_POST_URL }}
+          BLOG_POST_TOKEN: ${{ secrets.BLOG_POST_TOKEN }}
+        run: |
+          # Backup: poora kaam 3 baar tak dobara (beech mein ruk ke)
+          for TRY in 1 2 3; do
+            python3 blog/blog_bot.py && break
+            echo "koshish $TRY fail"; [ $TRY -lt 3 ] && sleep $((120 * TRY))
+          done
+      - name: Save posted list + copies
+        if: always()
+        run: |
+          git config user.name "katha-chitra-bot"; git config user.email "bot@users.noreply.github.com"
+          git add blog/posted.json blog/out 2>/dev/null || true
+          git diff --cached --quiet || { git commit -q -m "blog: aaj ki posts"; git pull -q --rebase || true; git push -q || true; }
