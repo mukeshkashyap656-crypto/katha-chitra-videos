@@ -25,3 +25,9 @@ Ye blog "sari khabar, Hindi mein" ke liye hai, 6 vishay baari-baari se: Mobile G
 - FAQ (3-4 sawaal), "kharidne se pehle" list, kimat badal sakti hai wala note.
 - Spec sirf wahi likhna jo asli source se mila ho; andaza nahi. Jo pata na ho, "nahi mila" ya chhod do.
 - Kisi site ka text copy nahi, apne shabdon mein, aam bolchaal ki Hindi.
+
+## Khabaradda ki apni pehchaan (sabse alag dikhne ke liye)
+- Photo ka look har post mein ek jaisa: gehra neela background, kesariya patti, "khabaradda | seedha sach, seedhi kimat" line. Phone ki apni banayi tasveer, kisi company ki photo nahi.
+- Har post mein ek "Khabaradda ka seedha jawab" hissa: "Agar X chahiye to ye lo, Y chahiye to wo lo" (battery / RAM / brand / kam budget).
+- Har post mein ek "Kisko mat lena" line: kis tarah ke user ko ye phone/cheez nahi leni chahiye.
+- Seedhi, aam bolchaal ki bhasha; "seedha sach" wala lehja; badhaa-chadhaa kar kuch nahi.
