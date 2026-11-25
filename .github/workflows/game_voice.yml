@@ -1,0 +1,31 @@
+name: Gaming kahani ki awaaz
+# Haath se chalao. Sirf free awaaz 'game-voice' branch par. Koi video/post nahi, koi chaabi nahi.
+on:
+  workflow_dispatch:
+    inputs:
+      story:
+        default: mk1
+permissions:
+  contents: write
+jobs:
+  voice:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: auto-video
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - run: pip install -q edge-tts
+      - env:
+          STORY: ${{ inputs.story }}
+        run: python -u tools/game_voice.py "gaming/$STORY/lines.json" /tmp/voice_out
+      - name: Awaaz bhejo
+        run: |
+          cd /tmp/voice_out
+          git init -q && git checkout -q -b game-voice
+          git config user.name katha-chitra-bot && git config user.email bot@users.noreply.github.com
+          git add -A && git commit -q -m "Gaming awaaz"
+          git push -q -f "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" game-voice
