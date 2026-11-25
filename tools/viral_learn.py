@@ -109,7 +109,7 @@ def gemini_watch(vid):
                     return t[:260]
             except Exception as e:
                 print("gemini_watch", m, str(e)[:100])
-                if "404" in str(e) or "429" in str(e):
+                if any(x in str(e) for x in ("404", "429", "503", "UNAVAILABLE")):
                     continue
                 break
     except Exception as e:
