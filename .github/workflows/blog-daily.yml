@@ -30,7 +30,14 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY_BLOG || secrets.GEMINI_API_KEY }}
-          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY_BLOG || secrets.OPENROUTER_API_KEY }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY_BLOG || secrets.GROQ_API_KEY }}
+          CEREBRAS_API_KEY: ${{ secrets.CEREBRAS_API_KEY_BLOG || secrets.CEREBRAS_API_KEY }}
+          MISTRAL_API_KEY: ${{ secrets.MISTRAL_API_KEY_BLOG || secrets.MISTRAL_API_KEY }}
+          SAMBANOVA_API_KEY: ${{ secrets.SAMBANOVA_API_KEY_BLOG || secrets.SAMBANOVA_API_KEY }}
+          NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY_BLOG || secrets.NVIDIA_API_KEY }}
+          COHERE_API_KEY: ${{ secrets.COHERE_API_KEY_BLOG || secrets.COHERE_API_KEY }}
+          ZAI_API_KEY: ${{ secrets.ZAI_API_KEY_BLOG || secrets.ZAI_API_KEY }}
           BLOG_ID: ${{ secrets.BLOG_ID }}
           BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
           BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}

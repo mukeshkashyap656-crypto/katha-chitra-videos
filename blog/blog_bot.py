@@ -221,6 +221,18 @@ def openrouter_free():
     return ["meta-llama/llama-3.3-70b-instruct:free", "google/gemma-3-27b-it:free", "mistralai/mistral-small-3.2-24b-instruct:free"]
 
 
+# (naam, pata, blog ki chaabi ka naam, model). Chaabi wale tabhi chalte hain jab secret ho; aakhri do bina chaabi ke.
+MORE_ROUTES = [
+    ("Groq", "https://api.groq.com/openai/v1", "GROQ_API_KEY", ["openai/gpt-oss-120b", "llama-3.3-70b-versatile"]),
+    ("Cerebras", "https://api.cerebras.ai/v1", "CEREBRAS_API_KEY", ["gpt-oss-120b", "llama-3.3-70b"]),
+    ("Mistral", "https://api.mistral.ai/v1", "MISTRAL_API_KEY", ["mistral-large-latest", "mistral-small-latest"]),
+    ("SambaNova", "https://api.sambanova.ai/v1", "SAMBANOVA_API_KEY", ["Meta-Llama-3.3-70B-Instruct"]),
+    ("NVIDIA", "https://integrate.api.nvidia.com/v1", "NVIDIA_API_KEY", ["meta/llama-3.3-70b-instruct"]),
+    ("Cohere", "https://api.cohere.ai/compatibility/v1", "COHERE_API_KEY", ["command-a-03-2025"]),
+    ("ZAI", "https://api.z.ai/api/paas/v4", "ZAI_API_KEY", ["glm-4.7-flash", "glm-4.5-flash"]),
+    ("OVH", "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1", "", ["gpt-oss-120b", "Meta-Llama-3_3-70B-Instruct"]),
+    ("Kilo", "https://ai-gateway.kilo.ai/api/v1", "", ["kilo-auto/free"]),
+]
 GEM_SKIP_UNTIL = 0     # Gemini ka free quota khatam (429) hone par is run mein 10 minute tak use na aazmao (sab post mein samay barbaad hota tha)
 GEM_DEAD = set()       # jo model "no longer available" (404) bole, use is run mein dobara na aazmao
 
@@ -320,6 +332,22 @@ def write_post(item):
             except Exception as e:
                 log("HuggingFace", model, "fail:", str(e)[:120])
                 if "402" in str(e): break
+    for name, base, key_env, models in MORE_ROUTES:   # aur free raaste: chaabi wale (jab chaabi ho) aur bina chaabi wale
+        key = os.environ.get(key_env, "").strip() if key_env else ""
+        if key_env and not key:
+            continue
+        for model in models:
+            try:
+                r = requests.post(base + "/chat/completions", timeout=180,
+                                  headers={"Authorization": "Bearer " + key} if key else {},
+                                  json={"model": model, "messages": [{"role": "user", "content": nosearch}], "max_tokens": 6000})
+                if r.status_code != 200:
+                    raise RuntimeError(f"HTTP {r.status_code}: {r.text[:120]!r}")
+                post = parse_json(r.json()["choices"][0]["message"]["content"])
+                log(name, model, "ok")
+                return post, []
+            except Exception as e:
+                log(name, model, "fail:", str(e)[:150])
     return None, []
 
 
