@@ -4,7 +4,9 @@ Sahara (backup): Piper, free open-source Hindi voice that runs on GitHub's own c
 used automatically if Madhur does not work (or VOICE_ENGINE=piper). Word times are then estimated from the text.
 Usage: python3 tools/make_voice.py episodes/<name>/episode.json out/voice.zip
 """
-import asyncio, json, sys, zipfile, os, tempfile, subprocess, wave, urllib.request
+import asyncio, json, sys, zipfile, os, tempfile, subprocess, wave, urllib.request, hashlib, shutil
+# Wahi line (wahi text, awaaz, speed) dobara ho toh purani bani awaaz wapas lo: episode baar baar banta hai, har baar awaaz nahi banani.
+CACHE = os.path.expanduser(os.environ.get("VOICE_CACHE", "~/.cache/kc_voice"))
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.abspath(__file__)), "engine"))
 try:
     import spec as SP
@@ -160,6 +162,15 @@ async def main(cfg_path, out_zip):
             for k, (text, rate, pitch) in lines.items():
                 role, vlist = voices_for(k, epi); done = False
                 _who = SP.speaker(k, epi) if SP else None
+                _ck = hashlib.sha1(json.dumps([text, rate, pitch, vlist, role, _who, bool(os.environ.get("ELEVENLABS_API_KEY")),
+                                               epi.get("ELEVEN_VOICES", {})], ensure_ascii=False).encode()).hexdigest()[:24]
+                try:
+                    if os.path.exists(f"{CACHE}/{_ck}.json") and os.path.getsize(f"{CACHE}/{_ck}.mp3") > 2000:
+                        _c = json.load(open(f"{CACHE}/{_ck}.json", encoding="utf-8"))
+                        shutil.copy(f"{CACHE}/{_ck}.mp3", f"{tmp}/{k}.mp3"); res[k] = _c["words"]; used[k] = _c["used"]
+                        print(k, len(res[k]), "words |", used[k], "| purani bani awaaz (cache)"); continue
+                except Exception as e:
+                    print(k, "cache nahi padha:", e)
                 # 25 Nov 2026 (user ka hukm): ElevenLabs sirf kathavachak (Adam) ke liye; baaki sab kirdaar free awaaz.
                 # Kisi kirdaar ko ElevenLabs dena ho to episode.json "ELEVEN_VOICES" mein uska naam likho.
                 if os.environ.get("ELEVENLABS_API_KEY") and (role == "narrator" or (_who and _who in epi.get("ELEVEN_VOICES", {}))):
@@ -174,17 +185,23 @@ async def main(cfg_path, out_zip):
                         except Exception as e:
                             print(k, "ElevenLabs", nm, "koshish", attempt + 1, "nahi chali:", e); await asyncio.sleep(3)
                 for vi, vname in enumerate([] if done else vlist):
-                    tries = 8 if vname == FALLBACK else 3          # pasandida awaaz par 3 koshish, phir agli; Madhur par 8
+                    tries = 6 if vname == FALLBACK else 2          # pasandida awaaz par 2 koshish, phir agli; Madhur par 6
                     for attempt in range(tries):
                         try:
                             res[k] = await gen_edge(f"{tmp}/{k}.mp3", text, rate, pitch, vname); used[k] = f"{role}: {vname}"; done = True; break
                         except Exception as e:
                             print(k, vname, "koshish", attempt + 1, "nahi chali:", e)
                             if attempt == tries - 1 and vname == FALLBACK: raise
-                            await asyncio.sleep(min(30, 4 * (attempt + 1)) if vname == FALLBACK else 2)
+                            await asyncio.sleep(min(10, 2 * (attempt + 1)) if vname == FALLBACK else 1)
                     if done: break
                 print(k, len(res[k]), "words |", used[k])
-                await asyncio.sleep(1.5)   # lines ke beech thoda ruk ke, server pe zor kam
+                try:
+                    os.makedirs(CACHE, exist_ok=True)
+                    shutil.copy(f"{tmp}/{k}.mp3", f"{CACHE}/{_ck}.mp3")
+                    json.dump({"words": res[k], "used": used[k]}, open(f"{CACHE}/{_ck}.json", "w", encoding="utf-8"), ensure_ascii=False)
+                except Exception as e:
+                    print(k, "cache mein nahi rakha:", e)
+                await asyncio.sleep(0.5)   # lines ke beech thoda ruk ke, server pe zor kam
             json.dump(used, open(f"{tmp}/voices.json", "w", encoding="utf-8"), ensure_ascii=False, indent=1)
             print("KAUN SI AWAAZ KISKI:", json.dumps(used, ensure_ascii=False))
         except Exception as e:

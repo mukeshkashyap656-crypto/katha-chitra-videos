@@ -34,7 +34,11 @@ jobs:
             ~/.npm
             ~/.cache/pip
             ~/.cache/hyperframes
-          key: render-tools-v1
+            ~/.cache/kc_voice
+          key: render-tools-v2-${{ github.run_id }}
+          restore-keys: |
+            render-tools-v2-
+            render-tools-v1
       - name: Tools
         run: |
           sudo apt-get update -qq
