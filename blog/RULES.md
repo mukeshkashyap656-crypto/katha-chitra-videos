@@ -37,3 +37,8 @@ Ye blog "sari khabar, Hindi mein" ke liye hai, 6 vishay baari-baari se: Mobile G
 2. Na mile to us brand/segment ki aam smartphone photo: Pexels, Pixabay, Unsplash (inki licence mein commercial use free hai).
 3. Wo bhi na mile to khabaradda ka apna banaya card (blog/img jaisa). Purane model ki photo naye model ke naam se kabhi mat lagao.
 4. Company ki official photo / review site ki photo bina ijazat kabhi nahi.
+
+## AI se tasveer (copyright-free rasta)
+- Bot pehle AI se apni nayi tasveer banata hai (Cloudflare FLUX, na chale to Hugging Face), phir khabaradda ka card.
+- AI wali tasveer ke neeche likhna: "Yeh tasveer AI se banayi gayi hai, asli product alag dikh sakta hai."
+- AI se kisi khaas phone model ki "asli jaisi" photo banane ka daava mat karo.

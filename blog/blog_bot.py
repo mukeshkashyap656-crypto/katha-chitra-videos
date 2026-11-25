@@ -233,6 +233,36 @@ def make_banner(post, path):
     return path
 
 
+def make_ai_image(post, path):
+    """AI se apni nayi tasveer banao (copyright-free, kisi ki photo nahi). Raaste: 1) Cloudflare Workers AI (FLUX), 2) Hugging Face (FLUX).
+    Env: CLOUDFLARE_ACCOUNT_ID + CLOUDFLARE_API_TOKEN, ya HF_TOKEN. Kuch na chale to False (tab apna card banta hai)."""
+    import base64
+    q = (post.get("image_query") or post.get("banner_title") or "smartphone").strip()[:120]
+    prompt = f"high quality editorial photo, {q}, clean modern look, soft studio lighting, no text, no logos, no watermark"
+    acc, ctok, hf = os.environ.get("CLOUDFLARE_ACCOUNT_ID"), os.environ.get("CLOUDFLARE_API_TOKEN"), os.environ.get("HF_TOKEN")
+    if acc and ctok:
+        for attempt in range(2):
+            try:
+                r = requests.post(f"https://api.cloudflare.com/client/v4/accounts/{acc}/ai/run/@cf/black-forest-labs/flux-1-schnell",
+                                  headers={"Authorization": "Bearer " + ctok}, json={"prompt": prompt, "steps": 6}, timeout=120)
+                r.raise_for_status()
+                open(path, "wb").write(base64.b64decode(r.json()["result"]["image"]))
+                return True
+            except Exception as e:
+                log("Cloudflare AI tasveer fail:", str(e)[:120]); time.sleep(5)
+    if hf:
+        for model in ("black-forest-labs/FLUX.1-schnell", "stabilityai/stable-diffusion-xl-base-1.0"):
+            try:
+                r = requests.post(f"https://router.huggingface.co/hf-inference/models/{model}",
+                                  headers={"Authorization": "Bearer " + hf}, json={"inputs": prompt}, timeout=180)
+                if r.status_code == 200 and r.headers.get("content-type", "").startswith("image"):
+                    open(path, "wb").write(r.content); return True
+                log("HF AI tasveer", model, r.status_code)
+            except Exception as e:
+                log("HF AI tasveer fail:", str(e)[:120])
+    return False
+
+
 def host_image(path):
     """Tasveer ko public jagah chadhao taaki post mein URL lag sake: public repo (GitHub Pages / jsDelivr) par.
     Env: BLOG_IMG_TOKEN (us repo mein Contents write), BLOG_IMG_REPO (default mukeshkashyap656-crypto/katha-chitra-voice)."""
@@ -276,10 +306,10 @@ def official_video(url):
     return None
 
 
-def build_html(post, srcs, item, img, banner_url=None):
+def build_html(post, srcs, item, img, banner_url=None, ai_used=False):
     parts = []
     if banner_url:
-        parts.append(f'<p><img src="{html.escape(banner_url)}" alt="{html.escape(post["title"])}" style="width:100%;height:auto"/></p>')
+        parts.append(f'<p><img src="{html.escape(banner_url)}" alt="{html.escape(post["title"])}" style="width:100%;height:auto"/>' + ('<br/><small>Yeh tasveer AI se banayi gayi hai, asli product alag dikh sakta hai.</small>' if ai_used else '') + '</p>')
     vid = official_video(post.get("official_video_url"))
     if vid:
         parts.append(f'<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden"><iframe src="https://www.youtube.com/embed/{vid["id"]}" '
@@ -399,12 +429,19 @@ def main():
             slug = re.sub(r"\W+", "-", post["title"])[:40] or "post"
             bpath = os.path.join(OUT, f"{time.strftime('%Y%m%d')}-{abs(hash(post['title'])) % 10**6}.jpg")
             banner_url = None
+            ai_used = False
             try:
-                make_banner(post, bpath); banner_url = host_image(bpath)
+                if os.environ.get("DRY_RUN") != "1" and make_ai_image(post, bpath):
+                    banner_url = host_image(bpath); ai_used = bool(banner_url)
+            except Exception as e:
+                log("AI tasveer nahi bani:", e)
+            try:
+                if not banner_url:
+                    make_banner(post, bpath); banner_url = host_image(bpath)
             except Exception as e:
                 log("banner nahi bana:", e)
             img = None if banner_url else find_image(post.get("image_query") or "news")
-            content = build_html(post, srcs, item, img, banner_url)
+            content = build_html(post, srcs, item, img, banner_url, ai_used)
             open(os.path.join(OUT, f"{time.strftime('%Y%m%d')}-{slug}.html"), "w", encoding="utf-8").write(content)
             url = publish(post["title"], content, post["labels"])
             st["posted"].append({"title": item["title"], "blog_title": post["title"], "cat": cat, "date": time.strftime("%Y-%m-%d"), "url": url, "mode": MODE})
