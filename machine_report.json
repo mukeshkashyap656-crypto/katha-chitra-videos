@@ -1,0 +1,25 @@
+{
+ "ok": true,
+ "fails": [],
+ "warns": [
+  "lambai 65.2 sec, VIRAL.md ka target 40-60 sec hai"
+ ],
+ "facts": {
+  "w": 1080,
+  "h": 1920,
+  "fps": 30.0,
+  "dur": 65.230667,
+  "has_audio": true,
+  "black": [],
+  "frozen": [],
+  "silence": [],
+  "lufs": -14.9,
+  "lufs_parts": [
+   -15.0,
+   -14.7,
+   -14.7,
+   -15.4
+  ]
+ },
+ "text": "Machine jaanch: ✅ theek\n- ⚠️ lambai 65.2 sec, VIRAL.md ka target 40-60 sec hai\n- ℹ️ 1080x1920, 30.0 fps, 65.2 sec, zor -14.9 LUFS"
+}

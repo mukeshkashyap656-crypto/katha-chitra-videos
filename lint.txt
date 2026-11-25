@@ -1,0 +1,158 @@
+◆  Linting proj/index.html
+
+  ⚠ duplicate_media_discovery_risk: Detected 12 matching img entries with the same source/start/duration.
+    Fix: Avoid duplicated media nodes that can be discovered twice during compilation.
+  ⚠ duplicate_media_discovery_risk: Detected 2 matching img entries with the same source/start/duration.
+    Fix: Avoid duplicated media nodes that can be discovered twice during compilation.
+  ⚠ duplicate_media_discovery_risk: Detected 10 matching img entries with the same source/start/duration.
+    Fix: Avoid duplicated media nodes that can be discovered twice during compilation.
+  ⚠ duplicate_media_discovery_risk: Detected 6 matching img entries with the same source/start/duration.
+    Fix: Avoid duplicated media nodes that can be discovered twice during compilation.
+  ⚠ duplicate_media_discovery_risk: Detected 5 matching img entries with the same source/start/duration.
+    Fix: Avoid duplicated media nodes that can be discovered twice during compilation.
+  ⚠ duplicate_media_discovery_risk: Detected 4 matching img entries with the same source/start/duration.
+    Fix: Avoid duplicated media nodes that can be discovered twice during compilation.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s0c0fL" for rotation between 1.11s and 1.11s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s0c0fR" for rotation between 0.83s and 0.83s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s1c0uL" for rotation between 5.10s and 5.11s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s1c0uL" for rotation between 7.04s and 7.04s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s1c0uR" for rotation between 5.03s and 5.04s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s1c0uR" for rotation between 6.34s and 6.34s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s1c0fR" for rotation between 6.75s and 6.75s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s3c0uL" for rotation between 13.57s and 13.57s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s3c0uL" for rotation between 16.12s and 16.13s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s3c0fL" for rotation between 13.57s and 13.57s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s3c0uR" for rotation between 13.57s and 13.57s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s3c0uR" for rotation between 16.12s and 16.13s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s3c0fR" for rotation between 13.57s and 13.57s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s3c0fR" for rotation between 13.95s and 13.95s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s3c0fR" for rotation between 14.76s and 14.76s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s3c0fR" for rotation between 16.12s and 16.13s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s3c0h" for y, rotation between 13.47s and 13.47s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s3c0h" for y, rotation between 14.53s and 14.53s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s3c1uL" for rotation between 13.38s and 13.38s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s3c1fL" for rotation between 13.62s and 13.62s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s3c1uR" for rotation between 14.05s and 14.05s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s4c0fR" for rotation between 17.48s and 17.48s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s4c0h" for y, rotation between 19.06s and 19.06s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s4c1uL" for rotation between 17.29s and 17.29s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s4c1fL" for rotation between 17.47s and 17.47s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s4c1uR" for rotation between 17.84s and 17.84s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s6c0fL" for rotation between 27.46s and 27.46s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s6c0uR" for rotation between 25.86s and 25.86s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s6c0fR" for rotation between 25.86s and 25.86s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s6c0fR" for rotation between 26.66s and 26.66s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s6c0fR" for rotation between 27.11s and 27.11s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s6c0h" for y, rotation between 25.76s and 25.76s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s6c0h" for y, rotation between 27.13s and 27.13s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s6c1uL" for rotation between 27.09s and 27.09s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s6c1fL" for rotation between 26.29s and 26.29s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s6c1uR" for rotation between 25.67s and 25.67s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s7c1uL" for rotation between 29.79s and 29.79s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s7c1fL" for rotation between 29.79s and 29.79s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s7c1uR" for rotation between 29.79s and 29.79s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s7c1fR" for rotation between 29.79s and 29.79s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s7c1fR" for rotation between 30.17s and 30.17s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s7c1h" for y, rotation between 31.77s and 31.77s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s8c0uL" for rotation between 34.93s and 34.93s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s8c0uR" for rotation between 35.07s and 35.07s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s8c0fR" for rotation between 35.15s and 35.15s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s8c0h" for y, rotation between 34.80s and 34.80s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s8c1uL" for rotation between 34.79s and 34.79s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s9c0uR" for rotation between 38.33s and 38.34s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s9c1fL" for rotation between 38.06s and 38.06s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s9c1uR" for rotation between 37.85s and 37.85s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s9c1fR" for rotation between 38.18s and 38.18s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s10c0uL" for rotation between 41.81s and 41.81s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s10c0fR" for rotation between 42.05s and 42.05s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s10c1uR" for rotation between 42.12s and 42.12s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s10c1fR" for rotation between 42.50s and 42.50s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s11c0uL" for rotation between 46.10s and 46.11s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s11c1fR" for rotation between 45.69s and 45.70s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s11c1h" for y, rotation between 46.05s and 46.06s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s12c1uL" for rotation between 49.18s and 49.18s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s12c1fR" for rotation between 48.54s and 48.54s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s13c0uL" for rotation between 54.81s and 54.82s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s13c0fR" for rotation between 52.42s and 52.42s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s13c0fR" for rotation between 54.81s and 54.82s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s13c0h" for y, rotation between 52.82s and 52.82s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s13c1uL" for rotation between 52.50s and 52.51s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s13c1fR" for rotation between 52.48s and 52.48s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s14c0uL" for rotation between 56.54s and 56.55s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s14c0fL" for rotation between 56.61s and 56.62s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s15c0uL" for rotation between 59.53s and 59.53s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s15c0uR" for rotation between 63.13s and 63.13s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+  ⚠ overlapping_gsap_tweens: GSAP tweens overlap on "#s15c0h" for y, rotation between 61.58s and 61.58s.
+    Fix: Shorten the earlier tween, move the later tween, or add `overwrite: "auto"`.
+
+◇  0 error(s), 77 warning(s)

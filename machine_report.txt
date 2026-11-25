@@ -1,0 +1,3 @@
+Machine jaanch: ✅ theek
+- ⚠️ lambai 65.2 sec, VIRAL.md ka target 40-60 sec hai
+- ℹ️ 1080x1920, 30.0 fps, 65.2 sec, zor -14.9 LUFS
