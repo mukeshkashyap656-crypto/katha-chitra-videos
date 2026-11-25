@@ -306,20 +306,6 @@ def write_post(item):
                 return post, []
             except Exception as e:
                 log("Cloudflare AI", model, "fail:", str(e)[:120])
-    gh = os.environ.get("GITHUB_TOKEN")
-    if gh:   # sahara 4: GitHub Models (Actions ke saath free)
-        for model in ["openai/gpt-4.1-mini", "openai/gpt-4o-mini", "meta/Llama-3.3-70B-Instruct", "deepseek/DeepSeek-V3-0324", "mistral-ai/Mistral-Small-2503"]:
-            try:
-                r = requests.post("https://models.github.ai/inference/chat/completions", timeout=180,
-                                  headers={"Authorization": "Bearer " + gh, "Accept": "application/vnd.github+json"},
-                                  json={"model": model, "messages": [{"role": "user", "content": nosearch}], "max_tokens": 6000})
-                if r.status_code != 200 or not r.text.strip():
-                    raise RuntimeError(f"HTTP {r.status_code}: {r.text[:100]!r}")
-                post = parse_json(r.json()["choices"][0]["message"]["content"])
-                log("GitHub Models", model, "ok")
-                return post, []
-            except Exception as e:
-                log("GitHub Models", model, "fail:", str(e)[:120])
     hf = os.environ.get("HF_TOKEN")
     if hf:   # sahara 5: Hugging Face
         for model in ["meta-llama/Llama-3.3-70B-Instruct", "Qwen/Qwen2.5-72B-Instruct"]:

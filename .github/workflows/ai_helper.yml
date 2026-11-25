@@ -17,6 +17,8 @@ on:
     - cron: '37 5 * * *'   # subah 11:07 IST: paanchvi koshish
     - cron: '7 7 * * *'    # dopahar 12:37 IST: chhathi koshish
     - cron: '37 11 * * *'  # shaam 5:07 IST: saatvi koshish
+    - cron: '47 12 * * *'  # shaam 6:17 IST: 7 baje ki post se pehle
+    - cron: '47 13 * * *'  # shaam 7:17 IST: 8 baje wali post koshish se pehle
   workflow_dispatch:
 
 permissions:
