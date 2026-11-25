@@ -1,0 +1,748 @@
+{
+ "NAME": "Ramayan_Bhag10_Kartikeya_ka_Janm",
+ "COVER_NAME": "Ramayan_Bhag10_Cover",
+ "BHAG": 10,
+ "VERSION": 1,
+ "QUESTION": "उमा के बेटे का जन्म गंगा से कैसे हुआ?",
+ "LINES": {
+  "n1": [
+   "उमा के बेटे का जन्म, गंगा से कैसे हुआ?",
+   "+0%",
+   "+0Hz"
+  ],
+  "vm1": [
+   "राम, शिव और उमा को साथ रहते सौ दिव्य वर्ष बीत गए, पुत्र नहीं हुआ।",
+   "-12%",
+   "-16Hz"
+  ],
+  "dev1": [
+   "महादेव, अपना तेज रोक लीजिए! तीनों लोक इसे नहीं सह पाएँगे।",
+   "-8%",
+   "-14Hz"
+  ],
+  "sh1": [
+   "ठीक है, मैं तेज रोकूँगा। पर जो हिल चुका है, उसे कौन धारण करेगा?",
+   "-15%",
+   "-25Hz"
+  ],
+  "n2": [
+   "शिव जी का तेज धरती पर फैल गया। अग्नि उसमें समा गए।",
+   "+0%",
+   "+0Hz"
+  ],
+  "uma1": [
+   "देवताओ, तुमने मुझे पुत्र से रोका! अब तुम अपनी पत्नियों से संतान नहीं पाओगे!",
+   "+4%",
+   "+6Hz"
+  ],
+  "n3": [
+   "तब देवता ब्रह्मा जी के पास गए। उन्हें एक सेनापति चाहिए था।",
+   "+0%",
+   "+0Hz"
+  ],
+  "br1": [
+   "गंगा में अग्नि का पुत्र होगा। उमा भी उसे अपनाएँगी।",
+   "-12%",
+   "-12Hz"
+  ],
+  "ag1": [
+   "देवी गंगा, शिव जी का यह तेज धारण कीजिए।",
+   "+6%",
+   "+14Hz"
+  ],
+  "gn1": [
+   "यह ताप मुझसे नहीं सहा जाता!",
+   "-6%",
+   "-10Hz"
+  ],
+  "ag2": [
+   "इसे हिमालय की तलहटी में रख दो।",
+   "+6%",
+   "+14Hz"
+  ],
+  "n4": [
+   "गंगा ने तेज हिमालय के नीचे रख दिया। वहाँ सोना, चाँदी, ताँबा और लोहा बने।",
+   "+0%",
+   "+0Hz"
+  ],
+  "n5": [
+   "कृत्तिकाओं ने बालक को पाला, इसलिए नाम पड़ा कार्तिकेय। गंगा के गर्भ से गिरे थे, इसलिए स्कंद भी।",
+   "+0%",
+   "+0Hz"
+  ],
+  "n6": [
+   "देवताओं ने उसे अपना सेनापति बनाया।",
+   "+0%",
+   "+0Hz"
+  ],
+  "n7": [
+   "अब सगर के साठ हज़ार पुत्र कौन थे? सब्सक्राइब कीजिए, कमेंट में लिखिए: जय श्री राम",
+   "+0%",
+   "+0Hz"
+  ]
+ },
+ "SPEAKER": {
+  "dev1": "indra",
+  "sh1": "shiva",
+  "uma1": "uma",
+  "br1": "brahma",
+  "ag1": "agni",
+  "gn1": "ganga",
+  "ag2": "agni"
+ },
+ "KEYWORDS": {
+  "n1": [
+   "गंगा",
+   "उमा"
+  ],
+  "vm1": [
+   "सौ दिव्य वर्ष"
+  ],
+  "dev1": [
+   "तेज"
+  ],
+  "sh1": [
+   "कौन"
+  ],
+  "n2": [
+   "तेज"
+  ],
+  "uma1": [
+   "संतान नहीं"
+  ],
+  "n3": [
+   "सेनापति"
+  ],
+  "br1": [
+   "गंगा"
+  ],
+  "ag1": [
+   "गंगा"
+  ],
+  "gn1": [
+   "ताप"
+  ],
+  "ag2": [
+   "हिमालय"
+  ],
+  "n4": [
+   "सोना"
+  ],
+  "n5": [
+   "कार्तिकेय",
+   "स्कंद"
+  ],
+  "n6": [
+   "सेनापति"
+  ],
+  "n7": [
+   "सगर"
+  ]
+ },
+ "NEW_CHARS": {
+  "ganga": {
+   "name": "देवी गंगा",
+   "kind": "f",
+   "big": true,
+   "glow": "gold",
+   "skin": "#f0c890",
+   "hair": "#140c08",
+   "saree": "#9ec8e0",
+   "blouse": "#f6f0e2",
+   "border": "#f2c230",
+   "jewel": true,
+   "tilak": true,
+   "mala": true,
+   "tall": 1.05,
+   "fw": 1.0,
+   "fh": 1.04
+  },
+  "uma": {
+   "name": "देवी उमा",
+   "kind": "f",
+   "big": true,
+   "glow": "gold",
+   "skin": "#e8b887",
+   "hair": "#140c08",
+   "saree": "#d9342b",
+   "blouse": "#f2c230",
+   "border": "#f6f0e2",
+   "jewel": true,
+   "tilak": true,
+   "mala": false,
+   "jatabun": "#140c08",
+   "tall": 0.96,
+   "fw": 0.94,
+   "fh": 0.97
+  },
+  "shiva": {
+   "name": "महादेव शिव",
+   "kind": "m",
+   "big": true,
+   "glow": "gold",
+   "skin": "#e8e0d2",
+   "hair": "#2a1a14",
+   "jatabun": "#2a1a14",
+   "tilak": true,
+   "mala": true,
+   "bare": true,
+   "tunic": "#c28a4a",
+   "lower": "#c28a4a",
+   "upper": "#e8e0d2",
+   "sash": "#6b4a2a",
+   "hem": "#6b4a2a",
+   "ajina": "#c28a4a",
+   "skirt": 1.3,
+   "age": 1
+  },
+  "brahma": {
+   "name": "ब्रह्मा जी",
+   "kind": "m",
+   "big": true,
+   "glow": "gold",
+   "skin": "#e0a878",
+   "hair": "#f4f1ea",
+   "beard": "#f8f6f0",
+   "mous": "#f8f6f0",
+   "beardlen": 1.5,
+   "jatabun": "#f4f1ea",
+   "tilak": true,
+   "mala": true,
+   "kamandalu": true,
+   "jewel": true,
+   "bare": true,
+   "tunic": "#f6f0e2",
+   "lower": "#f6f0e2",
+   "upper": "#e8902a",
+   "sash": "#8a5a2a",
+   "hem": "#e8902a",
+   "skirt": 1.6,
+   "age": 2
+  },
+  "indra": {
+   "name": "इंद्र",
+   "kind": "m",
+   "big": true,
+   "glow": "gold",
+   "crown": true,
+   "jewel": true,
+   "skin": "#e0a070",
+   "hair": "#140c08",
+   "mous": "#140c08",
+   "bare": true,
+   "tunic": "#2f6aa8",
+   "lower": "#2f6aa8",
+   "upper": "#f2c230",
+   "sash": "#f2c230",
+   "hem": "#f2c230",
+   "skirt": 1.4
+  },
+  "agni": {
+   "name": "अग्नि देव",
+   "kind": "m",
+   "big": true,
+   "glow": "gold",
+   "jewel": true,
+   "skin": "#e0743a",
+   "hair": "#d9342b",
+   "mous": "#8e1b2b",
+   "bare": true,
+   "tunic": "#d9342b",
+   "lower": "#d9342b",
+   "upper": "#f2a03a",
+   "sash": "#f2c230",
+   "hem": "#f2c230",
+   "skirt": 1.4,
+   "jatabun": "#d9342b",
+   "beard": "#a02a1c",
+   "beardlen": 0.9
+  },
+  "kartikeya": {
+   "name": "कार्तिकेय",
+   "kind": "m",
+   "child": true,
+   "glow": "gold",
+   "skin": "#f0c870",
+   "hair": "#140c08",
+   "tilak": true,
+   "jewel": true,
+   "bare": true,
+   "tunic": "#f2c230",
+   "lower": "#f2c230",
+   "upper": "#f2c230",
+   "sash": "#c0392b",
+   "hem": "#e8902a",
+   "skirt": 1.3,
+   "jatabun": "#140c08"
+  },
+  "krittika1": {
+   "name": "कृत्तिका",
+   "kind": "f",
+   "skin": "#e8b887",
+   "hair": "#140c08",
+   "saree": "#6a4a9a",
+   "blouse": "#f6f0e2",
+   "border": "#f2c230",
+   "jewel": true,
+   "tall": 1.03,
+   "fw": 0.95
+  },
+  "krittika2": {
+   "name": "कृत्तिका",
+   "kind": "f",
+   "skin": "#d99a6c",
+   "hair": "#140c08",
+   "saree": "#2f8a6a",
+   "blouse": "#f2c230",
+   "border": "#f6f0e2",
+   "jewel": true,
+   "tall": 0.98,
+   "fw": 1.04
+  },
+  "krittika3": {
+   "name": "कृत्तिका",
+   "kind": "f",
+   "skin": "#f0c890",
+   "hair": "#3a2418",
+   "saree": "#c0392b",
+   "blouse": "#f6f0e2",
+   "border": "#e8b730",
+   "jewel": true,
+   "tall": 1.0,
+   "fw": 0.98
+  }
+ },
+ "VOICES": {
+  "shiva": [
+   "en-US-AndrewMultilingualNeural",
+   "hi-IN-MadhurNeural"
+  ],
+  "brahma": [
+   "en-US-BrianMultilingualNeural",
+   "hi-IN-MadhurNeural"
+  ]
+ },
+ "SHOTS": [
+  {
+   "line": "n1",
+   "bg": "divine",
+   "cam": "wide",
+   "mood": "wonder",
+   "chip": "उमा का पुत्र?",
+   "show": "उमा चिंता और जिज्ञासा से गंगा की ओर देखती हैं, गंगा मुस्कुराकर आशीर्वाद का हाथ उठाती हैं; सवाल उनके चेहरे पर।",
+   "cast": [
+    {
+     "who": "uma",
+     "x": 420,
+     "pose": "talk",
+     "face": "worry",
+     "look": "right"
+    },
+    {
+     "who": "ganga",
+     "x": 940,
+     "pose": "bless",
+     "face": "smile",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "vm1",
+   "bg": "cloudvan",
+   "cam": "two",
+   "chip": "सौ दिव्य वर्ष",
+   "show": "विश्वामित्र गंभीरता से राम को कथा सुनाते हैं, हाथ से 'लंबा समय' दिखाते हैं; सौ वर्ष सुनकर राम चौंक जाते हैं।",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 300,
+     "pose": "stand",
+     "face": "shock",
+     "look": "right"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 800,
+     "pose": "talk",
+     "face": "stern",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "dev1",
+   "bg": "cloudvan",
+   "cam": "wide",
+   "mood": "wonder",
+   "chip": "देवता घबराए",
+   "show": "इंद्र हाथ उठाकर शिव जी से प्रार्थना करते हैं, घबराहट चेहरे पर; अग्नि भी चिंतित; शिव शांत और दृढ़ सुनते हैं।",
+   "cast": [
+    {
+     "who": "agni",
+     "x": 200,
+     "pose": "stand",
+     "face": "worry",
+     "look": "right"
+    },
+    {
+     "who": "indra",
+     "x": 560,
+     "pose": "raise",
+     "face": "worry",
+     "look": "right"
+    },
+    {
+     "who": "shiva",
+     "x": 1020,
+     "pose": "stand",
+     "face": "firm",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "sh1",
+   "bg": "cloudvan",
+   "cam": "speaker",
+   "chip": "तेज कौन धारे?",
+   "show": "शिव जी गंभीर चेहरे से सवाल पूछते हैं, हाथ से तेज की ओर इशारा; इंद्र चिंता से सुनते हैं।",
+   "cast": [
+    {
+     "who": "indra",
+     "x": 330,
+     "pose": "stand",
+     "face": "worry",
+     "look": "right"
+    },
+    {
+     "who": "shiva",
+     "x": 800,
+     "pose": "talk",
+     "face": "stern",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "n2",
+   "bg": "divine",
+   "cam": "wide",
+   "mood": "wonder",
+   "chip": "तेज धरती पर",
+   "show": "सुनहरी रोशनी का माहौल; अग्नि हैरानी से हाथ उठाए तेज की ओर देखते हैं, इंद्र चौंककर देखते हैं।",
+   "cast": [
+    {
+     "who": "agni",
+     "x": 380,
+     "pose": "raise",
+     "face": "shock",
+     "look": "right"
+    },
+    {
+     "who": "indra",
+     "x": 980,
+     "pose": "point",
+     "face": "shock",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "uma1",
+   "bg": "cloudvan",
+   "cam": "speaker",
+   "mood": "anger",
+   "chip": "उमा का श्राप",
+   "show": "उमा गुस्से से मुट्ठी कसकर देवताओं को श्राप देती हैं, आँखों में क्रोध; इंद्र हाथ जोड़कर सहम जाते हैं।",
+   "cast": [
+    {
+     "who": "uma",
+     "x": 380,
+     "pose": "angry",
+     "face": "angry",
+     "look": "right"
+    },
+    {
+     "who": "indra",
+     "x": 940,
+     "pose": "namaste",
+     "face": "shock",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "n3",
+   "bg": "divine",
+   "cam": "wide",
+   "chip": "ब्रह्मा जी के पास",
+   "show": "ब्रह्मा जी बीच में आशीर्वाद देते हैं; इंद्र और अग्नि हाथ जोड़कर चिंता के साथ उनके पास आए हैं।",
+   "cast": [
+    {
+     "who": "indra",
+     "x": 200,
+     "pose": "namaste",
+     "face": "worry",
+     "look": "right"
+    },
+    {
+     "who": "brahma",
+     "x": 680,
+     "pose": "bless",
+     "face": "smile",
+     "look": "front"
+    },
+    {
+     "who": "agni",
+     "x": 1160,
+     "pose": "namaste",
+     "face": "worry",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "br1",
+   "bg": "divine",
+   "cam": "speaker",
+   "mood": "wonder",
+   "chip": "गंगा में पुत्र",
+   "show": "ब्रह्मा जी मुस्कुराकर उपाय बताते हैं, हाथ से गंगा की ओर इशारा; अग्नि राहत से खुश होकर सुनते हैं।",
+   "cast": [
+    {
+     "who": "agni",
+     "x": 330,
+     "pose": "stand",
+     "face": "joy",
+     "look": "right"
+    },
+    {
+     "who": "brahma",
+     "x": 900,
+     "pose": "talk",
+     "face": "smile",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "ag1",
+   "bg": "river",
+   "cam": "two",
+   "chip": "देवी गंगा",
+   "show": "अग्नि हाथ आगे बढ़ाकर गंगा से तेज धारण करने को कहते हैं; गंगा शांत मुस्कान से सुनती हैं।",
+   "cast": [
+    {
+     "who": "agni",
+     "x": 330,
+     "pose": "talk",
+     "face": "firm",
+     "look": "right"
+    },
+    {
+     "who": "ganga",
+     "x": 940,
+     "pose": "stand",
+     "face": "smile",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "gn1",
+   "bg": "river",
+   "cam": "speaker",
+   "mood": "sorrow",
+   "chip": "असहनीय ताप",
+   "show": "गंगा ताप से पीड़ित हैं, हाथ उठाकर कहती हैं कि सहा नहीं जाता, चेहरे पर कष्ट; अग्नि चिंता से देखते हैं।",
+   "cast": [
+    {
+     "who": "agni",
+     "x": 330,
+     "pose": "stand",
+     "face": "worry",
+     "look": "right"
+    },
+    {
+     "who": "ganga",
+     "x": 940,
+     "pose": "raise",
+     "face": "sad",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "ag2",
+   "bg": "cloudvan",
+   "cam": "two",
+   "chip": "हिमालय के नीचे",
+   "show": "अग्नि हिमालय की ओर इशारा करके रास्ता बताते हैं, चेहरा दृढ़; गंगा राहत की साँस लेती हैं।",
+   "cast": [
+    {
+     "who": "agni",
+     "x": 330,
+     "pose": "point",
+     "face": "firm",
+     "look": "right"
+    },
+    {
+     "who": "ganga",
+     "x": 940,
+     "pose": "stand",
+     "face": "joy",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "n4",
+   "bg": "cloudvan",
+   "cam": "wide",
+   "mood": "wonder",
+   "chip": "सोना चाँदी ताँबा लोहा",
+   "show": "सुनहरी चमक के बीच गंगा हाथ उठाकर तेज रखती हैं; चेहरे पर राहत और आश्चर्य।",
+   "cast": [
+    {
+     "who": "ganga",
+     "x": 680,
+     "pose": "raise",
+     "face": "smile",
+     "look": "front"
+    }
+   ]
+  },
+  {
+   "line": "n5",
+   "bg": "morning",
+   "cam": "wide",
+   "mood": "joy",
+   "chip": "कृत्तिकाएँ",
+   "show": "सुनहरी चमक वाला बालक बीच में है; तीन कृत्तिकाएँ उसे प्यार से घेरकर खड़ी हैं, सबके चेहरे पर खुशी।",
+   "cast": [
+    {
+     "who": "krittika1",
+     "x": 200,
+     "pose": "bless",
+     "face": "joy",
+     "look": "right"
+    },
+    {
+     "who": "krittika2",
+     "x": 480,
+     "pose": "stand",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "kartikeya",
+     "x": 760,
+     "pose": "stand",
+     "face": "joy",
+     "look": "front"
+    },
+    {
+     "who": "krittika3",
+     "x": 1040,
+     "pose": "bless",
+     "face": "smile",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "n5",
+   "at_word": "गंगा",
+   "bg": "divine",
+   "cam": "speaker",
+   "mood": "wonder",
+   "chip": "स्कंद",
+   "show": "बालक कार्तिकेय सुनहरी चमक के साथ हाथ ऊपर उठाए खड़ा है, चेहरे पर चमक और मुस्कान।",
+   "cast": [
+    {
+     "who": "kartikeya",
+     "x": 680,
+     "pose": "raise",
+     "face": "joy",
+     "look": "front"
+    }
+   ]
+  },
+  {
+   "line": "n6",
+   "bg": "divine",
+   "cam": "wide",
+   "mood": "joy",
+   "chip": "सेनापति",
+   "show": "देवता खुशी से कार्तिकेय को घेरकर सेनापति बनाते हैं: इंद्र हाथ जोड़े, अग्नि आशीर्वाद देते, कार्तिकेय बीच में हाथ उठाए।",
+   "cast": [
+    {
+     "who": "indra",
+     "x": 200,
+     "pose": "namaste",
+     "face": "joy",
+     "look": "right"
+    },
+    {
+     "who": "kartikeya",
+     "x": 680,
+     "pose": "raise",
+     "face": "joy",
+     "look": "front"
+    },
+    {
+     "who": "agni",
+     "x": 1160,
+     "pose": "bless",
+     "face": "joy",
+     "look": "left"
+    }
+   ]
+  },
+  {
+   "line": "n7",
+   "bg": "divine",
+   "cam": "two",
+   "mood": "wonder",
+   "chip": "जय श्री राम",
+   "show": "राम हाथ जोड़कर प्रसन्नता से सुनते हैं, विश्वामित्र मुस्कुराकर आशीर्वाद देते हैं; अगले भाग की उत्सुकता।",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 420,
+     "pose": "namaste",
+     "face": "joy",
+     "look": "right"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 940,
+     "pose": "bless",
+     "face": "smile",
+     "look": "left"
+    }
+   ]
+  }
+ ],
+ "COVER": {
+  "bg": "divine",
+  "tag": "गंगा से जन्म?",
+  "cast": [
+   {
+    "who": "ganga",
+    "x": 420,
+    "pose": "point",
+    "face": "smile",
+    "look": "right"
+   },
+   {
+    "who": "kartikeya",
+    "x": 940,
+    "pose": "raise",
+    "face": "joy",
+    "look": "left"
+   }
+  ]
+ }
+}

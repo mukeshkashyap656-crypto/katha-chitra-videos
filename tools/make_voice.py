@@ -159,8 +159,10 @@ async def main(cfg_path, out_zip):
         try:
             for k, (text, rate, pitch) in lines.items():
                 role, vlist = voices_for(k, epi); done = False
-                if os.environ.get("ELEVENLABS_API_KEY"):
-                    _who = SP.speaker(k, epi) if SP else None
+                _who = SP.speaker(k, epi) if SP else None
+                # 25 Nov 2026 (user ka hukm): ElevenLabs sirf kathavachak (Adam) ke liye; baaki sab kirdaar free awaaz.
+                # Kisi kirdaar ko ElevenLabs dena ho to episode.json "ELEVEN_VOICES" mein uska naam likho.
+                if os.environ.get("ELEVENLABS_API_KEY") and (role == "narrator" or (_who and _who in epi.get("ELEVEN_VOICES", {}))):
                     nm, vid = eleven_pick(role, _who, epi)
                     for attempt in range(3):
                         try:
