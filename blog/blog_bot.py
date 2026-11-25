@@ -176,6 +176,7 @@ Khabar: {title}  (srot: {source})
 Niyam (zaroori):
 - Google Search se 2-3 bharosemand srot dekhkar tathya verify karo. Jo verify na ho wo mat likho.
 - Post tumhare apne shabdon mein ho, kisi lekh ka text copy nahi. Aaj ki saaf bolchaal wali Hindi.
+- LIPI (zaroori): title, description, body_html aur har heading POORI DEVANAGARI (हिन्दी) lipi mein likho, Roman/Hinglish mein bilkul nahi. Sirf brand, phone/game ke naam aur technical shabd (jaise BGMI, 5G, RAM, Snapdragon) English mein rakh sakte ho.
 - Pehli 2 line mein hi sabse kaam ki baat (hook): kya naya hai aur player ke liye abhi kya zaroori hai. "Namaskar/aaj hum baat karenge" jaise shuruaat mana.
 - Dhaancha: hook -> <h2> "Kya-kya naya aaya" (chhoti bullet list) -> <h2> "Tareekhein" (<table> mein: tareekh | kya) -> <h2> "Aaj hi karne wale kaam" (2-4 bullet, deadline wali baat sabse upar) -> <h2> "Aksar puchhe sawaal" (2-3 sawaal-jawab, jaise "update nahi dikh raha to?").
 - Gamer wali seedhi bolchaal (tum/aap), chhote vaakya, ek paragraph mein 2-3 line se zyada nahi. Bhari-bharkam shabd mana.
@@ -263,6 +264,9 @@ def quality_ok(post, srcs, item):
     if not srcs and not item.get("link"): why.append("srot nahi")
     if re.search(r"(?i)\b(shocking|you won't believe|chaunk|चौंक)", post["title"]): why.append("clickbait heading")
     if "<h1" in post["body_html"].lower(): why.append("h1 mana")
+    _txt = plain(post["body_html"])
+    _dev = len(re.findall(r"[\u0900-\u097F]", _txt)); _lat = len(re.findall(r"[A-Za-z]", _txt))
+    if _dev < 0.5 * (_dev + _lat) or not re.search(r"[\u0900-\u097F]", post["title"]): why.append("Devanagari lipi nahi (Roman/Hinglish mein likhi)")
     if re.search(r"(?i)(mod apk|hack|cheat|crack|free (diamond|uc|redeem)|redeem code|हैक|चीट)", post["title"] + " " + plain(post["body_html"])): why.append("mana wala vishay (hack/cheat/mod/redeem)")
     return why
 

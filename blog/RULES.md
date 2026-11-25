@@ -16,6 +16,7 @@ Ye blog "sari khabar, Hindi mein" ke liye hai, 6 vishay baari-baari se: Mobile G
 12. Bachchon wale khel hon to jua/paise ka laalach nahi dikhana. Khabar seedhi aur sachchi.
 13. BAND vishay (bot kabhi nahi likhta, khabar ka shirshak mile to hi chhod deta hai): sehat/ilaaj/dawa, paisa/share/nivesh/crypto, chunaav/rajneeti/partiyan, hatya/balatkar/hadsa/maut, dharm-vivaad/dange. Galti se nuksaan ya bhadkaane wali khabar AI se nahi likhni.
 14. "Desh Duniya" mein sirf sarkari yojana, vigyan, ISRO jaisi seedhi khabar, sirf tathya aur srot, apni raay nahi.
+15. LIPI: post ka title, description, heading aur poori body DEVANAGARI (हिन्दी) lipi mein, Roman/Hinglish mein nahi. Sirf brand/phone/game ke naam aur technical shabd English mein. Bot lipi jaanchta hai; Roman mein likhi post rok di jaati hai aur agle din dobara banti hai. (Owner ka faisla, 25 Nov 2026; sab posts par lagu.)
 
 ## Mobile guide / "best phones" posts (dusre blogs se seekh, unse behtar banana)
 - Shuru mein 2 line ka hook: kaun si kimat, kiske liye (gamer / camera / battery / student).
