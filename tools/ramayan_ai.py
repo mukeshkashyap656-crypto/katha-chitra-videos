@@ -306,6 +306,54 @@ def nvidia(p, j):
                   ["meta/llama-3.3-70b-instruct", "qwen/qwen2.5-coder-32b-instruct"], p, j)
 
 
+def zai(p, j):
+    return _extra("ZAI", "https://api.z.ai/api/paas/v4/chat/completions", "ZAI_API_KEY",
+                  ["glm-4.7-flash", "glm-4.5-flash"], p, j)
+
+
+# ---------------- bina chaabi wale reserve raaste (25 Nov 2026) ----------------
+# Inhe sirf public repo ki baatein jaati hain. Free model jawab ko log / seekhne mein istemal kar sakte hain.
+def _keyless(name, base, models, prompt_text, want_json):
+    last = None
+    for m in models:
+        try:
+            r = requests.post(base + "/chat/completions", timeout=120,
+                              json={"model": m, "temperature": 0.3, "messages": [{"role": "user", "content": prompt_text}]})
+            try:
+                txt = (r.json()["choices"][0]["message"]["content"] or "").strip()
+            except (KeyError, IndexError, TypeError, ValueError):
+                raise RuntimeError(f"HTTP {r.status_code}: {r.text[:200]!r}")
+            if txt:
+                print(f"Jawab ({name}):", m); USED.append(f"{name} {m}")
+                return txt
+            raise RuntimeError("khaali jawab")
+        except Exception as e:
+            last = e
+            print(f"{name} {m} nahi chala: {str(e)[:200]}")
+    raise Busy(f"{name}: {str(last)[:200]}")
+
+
+OVH_URL = "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1"      # OVHcloud: bina chaabi, 2 sawaal/minute har model
+KILO_URL = "https://ai-gateway.kilo.ai/api/v1"                     # Kilo: bina chaabi, free model, 200 sawaal/ghanta
+
+
+def ovh(p, j):
+    return _keyless("OVH", OVH_URL, ["gpt-oss-120b", "Meta-Llama-3_3-70B-Instruct", "gpt-oss-20b"], p, j)
+
+
+def kilo_models():
+    try:
+        data = requests.get(KILO_URL + "/models", timeout=30).json()["data"]
+        free = [m["id"] for m in data if m["id"].endswith(":free") and (m.get("context_length") or 0) >= 60000]
+    except Exception:
+        free = []
+    return ["kilo-auto/free"] + free[:4]
+
+
+def kilo(p, j):
+    return _keyless("Kilo", KILO_URL, kilo_models(), p, j)
+
+
 # ---------------- aakhri sahara: GitHub ke computer par hi chhota AI (Ollama), koi key/limit nahi ----------------
 LOCAL_URL = "http://127.0.0.1:11434"
 
@@ -358,7 +406,8 @@ def ask(prompt_text, image=None, want_json=True, hard=False):
                   ("SambaNova", lambda p: sambanova(p, want_json)),
                   ("NVIDIA", lambda p: nvidia(p, want_json)),
                   ("Cohere", lambda p: cohere(p, want_json)),
-                  ("HuggingFace", lambda p: huggingface(p, want_json))]
+                  ("HuggingFace", lambda p: huggingface(p, want_json)),
+                  ("ZAI", lambda p: zai(p, want_json))]
     def parse(txt):
         mt = re.search(r"\{.*\}", txt, re.DOTALL)
         data = json.loads(mt.group(0) if mt else txt)
@@ -409,6 +458,15 @@ def ask(prompt_text, image=None, want_json=True, hard=False):
                 print("Daud ka jeetne wala AI:", nm)
                 return res
             errs.append(f"{nm}: {err}")
+    if not imgs:
+        for name, fn in (("OVH", ovh), ("Kilo", kilo)):     # bina chaabi wale reserve: sirf jab upar wale sab fail
+            try:
+                t = fn(prompt_text, want_json)
+                res = parse(t) if want_json else t
+                print("Reserve AI ne jawab diya:", name)
+                return res
+            except Exception as e:
+                errs.append(f"{name}: {str(e)[:60]}")
     if not imgs:                                  # sab free AI fail: aakhri sahara, apne computer par chhota AI
         try:
             t = local_ai(prompt_text, want_json, hard)
