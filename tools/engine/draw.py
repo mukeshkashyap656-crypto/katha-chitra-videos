@@ -205,7 +205,7 @@ def bg_kurukshetra(file):
     g = cairo.LinearGradient(0, 0, 0, 1100)
     g.add_color_stop_rgb(0, *hexc("#4a2a6a")); g.add_color_stop_rgb(0.45, *hexc("#c4476a")); g.add_color_stop_rgb(1, *hexc("#f59a3c"))
     c.set_source(g); c.paint()
-    bglib.glowdisc(c, 1000, 900, 330, "#ffd37a", 0.55)
+    bglib.glowdisc(c, 1000, 900, 330, hexc("#ffd37a"), 0.55)
     c.arc(1000, 900, 120, 0, 6.3); fill_stroke(c, "#ffe9a8", 5)
     for x, y, sc in ((260, 300, 110), (760, 200, 85)): bglib.swirl_cloud(c, x, y, sc, col="#e7a3b8")
     for (x0, hgt, col) in ((-100, 260, "#6a2f55"), (500, 340, "#58264a")):     # far dark hills
@@ -215,7 +215,7 @@ def bg_kurukshetra(file):
         c.move_to(x, 1190); c.line_to(x, 1190 - rnd.uniform(110, 190)); c.set_source_rgb(*hexc("#2a1030")); c.set_line_width(7); c.stroke()
         if k % 3 == 0: poly(c, [(x, 1010), (x + 60, 1030), (x, 1055)]); fill_stroke(c, "#8e1b2b", 3)
     for x in (140, 520, 1180):                                                 # far camp-fires
-        bglib.glowdisc(c, x, 1215, 70, "#ffb347", 0.6)
+        bglib.glowdisc(c, x, 1215, 70, hexc("#ffb347"), 0.6)
         poly(c, [(x - 22, 1235), (x, 1170), (x + 22, 1235)]); fill_stroke(c, "#f2711c", 3)
     c.rectangle(0, 1240, WW, WH - 1240); g2 = cairo.LinearGradient(0, 1240, 0, WH)
     g2.add_color_stop_rgb(0, *hexc("#8a4a3a")); g2.add_color_stop_rgb(1, *hexc("#4a2418")); c.set_source(g2); c.fill()

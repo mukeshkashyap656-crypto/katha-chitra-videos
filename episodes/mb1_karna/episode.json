@@ -163,7 +163,8 @@
    "mous": "#140c08",
    "tilak": true,
    "jewel": true,
-   "build": 1.05
+   "build": 1.05,
+   "crown": true
   },
   "krishna": {
    "name": "श्रीकृष्ण",
@@ -598,5 +599,5 @@
    }
   ]
  },
- "VERSION": 1
+ "VERSION": 2
 }
