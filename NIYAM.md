@@ -7,6 +7,19 @@ Ye file kisi bhi AI (Gemini, DeepSeek, ChatGPT, Claude...) ko do aur bolo:
 
 ---
 
+## Sabse pehle ye samjho (aasaan bhasha mein)
+1. Bhag 10 se kahani 1987 wali TV Ramayan ke hisaab se banani hai. Bhag 8-9 Valmiki wale hi hain.
+2. Har bhaag ki kahani `plans/STORY_QUEUE.json` ke `facts` mein likhi hai. Sirf wahi ghatnayein dikhao. Apne mann se koi nayi ghatna mat jodo.
+3. Jo baat pakki na ho, use mat banao. Owner ko saaf batao.
+4. Serial ka video, gaana, dialogue ya actor ka chehra mat lo. Baat aur drawing apni banao.
+5. Har scene poora ho: sahi kirdaar, jagah, cheezein, awaaz, chehre ke bhaav aur harkat.
+6. Har kirdaar har scene mein ek jaisa dikhe. Naye kirdaar ka roop pehle tay karo.
+7. Serial wale bhaag par "Valmiki" mat likho. "रामायण कथा" likho.
+8. Video poora jaanche bina post mat karo.
+Neeche saare niyam vistaar se hain.
+
+---
+
 ## 1. Baat karne ka tareeka
 - Jawab **Hinglish** mein (Hindi, Roman likhai), aam bolchaal ke shabd — technical ya product ke naam nahi, jaise kisi aam insaan se baat ho rahi ho.
 - Koi baat samajh na aaye (jaise raj-darbar kaisa dikhta tha) toh pehle internet par dekho, phir banao.
@@ -16,13 +29,14 @@ Ye file kisi bhi AI (Gemini, DeepSeek, ChatGPT, Claude...) ko do aur bolo:
 ## 2. Kahani (sabse zaroori)
 ### Naya niyam (26 Nov 2026, owner ka hukm)
 - Kahani aur andaaz **1987 wale Ramanand Sagar ke Ramayan serial** ko dekh kar. Ye "sirf Valmiki" wale purane niyam ki jagah leta hai. Baaki files (SEEKH, VIRAL, KNOWLEDGE, FESTIVAL, CLAUDE) mein Ramayan ke liye "sirf Valmiki" likha ho toh ye niyam upar hai.
-- **Kab se:** jab `plans/STORY_QUEUE.json` ki nayi serial wali list aur `tools/ramayan_ai.py` ki jaanch badal jaaye. Tab tak purani list wale bhaag Valmiki se hi banenge (neeche ki Valmiki wali lines un par lagti hain).
+- **Kab se:** Bhag 10 se (`plans/STORY_QUEUE.json` mein `source: serial1987`). Wahan likhe `facts` ke bahar koi ghatna nahi; aadhar `plans/SERIAL_REF.md`. Bhag 8-9 Valmiki wale hain.
 - Har bhaag se pehle us hisse ki likhi hui jaankari dhoondo. Jis scene ki pakki jaankari na mile, use apne mann se mat jodo; owner ko batao aur auto-post mat karo. (Ye "owner se sawaal nahi" wale tareeke se upar hai.)
 - Dialogue aur narration naye likho. Serial ke video, gaane, dialogue aur actors ke chehre mat lo. Serial ke apne jode hue khaas scene hoobahoo mat utaaro. Title/tags mein serial ya actor ka naam nahi.
+- **Har scene poora ho** (owner, 26 Nov 2026): us pal mein kahani ke hisaab se jo kirdaar hone chahiye wo sab dikhein (peechhe wale bhi), aur sahi jagah, cheezein, hathiyar, vahan, mausam, awaazein, bhaav aur harkat. Banane se pehle har shot ke liye ye list banao. Koi cheez engine mein na ho toh milti-julti cheez mat lagao, nayi banao (need_code). Kirdaar: `plans/SERIAL_CHARACTERS.md`.
 - Andaaz: bhaavuk pal par thehrav, chehre aur aankhon se bhaav, izzat wali aasaan Hindi.
 - Serial wale bhaag par screen, caption ya tags mein "वाल्मीकि रामायण" / "valmiki" mat likho.
 
-### Purani list wale bhaag (badlaav tak)
+### Purani list wale bhaag (Bhag 9 tak)
 - Valmiki Ramayan (Tulsidas nahi). Viral topic ke liye bhi Valmiki se bahar ki kahani nahi.
 - Kahani **bilkul waisi** jaisi Valmiki mein hai, episode-dar-episode aage. **Apni taraf se kuch mat jodo, kuch mat badlo.**
 - Pehle us bhaag ka sarga padho, phir likho.

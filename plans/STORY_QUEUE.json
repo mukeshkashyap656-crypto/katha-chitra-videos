@@ -1,5 +1,5 @@
 {
- "note": "Sargas Valmiki Ramayan Bala Kanda ke anumaanit hain; AI ko asli paath (ya apni jaankari) se milana hai, kuch jodna nahi. Tithi = shaam 7 baje IST post. Bhag 8 = 26 Nov 2026.",
+ "note": "Bhag 8-9: Valmiki (pehle se bane). Bhag 10 se rajyabhishek tak: 1987 Ramayan serial; 'facts' Wikipedia ke saar aur episode ke naamon se (plans/SERIAL_REF.md). Facts ke bahar koi ghatna nahi. Tithi = shaam 7 baje IST post.",
  "start_bhag": 8,
  "start_date": "2026-11-26",
  "episodes": [
@@ -18,86 +18,378 @@
   {
    "bhag": 10,
    "date": "2026-11-28",
-   "topic": "Kartikeya ka janm",
-   "sargas": "1.36-1.37"
+   "topic": "Ahalya ka uddhar",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "5",
+   "facts": [
+    "Mithila ke raaste mein Ram Ahalya ko mukt karte hain.",
+    "Ahalya ko uske pati rishi Gautam ne shraap diya tha."
+   ]
   },
   {
    "bhag": 11,
    "date": "2026-11-29",
-   "topic": "Raja Sagar ke 60,000 putra aur yagya ka ghoda",
-   "sargas": "1.38-1.40"
+   "topic": "Pushp Vatika mein Ram aur Sita",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "6",
+   "facts": [
+    "Ram aur Sita mahal ke bageeche (Pushp Vatika) mein milte hain.",
+    "Pehli nazar mein dono ke man mein prem jaagta hai."
+   ]
   },
   {
    "bhag": 12,
    "date": "2026-11-30",
-   "topic": "Anshuman aur Dilip: Ganga ko laane ki koshish",
-   "sargas": "1.41"
+   "topic": "Sita swayamvar aur Shiv dhanush",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "7-8",
+   "facts": [
+    "Raja Janak ki beti Sita ka swayamvar hota hai.",
+    "Ram Shiv ka dhanush todte hain aur swayamvar mein Sita ko jeette hain.",
+    "Swayamvar ke hisse mein Parashuram bhi aate hain (unki baatcheet ki pakki jaankari nahi; kuch mat gadho)."
+   ]
   },
   {
    "bhag": 13,
    "date": "2026-12-01",
-   "topic": "Bhagirath ki tapasya aur Ganga ka avataran",
-   "sargas": "1.42-1.43"
+   "topic": "Chaaron bhaiyon ka vivah aur vidaai",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "9-10",
+   "facts": [
+    "Vivah tay hota hai; Ram aur Sita ka vivah.",
+    "Lakshman ka vivah Urmila se, Bharat ka Mandavi se, Shatrughna ka Shrutakirti se.",
+    "Dulhanein bhaavuk hokar apne mata-pita se vida leti hain."
+   ]
   },
   {
    "bhag": 14,
    "date": "2026-12-02",
-   "topic": "Ganga ka prabhaav aur Sagar putron ka uddhar",
-   "sargas": "1.43-1.44"
+   "topic": "Ayodhya mein Sita aur Ram ko uttaradhikari banane ki ghoshna",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "11-12",
+   "facts": [
+    "Sita Ayodhya aati hain.",
+    "Raja Dasharatha Ram ko apna uttaradhikari ghoshit karte hain."
+   ]
   },
   {
    "bhag": 15,
    "date": "2026-12-03",
-   "topic": "Samudra manthan",
-   "sargas": "1.45"
+   "topic": "Manthara aur Kaikeyi ke do var",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "13-14",
+   "facts": [
+    "Manthara Kaikeyi ke man mein zeher bharti hai.",
+    "Kaikeyi do var maangti hai: Bharat ko raajgaddi aur Ram ko 14 saal ka vanvas."
+   ]
   },
   {
    "bhag": 16,
    "date": "2026-12-04",
-   "topic": "Diti, Indra aur Marut",
-   "sargas": "1.46-1.47"
+   "topic": "Ram, Sita aur Lakshman ka vanvas",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "15-19",
+   "facts": [
+    "Ram, Sita aur Lakshman van ke liye Ayodhya chhodte hain.",
+    "Nishadraj Guha unhe nadi paar karne mein madad karta hai.",
+    "Teeno Chitrakoot mein rehne lagte hain.",
+    "Raaste mein Bharadwaj ka ashram aur Valmiki ka ashram aata hai."
+   ]
   },
   {
    "bhag": 17,
    "date": "2026-12-05",
-   "topic": "Ahalya ka uddhar",
-   "sargas": "1.48-1.49"
+   "topic": "Dasharatha ka dehant aur Bharat ki wapsi",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "20-22",
+   "facts": [
+    "Raja Dasharatha dukh mein praan tyaag dete hain.",
+    "Bharat aur Shatrughna lautte hain.",
+    "Bharat raajgaddi lene se mana karte hain.",
+    "Dasharatha ki mrityu ke hisse mein Shravan Kumar ki katha aati hai (uske vistaar ki jaankari SERIAL_REF mein nahi)."
+   ]
   },
   {
    "bhag": 18,
    "date": "2026-12-06",
-   "topic": "Mithila mein Janak se mulakat",
-   "sargas": "1.50-1.51"
+   "topic": "Bharat Milap aur Ram ki charan paduka",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "23-26",
+   "facts": [
+    "Bharat Ram ko dhoondhne jaate hain aur bhai milte hain.",
+    "Ram samay se pehle lautne se mana karte hain.",
+    "Bharat Ram ki paduka Ayodhya le jaate hain aur Nandigram se raaj sambhalte hain."
+   ]
   },
   {
    "bhag": 19,
    "date": "2026-12-07",
-   "topic": "Vishwamitra aur Vasishtha: Kamdhenu ki kahani",
-   "sargas": "1.52-1.56"
+   "topic": "Atri-Anasuya aur Agastya",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "27-28",
+   "facts": [
+    "Ram, Sita aur Lakshman rishi Atri aur Anasuya se milte hain.",
+    "Ram rakshason ke naash ka sankalp lete hain.",
+    "Agastya rishi Ram ko baan dete hain."
+   ]
   },
   {
    "bhag": 20,
    "date": "2026-12-08",
-   "topic": "Raja Trishanku ki kahani",
-   "sargas": "1.57-1.60"
+   "topic": "Panchvati, Jatayu aur Shurpanakha",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "29-30",
+   "facts": [
+    "Ram Jatayu se pehli baar milte hain.",
+    "Teeno Panchvati mein bas jaate hain.",
+    "Shurpanakha ka vivah prastav thukraya jaata hai aur Lakshman uski naak kaat dete hain."
+   ]
   },
   {
    "bhag": 21,
    "date": "2026-12-09",
-   "topic": "Ambarish aur Shunahshepa",
-   "sargas": "1.61-1.62"
+   "topic": "Khar-Dushan ka ant aur Ravan ki chaal",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "30-31",
+   "facts": [
+    "Khar aur Dushan ki sena Ram ke haathon nasht hoti hai.",
+    "Ravan Sita ko le jaane ki yojana banata hai."
+   ]
   },
   {
    "bhag": 22,
    "date": "2026-12-10",
-   "topic": "Menaka, Rambha aur Vishwamitra ka Brahmarshi banna",
-   "sargas": "1.63-1.65"
+   "topic": "Sone ka hiran aur Sita haran",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "31-32",
+   "facts": [
+    "Ravan Maricha ko hiran banakar bhejta hai taaki Ram aur Lakshman door jaayein.",
+    "Ravan Sita ko har le jaata hai.",
+    "Jatayu Sita ko bachane ki koshish mein ghaayal hota hai."
+   ]
   },
   {
    "bhag": 23,
    "date": "2026-12-11",
-   "topic": "Shiv ka dhanush aur Sita ka vivah prastav",
-   "sargas": "1.66-1.67"
+   "topic": "Jatayu, Kabandh aur Shabari",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "33-34",
+   "facts": [
+    "Ghaayal Jatayu Ram ko sab batata hai aur praan tyaag deta hai; Ram uska antim sanskaar karte hain.",
+    "Ram aur Lakshman Kabandh se milte hain aur Shabari ke ashram pahunchte hain."
+   ]
+  },
+  {
+   "bhag": 24,
+   "date": "2026-12-12",
+   "topic": "Hanuman aur Sugriv se dosti",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "35-37",
+   "facts": [
+    "Hanuman Ram se milte hain.",
+    "Ram aur Sugriv ki mitrata hoti hai.",
+    "Sugriv Ram ko Bali ke baare mein batate hain."
+   ]
+  },
+  {
+   "bhag": 25,
+   "date": "2026-12-13",
+   "topic": "Bali vadh",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "38-39",
+   "facts": [
+    "Ram Bali ko maarte hain.",
+    "Sugriv raja bante hain."
+   ]
+  },
+  {
+   "bhag": 26,
+   "date": "2026-12-14",
+   "topic": "Lakshman ka krodh aur Sita ki khoj",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "40-42",
+   "facts": [
+    "Sugriv aur Angad Ram ka aashirvaad lene aate hain.",
+    "Lakshman gusse mein Kishkindha mein aate hain.",
+    "Sita ki khoj shuru hoti hai."
+   ]
+  },
+  {
+   "bhag": 27,
+   "date": "2026-12-15",
+   "topic": "Hanuman ki chhalaang",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "43",
+   "facts": [
+    "Jambavan Hanuman ko unki soi hui shakti yaad dilate hain.",
+    "Hanuman udkar Lanka pahunchte hain."
+   ]
+  },
+  {
+   "bhag": 28,
+   "date": "2026-12-16",
+   "topic": "Ashok Vatika mein Sita",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "44-45",
+   "facts": [
+    "Hanuman Ashok Vatika mein Sita se milte hain.",
+    "Hanuman Ashok Vatika ujaadte hain aur Akshay Kumar ko maarte hain."
+   ]
+  },
+  {
+   "bhag": 29,
+   "date": "2026-12-17",
+   "topic": "Lanka dahan aur wapsi",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "46-48",
+   "facts": [
+    "Hanuman Ravan se milte hain aur Lanka jalate hain.",
+    "Hanuman Sita se vida lete hain.",
+    "Hanuman lautkar Ram ko Sita ka samachar dete hain."
+   ]
+  },
+  {
+   "bhag": 30,
+   "date": "2026-12-18",
+   "topic": "Vibhishan Ram ki sharan mein",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "49-51",
+   "facts": [
+    "Vibhishan ko Lanka se nikaal diya jaata hai.",
+    "Vibhishan Ram se milte hain."
+   ]
+  },
+  {
+   "bhag": 31,
+   "date": "2026-12-19",
+   "topic": "Ram Setu",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "52-53",
+   "facts": [
+    "Samudra par setu banta hai aur poora hota hai."
+   ]
+  },
+  {
+   "bhag": 32,
+   "date": "2026-12-20",
+   "topic": "Angad ki chunauti",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "54-58",
+   "facts": [
+    "Ram ka baan Ravan ka mukut gira deta hai.",
+    "Sugriv aur Ravan ka dwandva hota hai.",
+    "Ram Angad ko shaanti doot banakar Ravan ke darbar bhejte hain; Angad chunauti dete hain.",
+    "Mandodari Ravan se badon ki salaah maanne ko kehti hai."
+   ]
+  },
+  {
+   "bhag": 33,
+   "date": "2026-12-21",
+   "topic": "Yuddh aur Kumbhakaran",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "59-62",
+   "facts": [
+    "Yuddh shuru hota hai aur Ravan ranbhoomi mein aata hai.",
+    "Kumbhakaran ko jagaya jaata hai aur uska vadh hota hai."
+   ]
+  },
+  {
+   "bhag": 34,
+   "date": "2026-12-22",
+   "topic": "Nagpash aur Garud",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "63-66",
+   "facts": [
+    "Atikaya sahit kai rakshas yodha maare jaate hain; Atikaya ko Lakshman maarte hain.",
+    "Indrajit Ram aur Lakshman ko Nagpash mein baandhta hai.",
+    "Garud unhe mukt karte hain."
+   ]
+  },
+  {
+   "bhag": 35,
+   "date": "2026-12-23",
+   "topic": "Lakshman par shakti aur Sanjeevani",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "67-69",
+   "facts": [
+    "Lakshman Indrajit ke shakti astra se ghaayal hote hain.",
+    "Hanuman Sushen Vaidya ko laate hain.",
+    "Hanuman Himalaya se Sanjeevani wala parvat laate hain aur Lakshman theek hote hain."
+   ]
+  },
+  {
+   "bhag": 36,
+   "date": "2026-12-24",
+   "topic": "Indrajit vadh",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "70-71",
+   "facts": [
+    "Indrajit tantrik yagya karne jaata hai.",
+    "Indrajit ka vadh hota hai."
+   ]
+  },
+  {
+   "bhag": 37,
+   "date": "2026-12-25",
+   "topic": "Ravan vadh",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "72-75",
+   "facts": [
+    "Ravan ranbhoomi mein Ram se ladta hai.",
+    "Indra Ram ke liye apna rath bhejte hain.",
+    "Ravan ka vadh hota hai aur yuddh khatam hota hai."
+   ]
+  },
+  {
+   "bhag": 38,
+   "date": "2026-12-26",
+   "topic": "Agni pariksha aur Ayodhya wapsi",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "76-77",
+   "facts": [
+    "Sita ki agni pariksha hoti hai.",
+    "Ram Ayodhya ki or chalte hain."
+   ]
+  },
+  {
+   "bhag": 39,
+   "date": "2026-12-27",
+   "topic": "Ram ka rajyabhishek",
+   "sargas": "",
+   "source": "serial1987",
+   "serial_ep": "78",
+   "facts": [
+    "Ram ka rajyabhishek hota hai."
+   ]
   }
  ]
 }

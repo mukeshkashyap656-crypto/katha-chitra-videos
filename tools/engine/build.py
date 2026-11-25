@@ -405,6 +405,18 @@ LINEKEYS = {k: set(EPI["KEYWORDS"].get(k, [])) for k in ORDER}
 LINEKEYS[LAST] |= {"जय", "श्री", "राम"}
 def is_key(k, w):
     n = norm(w); return any(n == norm(x) or n.rstrip("ा") == norm(x) or n.startswith(norm(x)) for x in LINEKEYS[k] if norm(x))
+def story_tag():
+    """Cover ka chhota tag: serial wale bhaag par Valmiki kabhi nahi."""
+    try:
+        with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "plans", "STORY_QUEUE.json"), encoding="utf-8") as fh:
+            items = json.load(fh)["episodes"]
+        if any(str(x["bhag"]) == str(EPI["BHAG"]) and x.get("source") == "serial1987" for x in items):
+            return "रामायण कथा"
+    except (OSError, ValueError, KeyError):
+        pass
+    return EPI.get("TAG", "वाल्मीकि रामायण")
+
+
 def chunks(k):
     out, cur, ln = [], [], 0
     for i, (w, _) in enumerate(WT[k]):
@@ -574,7 +586,7 @@ cov = f"""<!DOCTYPE html>
  <div id="q">?</div>
  <img id="logo" src="assets/katha_chitra_logo.png">
  <div id="tag">{html.escape(cv.get("tag", ""))}</div>
- <div id="tag2">{html.escape(EPI.get("TAG", "वाल्मीकि रामायण"))}</div>
+ <div id="tag2">{html.escape(story_tag())}</div>
 </div>
 <script src="fonts/gsap/dist/gsap.min.js"></script>
 <script>const tl=gsap.timeline({{paused:true}});tl.set({{}},{{}},1);window.__timelines={{cover:tl}};</script>

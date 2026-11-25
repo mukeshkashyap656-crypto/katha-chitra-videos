@@ -55,7 +55,7 @@ Jaanchne wale AI ko check_sheet (har 0.25 sec ka frame) aur episode.json do. Har
 6. Subtitle ya chip kisi ka chehra dhak raha hai.
 7. Katha Chitra logo gayab, ya aakhir mein subscribe widget gayab.
 8. Awaaz aur subtitle ka mel nahi, ya kisi line ki awaaz baaki se bahut dheemi.
-9. Kahani Valmiki se alag, ya koi cheez apni taraf se jodi gayi.
+9. Kahani us bhaag ke tay aadhar (NIYAM.md section 2) se alag, ya koi cheez apni taraf se jodi gayi.
 10. Pehli frame par cover nahi.
 11. Pehli line 12 shabd se lambi, ya chaunkane wali baat/sawaal pehle 3 sec mein nahi aaya (section 1). Pehle shot mein 1 sec ke andar koi harkat nahi.
 12. Video 75 sec se lambi.
