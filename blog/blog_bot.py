@@ -206,16 +206,29 @@ def parse_json(txt):
     return json.loads(m.group(0))
 
 
+GEM_SKIP_UNTIL = 0     # Gemini ka free quota khatam (429) hone par is run mein 10 minute tak use na aazmao (sab post mein samay barbaad hota tha)
+GEM_DEAD = set()       # jo model "no longer available" (404) bole, use is run mein dobara na aazmao
+
+
 def write_post(item):
     """Returns (post dict, sources list). Gemini grounded -> OpenRouter fallback."""
+    global GEM_SKIP_UNTIL
     prompt = PROMPT.format(**item)
     key = os.environ.get("GEMINI_API_KEY")
+    if key and time.time() < GEM_SKIP_UNTIL:
+        log("Gemini quota abhi khatam tha: seedha doosre AI par")
+        key = None
     if key:
         try:
             from google import genai
             from google.genai import types
             c = genai.Client(api_key=key)
+            quota_out = False
             for model in gemini_models(c):
+                if model in GEM_DEAD:
+                    continue
+                if quota_out:
+                    break
                 for attempt in range(2):
                     try:
                         r = c.models.generate_content(
@@ -234,8 +247,13 @@ def write_post(item):
                     except Exception as e:
                         msg = str(e)
                         log("Gemini", model, "fail:", msg[:150])
-                        if "429" in msg or "RESOURCE_EXHAUSTED" in msg or "404" in msg or "NOT_FOUND" in msg:
-                            break   # quota khatam / model nahi: isi model par dobara koshish bekaar
+                        if "429" in msg or "RESOURCE_EXHAUSTED" in msg:
+                            GEM_SKIP_UNTIL = time.time() + 600
+                            quota_out = True      # quota poori key ka hota hai: baaki Gemini models bhi bekaar, seedha doosre AI par
+                            break
+                        if "404" in msg or "NOT_FOUND" in msg:
+                            GEM_DEAD.add(model)
+                            break   # model nahi: isi model par dobara koshish bekaar
                         time.sleep(8)
         except Exception as e:
             log("Gemini poora fail:", e)

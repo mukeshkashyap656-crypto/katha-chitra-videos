@@ -53,7 +53,7 @@ jobs:
           # Backup: poora kaam 3 baar tak dobara (beech mein ruk ke)
           for TRY in 1 2 3; do
             python3 blog/blog_bot.py && break
-            echo "koshish $TRY fail"; [ $TRY -lt 3 ] && sleep $((120 * TRY))
+            echo "koshish $TRY fail"; [ $TRY -lt 3 ] && sleep $((30 * TRY))
           done
       - name: Save posted list + copies
         if: always()
