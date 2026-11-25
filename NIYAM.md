@@ -149,3 +149,6 @@ Pura seekh: ANIMATION.md ("Insaan kaise bolta hai"). Har video par lagta hai:
 - **Har character ka apna andaaz:** talkel, nod, gs, gap, sway sab alag. Naye character ke liye `STYLES` mein apni entry ya nazdiki `_female/_elder/_man/_devta/_rakshas`.
 - **Jod saaf:** kohni/ungli par ring nahi (`tlimb(open_start=True)`); haath chehre jitna lamba; sir alag layer (`part="head"`), isliye ghoomta/jhukta hai.
 - Naya sudhaar karo to ANIMATION.md aur yahan, dono mein likho.
+
+## Haath (25 Nov 2026, owner ka hukm)
+- Haath ab ek poora insaani haath hai (`draw_hand`, template/lib/chars.py): moti ungliyan 3 jodon ki (knuckle line ke saath), palm kalaai se chauda hota hua, angootha palm se ugta hua, mutthi mein ungliyan saaf mudi hui, namaste mein gol sire waali pattiyan. Gol goli jaisa palm aur teeli jaisi ungliyan wapas nahi lani. Styles: relaxed / open / point / fist / join (purane naam wahi).

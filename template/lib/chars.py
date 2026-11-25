@@ -129,49 +129,119 @@ def draw_foot(ctx, x, y, u, skin, rot=0.0, side=0):
 
 def draw_hand(ctx, x, y, ang, u, skin, style, side):
     """Human-looking hand at the wrist point (x, y). ang = forearm direction (radians from straight down, + = screen right).
-    style: relaxed | open | point | fist | join.  side: -1 left arm / +1 right arm (thumb toward the body)."""
-    ctx.save(); ctx.translate(x, y); ctx.rotate(-ang); ctx.scale(1.28, 1.28)     # a real hand is about as long as the face: bigger than a cartoon mitten
-    th = -side
-    FL = 2.4                                                                          # thin outline for fingers
-    def fing(x0, y0, ln, a=0.0, curl=0.0, w=0.066):
-        pts = [(x0 * u, y0 * u)]; ca = a
-        for k in range(3):
-            ca += curl * (0.6 + 0.4 * k)
-            px, py = pts[-1]; pts.append((px + math.sin(ca) * ln / 3 * u, py + math.cos(ca) * ln / 3 * u))
-        tlimb(ctx, pts, [w * u, w * 0.9 * u, w * 0.78 * u, w * 0.66 * u], skin, lw=FL)
-    def palm(w0=0.21, w1=0.19, ln=0.15):
-        tlimb(ctx, [(0, -0.03 * u), (0, ln * u)], [w0 * u, w1 * u], skin, lw=3.2)
-    def thumb(ang_=0.55, ln=0.19, y0=0.03):
-        pts = [(th * 0.09 * u, y0 * u), (th * (0.09 + 0.07 * math.sin(ang_)) * u, (y0 + 0.5 * ln * math.cos(ang_)) * u), (th * (0.09 + 0.13 * math.sin(ang_)) * u, (y0 + ln * math.cos(ang_)) * u)]
-        tlimb(ctx, pts, [0.085 * u, 0.072 * u, 0.058 * u], skin, lw=FL)
-    if style == "join":                          # palms pressed together (pranam): closed leaf, fingers together
-        poly(ctx, [(-0.1 * u, 0.0), (-0.09 * u, 0.2 * u), (-0.045 * u, 0.4 * u), (0.0, 0.45 * u), (0.045 * u, 0.4 * u), (0.09 * u, 0.2 * u), (0.1 * u, 0.0)])
-        fill_stroke(ctx, skin, 4)
-        ctx.set_source_rgba(*OL, 0.8); ctx.set_line_width(2.2)
-        for fx_ in (-0.045, 0.0, 0.045):
-            ctx.move_to(fx_ * u, 0.24 * u); ctx.line_to(fx_ * u, (0.41 if fx_ == 0 else 0.38) * u); ctx.stroke()
-    elif style == "fist":
-        thumb(0.9, 0.14, 0.05)
-        tlimb(ctx, [(0, 0.0), (0, 0.12 * u)], [0.24 * u, 0.22 * u], skin, lw=3.5)
-        ctx.set_source_rgba(*OL, 0.9); ctx.set_line_width(2.4)
-        for fx_ in (-0.06, -0.02, 0.02, 0.06):
-            ctx.move_to(fx_ * u, 0.1 * u); ctx.line_to(fx_ * u, 0.17 * u); ctx.stroke()
-    elif style == "point":                       # index finger out, the others curled into the palm, thumb across
-        palm(0.21, 0.19, 0.17)
-        fing(th * 0.0 - th * 0.0, 0.15, 0.30, a=th * 0.0, curl=0.0, w=0.066)
-        for k, fx_ in enumerate((0.05, 0.085, 0.115)):
-            ctx.arc(-th * fx_ * u, 0.2 * u, 0.04 * u, 0, 6.3); fill_stroke(ctx, skin, 2.4)
-        thumb(0.9, 0.14, 0.06)
-    elif style == "open":                        # fingers gently spread: blessing / explaining
-        for fx_, ln, a_ in ((-0.075, 0.24, -0.34), (-0.026, 0.3, -0.11), (0.026, 0.31, 0.09), (0.075, 0.25, 0.3)):
-            fing(fx_, 0.11, ln, a=a_, curl=-a_ * 0.12)
-        thumb(0.95, 0.22, 0.04)
-        palm(0.22, 0.2, 0.15)
-    else:                                        # relaxed: four fingers, gently curled, thumb alongside
-        for fx_, ln, c_ in ((-0.077, 0.24, 0.2), (-0.026, 0.29, 0.24), (0.026, 0.28, 0.26), (0.077, 0.22, 0.3)):
-            fing(fx_, 0.11, ln, a=fx_ * 0.9, curl=c_ * -th * 0.35)
-        thumb(0.5, 0.2, 0.02)
-        palm(0.22, 0.2, 0.15)
+    style: relaxed | open | point | fist | join.  side: -1 left arm / +1 right arm (thumb toward the body).
+    v2 (25 Nov 2026): one connected hand - thick 3-joint fingers with knuckle creases, a palm that widens to the knuckles,
+    a thumb that grows out of the palm (thenar), folded fingers drawn as real finger blocks, namaste as a rounded leaf."""
+    ctx.save(); ctx.translate(x, y); ctx.rotate(-ang); ctx.scale(1.28, 1.28)
+    th = -side                                  # +x * th = toward the thumb
+    FL = 2.6                                    # finger outline
+    SK = hexc(skin); SKD = tuple(max(0.0, c * 0.80) for c in SK)
+
+    def crease(px, py, dx, dy, w):              # tiny knuckle line across a finger at (px, py), finger direction (dx, dy)
+        nx, ny = -dy, dx
+        ctx.move_to(px - nx * w * 0.3, py - ny * w * 0.3); ctx.line_to(px + nx * w * 0.3, py + ny * w * 0.3)
+        ctx.set_source_rgba(*OL, 0.55); ctx.set_line_width(1.6); ctx.set_line_cap(cairo.LINE_CAP_ROUND); ctx.stroke()
+
+    def fing(bx, by, lens, bends, a0, w):       # one finger = 3 bones; bends = joint angles (radians, + = toward +x)
+        pts = [(bx * u, by * u)]; ca = a0; dirs = []
+        for ln, bd in zip(lens, bends):
+            ca += bd; dirs.append((math.sin(ca), math.cos(ca)))
+            px, py = pts[-1]; pts.append((px + math.sin(ca) * ln * u, py + math.cos(ca) * ln * u))
+        tlimb(ctx, pts, [w * u, w * 0.94 * u, w * 0.84 * u, w * 0.72 * u], skin, lw=FL)
+        for k in (1, 2):
+            crease(pts[k][0], pts[k][1], dirs[k - 1][0], dirs[k - 1][1], w * u)
+        return pts
+
+    def palm_fill(ww=0.11, kw=0.145, ln=0.19, thumb_cut=0.05):
+        """palm: narrow at the wrist, wide at the knuckles. Fill all round, outline only the sides (the finger / thumb roots stay open)."""
+        W0, K = ww * u, kw * u
+        p = lambda sx, yy: (sx, yy * u)
+        ctx.new_path()
+        ctx.move_to(-W0, -0.03 * u)
+        ctx.curve_to(-W0 * 1.05, 0.03 * u, -K * 1.02, 0.08 * u, -K, ln * u)
+        ctx.line_to(K, ln * u)
+        ctx.curve_to(K * 1.02, 0.08 * u, W0 * 1.05, 0.03 * u, W0, -0.03 * u)
+        ctx.close_path()
+        ctx.set_source_rgb(*SK); ctx.fill()
+        ctx.set_line_cap(cairo.LINE_CAP_ROUND); ctx.set_source_rgb(*OL); ctx.set_line_width(3.4)
+        # outer (pinky) side: full edge; thumb side: only down to the thumb root
+        sp = -th                                                       # pinky side sign
+        ctx.move_to(sp * W0, -0.03 * u); ctx.curve_to(sp * W0 * 1.05, 0.03 * u, sp * K * 1.02, 0.08 * u, sp * K, ln * u); ctx.stroke()
+        ctx.move_to(th * W0, -0.03 * u); ctx.curve_to(th * W0 * 1.05, 0.0 * u, th * W0 * 1.1, 0.02 * u, th * W0 * 1.12, thumb_cut * u); ctx.stroke()
+        # soft knuckle bumps on the knuckle line + palm crease
+        ctx.set_source_rgba(*OL, 0.35); ctx.set_line_width(1.8)
+        ctx.move_to(-th * 0.09 * u, 0.09 * u); ctx.curve_to(-th * 0.03 * u, 0.115 * u, th * 0.05 * u, 0.1 * u, th * 0.09 * u, 0.07 * u); ctx.stroke()
+
+    def thumb(a_=0.55, ln1=0.12, ln2=0.11, y0=0.03, b2=0.25, w=0.095):
+        """thumb grows out of the palm (thenar). a_ = angle away from the palm line, + = outward toward the thumb side."""
+        p0 = (th * 0.085 * u, y0 * u)
+        a1 = th * a_; a2 = th * (a_ - b2)
+        p1 = (p0[0] + math.sin(a1) * ln1 * u, p0[1] + math.cos(a1) * ln1 * u)
+        p2 = (p1[0] + math.sin(a2) * ln2 * u, p1[1] + math.cos(a2) * ln2 * u)
+        tlimb(ctx, [p0, p1, p2], [w * u, w * 0.82 * u, w * 0.68 * u], skin, lw=FL, open_start=True)
+        crease(p1[0], p1[1], math.sin(a1), math.cos(a1), w * u)
+
+    # finger rows: index nearest the thumb. (x of knuckle, length scale, fan angle)
+    F = [(th * 0.078, 1.00, th * 0.05), (th * 0.026, 1.10, th * 0.01), (-th * 0.026, 1.03, -th * 0.05), (-th * 0.078, 0.80, -th * 0.12)]
+    L3 = (0.115, 0.085, 0.07)                  # bone lengths (u) for a middle finger of scale 1.0
+    FW = 0.071                                  # finger thickness (u)
+    KY = 0.17                                   # y of the knuckle line
+
+    def lens(s): return tuple(l * s for l in L3)
+
+    if style == "join":                          # namaste, seen from the front: two palms pressed, only the edge shows - a rounded leaf of fingers
+        W0 = 0.095 * u
+        ctx.new_path(); ctx.move_to(-W0, -0.03 * u)
+        ctx.curve_to(-W0 * 1.2, 0.12 * u, -W0 * 1.1, 0.26 * u, -W0 * 0.8, 0.38 * u)
+        ctx.curve_to(-W0 * 0.5, 0.48 * u, W0 * 0.5, 0.48 * u, W0 * 0.8, 0.38 * u)
+        ctx.curve_to(W0 * 1.1, 0.26 * u, W0 * 1.2, 0.12 * u, W0, -0.03 * u); ctx.close_path()
+        ctx.set_source_rgb(*SK); ctx.fill()
+        ctx.set_source_rgb(*OL); ctx.set_line_width(3.6); ctx.set_line_join(cairo.LINE_JOIN_ROUND); ctx.set_line_cap(cairo.LINE_CAP_ROUND)
+        ctx.move_to(-W0, -0.03 * u)
+        ctx.curve_to(-W0 * 1.2, 0.12 * u, -W0 * 1.1, 0.26 * u, -W0 * 0.8, 0.38 * u)
+        ctx.curve_to(-W0 * 0.5, 0.48 * u, W0 * 0.5, 0.48 * u, W0 * 0.8, 0.38 * u)
+        ctx.curve_to(W0 * 1.1, 0.26 * u, W0 * 1.2, 0.12 * u, W0, -0.03 * u); ctx.stroke()
+        # four fingers pressed together: fingertip scallops + the lines between them
+        ctx.set_source_rgba(*OL, 0.75); ctx.set_line_width(2.0); ctx.set_line_cap(cairo.LINE_CAP_ROUND)
+        for fx_ in (-0.05, 0.0, 0.05):
+            ctx.move_to(fx_ * u, 0.24 * u); ctx.line_to(fx_ * u * 0.95, (0.43 if fx_ == 0 else 0.41) * u); ctx.stroke()
+        # thumb tip peeking at the base, knuckle line
+        ctx.set_source_rgba(*OL, 0.5); ctx.set_line_width(1.8)
+        ctx.move_to(-0.085 * u, 0.2 * u); ctx.curve_to(-0.03 * u, 0.225 * u, 0.03 * u, 0.225 * u, 0.085 * u, 0.2 * u); ctx.stroke()
+        ellipse(ctx, th * 0.05 * u, 0.1 * u, 0.026 * u, 0.05 * u); ctx.set_source_rgba(*OL, 0.0); ctx.new_path()
+    elif style == "fist":                        # fingers folded in: four finger blocks hanging from the knuckles, thumb across the front
+        palm_fill(0.11, 0.15, 0.1)
+        for k, (fx_, sc, a_) in enumerate(F):
+            ln = 0.17 * (0.9 if k == 3 else 1.0)
+            tlimb(ctx, [(fx_ * u, 0.06 * u), (fx_ * u, (0.06 + ln) * u)], [0.075 * u, 0.068 * u], skin, lw=FL)
+            ctx.set_source_rgba(*OL, 0.55); ctx.set_line_width(1.7)                                 # fold line (middle joint)
+            ctx.move_to((fx_ - 0.03) * u, (0.06 + ln * 0.55) * u); ctx.line_to((fx_ + 0.03) * u, (0.06 + ln * 0.55) * u); ctx.stroke()
+        # knuckle bumps on top
+        ctx.set_source_rgba(*OL, 0.5); ctx.set_line_width(1.8)
+        for fx_, sc, a_ in F:
+            ctx.arc(fx_ * u, 0.075 * u, 0.02 * u, math.pi, 2 * math.pi); ctx.stroke()
+        tlimb(ctx, [(th * 0.115 * u, 0.04 * u), (th * 0.07 * u, 0.15 * u), (-th * 0.02 * u, 0.205 * u)], [0.095 * u, 0.082 * u, 0.07 * u], skin, lw=FL)
+    elif style == "point":                       # index finger out, other three folded, thumb folded across them
+        palm_fill(0.11, 0.145, KY)
+        for k in (3, 2, 1):                       # folded fingers (peeking out below the palm), pinky first so the middle one is on top
+            fx_ = F[k][0]; ln = 0.15 * (0.85 if k == 3 else 1.0)
+            tlimb(ctx, [(fx_ * u, 0.12 * u), (fx_ * u, (0.12 + ln) * u)], [0.07 * u, 0.064 * u], skin, lw=FL)
+        fing(F[0][0], 0.15, (0.125, 0.09, 0.075), (th * 0.0, 0.0, 0.0), th * 0.02, 0.07)
+        thumb(0.75, 0.095, 0.085, 0.045, 0.7, 0.09)
+    elif style == "open":                        # fingers fanned, relaxed bend: blessing / explaining / showing
+        fan = (th * 0.26, th * 0.08, -th * 0.12, -th * 0.34)
+        for k in (3, 0, 2, 1):
+            fx_, sc, _ = F[k]
+            fing(fx_ * 0.95, KY - 0.02, lens(sc), (fan[k], -fan[k] * 0.1 * 0 + 0.05 * th, 0.06 * th), 0.0, FW)
+        thumb(0.95, 0.12, 0.105, 0.05, 0.3, 0.095)
+        palm_fill(0.11, 0.145, KY)
+    else:                                        # relaxed: four fingers hanging slightly curled, thumb alongside
+        for k in (3, 0, 2, 1):
+            fx_, sc, a_ = F[k]
+            c_ = 0.20 + 0.04 * k
+            fing(fx_, KY - 0.02, lens(sc * 0.97), (a_, th * c_ * 0.45, th * c_ * 0.55), 0.0, FW)
+        thumb(0.45, 0.12, 0.10, 0.05, 0.22, 0.095)
+        palm_fill(0.11, 0.145, KY)
     ctx.restore()
 
 # ---------------- character specs (fixed for whole series) ----------------
