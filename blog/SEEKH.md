@@ -70,3 +70,8 @@ Saddam Kassim (@SaddamKassim): "News Blog Tutorial 2025" (e-pcQcvtHIk) aur "Cont
 - Koi key, password, token ya secret link code, log, issue ya chat mein nahi.
 - Apni permission badhana, naya apne-aap chalne wala kaam jodna, ya secret badalna: sirf user ki saaf haan ke baad.
 - Awaaz ki shart CC BY-NC-SA 4.0 (bina kamai wala istemaal): blog par ads/kamai shuru hone se pehle yeh awaaz hatani/badalni hai.
+
+**27 Nov 2026 ki nayi baatein**
+- blog_bot.py mein AWS (Opus 4.6) pehla likhne wala raasta hai, sirf jab srot ka text saath ho aur AWS_AI = on. Alag ginti 100 call roz. Na chale to Gemini aur baaki free raaste.
+- Test (bina post kiye) mein ek post "kal yaani 26 November" likh kar ankon ki jaanch paar kar gayi thi, jabki woh tareekh beet chuki thi. Ab AI ko aaj ki tareekh di jaati hai aur tareekh_galti() jaanch lagi hai. Ise hatana ya dheela mat karna.
+- Mashini jaanch har galti nahi pakadti: shabdon mein likha andaaza (jaise "battery do din chalegi") nikal sakta hai.
