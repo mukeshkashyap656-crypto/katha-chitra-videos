@@ -30,7 +30,8 @@ jobs:
         with: { python-version: '3.12' }
       - run: pip install -q --upgrade google-genai requests pillow
       - name: Hindi font (apne cover ke liye)
-        run: sudo apt-get update -qq && sudo apt-get install -y -qq fonts-noto-core libfribidi0 || echo "font nahi laga: cover par English shirshak aayega"
+        run: |
+          sudo apt-get update -qq && sudo apt-get install -y -qq fonts-noto-core libfribidi0 || echo "font nahi laga - cover par English shirshak aayega"
       - name: Make today's posts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
