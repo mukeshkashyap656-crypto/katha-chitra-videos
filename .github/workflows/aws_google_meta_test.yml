@@ -1,0 +1,66 @@
+name: AWS Google Meta test
+
+# Sirf haath se chalta hai. Sirf Google (Gemma 3) aur Meta (Llama) ko chhota sawaal bhejta hai.
+# Malik ne 26 Nov 2026 ko chat mein sirf Google aur Meta ki terms manzoor ki hain.
+# Google: ap-southeast-2 (Sydney). Meta: us-east-1 (USA).
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Google Meta model check
+        env:
+          AWS_BEARER_TOKEN_BEDROCK: ${{ secrets.AWS_BEARER_TOKEN_BEDROCK }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, sys, urllib.request, urllib.error
+
+          key = os.environ.get("AWS_BEARER_TOKEN_BEDROCK", "").strip()
+          if not key:
+              sys.exit("AWS_BEARER_TOKEN_BEDROCK secret nahi mila.")
+
+          models = [
+              ("Gemma 3 4B", "ap-southeast-2", "google.gemma-3-4b-it"),
+              ("Gemma 3 12B", "ap-southeast-2", "google.gemma-3-12b-it"),
+              ("Gemma 3 27B", "ap-southeast-2", "google.gemma-3-27b-it"),
+              ("Llama 4 Maverick", "us-east-1", "us.meta.llama4-maverick-17b-instruct-v1:0"),
+              ("Llama 4 Scout", "us-east-1", "us.meta.llama4-scout-17b-instruct-v1:0"),
+              ("Llama 3.3 70B", "us-east-1", "us.meta.llama3-3-70b-instruct-v1:0"),
+              ("Llama 3.1 70B", "us-east-1", "us.meta.llama3-1-70b-instruct-v1:0"),
+              ("Llama 3.1 8B", "us-east-1", "us.meta.llama3-1-8b-instruct-v1:0"),
+              ("Llama 3 70B", "us-east-1", "meta.llama3-70b-instruct-v1:0"),
+              ("Llama 3 8B", "us-east-1", "meta.llama3-8b-instruct-v1:0"),
+          ]
+          body = json.dumps({
+              "messages": [{"role": "user", "content": [{"text": "Namaste, ek line mein jawab do."}]}],
+              "inferenceConfig": {"maxTokens": 50},
+          }).encode()
+
+          def call(region, model_id):
+              req = urllib.request.Request(
+                  f"https://bedrock-runtime.{region}.amazonaws.com/model/{model_id}/converse",
+                  data=body,
+                  headers={"Content-Type": "application/json", "Authorization": "Bearer " + key},
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=60) as r:
+                      out = json.load(r)
+                  out["output"]["message"]["content"][0]["text"]
+                  return True, ""
+              except urllib.error.HTTPError as e:
+                  kind = (e.headers.get("x-amzn-ErrorType") or "").split(":")[0]
+                  return False, f"HTTP {e.code} {re.sub(r'[^A-Za-z]', '', kind)}".strip()
+              except Exception as e:
+                  return False, type(e).__name__
+
+          lines = ["AWS Google + Meta test"]
+          for name, region, model_id in models:
+              ok, err = call(region, model_id)
+              lines.append(f"{'CHALU' if ok else 'BAND '}  {name}  [{region}]  {err}".rstrip())
+          print("\n".join(lines))
+          PY
