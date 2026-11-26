@@ -58,10 +58,14 @@ jobs:
           BLOG_POST_TOKEN: ${{ secrets.BLOG_POST_TOKEN }}
         run: |
           # Backup: poora kaam 3 baar tak dobara (beech mein ruk ke)
+          # exit 2 = post bani par blog tak nahi gayi (setting galat): dobara banane ka fayda nahi, run laal dikhe
           for TRY in 1 2 3; do
-            python3 blog/blog_bot.py && break
+            RC=0; python3 blog/blog_bot.py || RC=$?
+            [ $RC -eq 0 ] && exit 0
+            [ $RC -eq 2 ] && exit 1
             echo "koshish $TRY fail"; [ $TRY -lt 3 ] && sleep $((30 * TRY))
           done
+          exit 1
       - name: Save posted list + copies
         if: always()
         run: |

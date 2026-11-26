@@ -43,3 +43,10 @@ Ye blog "sari khabar, Hindi mein" ke liye hai, 6 vishay baari-baari se: Mobile G
 - Bot pehle AI se apni nayi tasveer banata hai (Cloudflare FLUX, na chale to Hugging Face), phir khabaradda ka card.
 - AI wali tasveer ke neeche likhna: "Yeh tasveer AI se banayi gayi hai, asli product alag dikh sakta hai."
 - AI se kisi khaas phone model ki "asli jaisi" photo banane ka daava mat karo.
+
+## Post se pehle apni jaanch (owner ka kehna, 26 Nov 2026: "GitHub khud check kare, phir post ho")
+- Pehle shabd, srot, lipi aur mana vishay ki jaanch; phir srot ka page padh kar post ka har ank (daam, tareekh, spec) milaaya jaata hai.
+- Koi srot na padha ja sake ya koi ank na mile to post blog par NAHI jaati; agli khabar li jaati hai (ek run mein zyada se zyada 4 rokein).
+- Ye mashini milaan hai: har tarah ki galti nahi pakadta.
+- Post blog tak na pahunche to run fail (laal) dikhta hai aur khabar "posted" mein nahi likhi jaati.
+- Secret pata ya TOKEN kabhi log mein nahi likhna.

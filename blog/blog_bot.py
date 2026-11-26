@@ -371,6 +371,61 @@ def quality_ok(post, srcs, item):
     return why
 
 
+def _source_url(u):
+    """Bing News ke ghumane wale link se asli pata nikaalo."""
+    pu = urllib.parse.urlparse(u or "")
+    if pu.netloc.endswith("bing.com"):
+        real = urllib.parse.parse_qs(pu.query).get("url")
+        if real: return real[0]
+    return u
+
+
+def fetch_source_text(url):
+    """Srot ke page ka saada text; na mile to khaali."""
+    u = _source_url(url)
+    if not (u or "").startswith("http") or urllib.parse.urlparse(u).netloc == "news.google.com":
+        return ""
+    try:
+        r = requests.get(u, timeout=25, headers={"User-Agent": "Mozilla/5.0 (compatible; khabaradda-bot)"})
+        r.raise_for_status()
+        if "html" not in r.headers.get("content-type", ""): return ""
+        if not r.encoding or r.encoding.lower() == "iso-8859-1": r.encoding = "utf-8"
+        t = r.text
+        art = " ".join(re.findall(r"(?is)<p[^>]*>(.*?)</p>", t) + re.findall(r"(?is)<(?:li|td|th|h1|h2)[^>]*>(.*?)</(?:li|td|th|h1|h2)>", t))
+        return re.sub(r"\s+", " ", plain(art)).strip()[:60000]
+    except Exception as e:
+        log("srot padhne mein dikkat:", type(e).__name__)
+        return ""
+
+
+def numbers_in(text):
+    """Text ke ank (2 ya zyada ank, ya dashamlav wale), comma hata ke; Devanagari ank bhi."""
+    t = text.translate(str.maketrans("०१२३४५६७८९", "0123456789"))
+    t = re.sub(r"(?<=\d),(?=\d)", "", t)
+    return {n for n in re.findall(r"\d+(?:\.\d+)?", t) if len(n) >= 2}
+
+
+def fact_check(post, srcs, item):
+    """Post hone se PEHLE ki jaanch: srot ka page sach mein padha jaaye, aur post ka har ank (daam, tareekh, spec) srot mein mile.
+    Ye mashini milaan hai: galat ank pakadta hai, har galti nahi. Khaali list = paas."""
+    texts = []
+    for u in ([item.get("link")] + [u for _, u in srcs])[:5]:
+        t = fetch_source_text(u) if u else ""
+        if len(t) >= 400: texts.append(t)
+    if not texts:
+        return ["koi srot padha nahi ja saka"]
+    src = " ".join(texts) + " " + item.get("title", "")
+    mine = post.get("title", "") + " " + post.get("description", "") + " " + plain(post.get("body_html", ""))
+    have = numbers_in(src) | {time.strftime("%Y")}
+    missing = sorted(numbers_in(mine) - have)
+    if missing:
+        return ["ye ank srot mein nahi mile: " + ", ".join(missing[:8])]
+    names = {w.lower() for w in re.findall(r"[A-Za-z]{3,}", item.get("title", ""))}
+    if names and not any(w in src.lower() for w in names):
+        return ["srot is khabar se mel nahi khata"]
+    return []
+
+
 def find_image(q):
     """CC0 / public-domain image >=1200px from Openverse. None if nothing good."""
     try:
@@ -636,11 +691,14 @@ def publish_script(title, content, labels):
     """Raasta 1 (sabse aasaan): Google Apps Script ka Web app. Wo post ko Blogger ke khufiya email par bhejta hai.
     Env (GitHub Secrets): BLOG_POST_URL (Web app ka /exec URL), BLOG_POST_TOKEN (script ke upar TOKEN wali value).
     Dhyan: draft ya live, Blogger ki Settings > Email wali setting se tay hota hai, MODE se nahi."""
+    clean = lambda v: v.strip().rstrip(";").strip().strip("'\"`").strip()  # galti se ' ' ya ; ke saath daala ho to bhi chale
+    web = clean(os.environ["BLOG_POST_URL"])
+    if not (web.startswith("https://script.google.com/") and web.endswith("/exec")):
+        raise RuntimeError("BLOG_POST_URL galat hai: ye https://script.google.com/ se shuru aur /exec par khatam hona chahiye")
     last = None
     for attempt in range(4):
         try:
-            clean = lambda v: v.strip().rstrip(";").strip().strip("'\"`").strip()  # galti se ' ' ya ; ke saath daala ho to bhi chale
-            r = requests.post(clean(os.environ["BLOG_POST_URL"]), timeout=90, allow_redirects=True,
+            r = requests.post(web, timeout=90, allow_redirects=True,
                               json={"token": clean(os.environ["BLOG_POST_TOKEN"]), "title": title, "html": content, "labels": labels or []})
             r.raise_for_status()
             j = r.json()
@@ -648,7 +706,9 @@ def publish_script(title, content, labels):
                 raise RuntimeError(str(j.get("error"))[:150])
             return "script-se-bheji"
         except Exception as e:
-            last = e; log("Apps Script koshish", attempt + 1, "fail:", str(e)[:150]); time.sleep(10 * (attempt + 1))
+            # error ka poora text log mein nahi: usme secret pata ya TOKEN aa sakta hai (repo public hai)
+            last = str(e)[:150] if type(e) is RuntimeError else type(e).__name__
+            log("Apps Script koshish", attempt + 1, "fail:", last); time.sleep(10 * (attempt + 1))
     raise RuntimeError(f"Apps Script se nahi gayi: {last}")
 
 
@@ -685,9 +745,10 @@ def main():
     cats = list(CATS)
     start = len(st["posted"]) % len(cats)
     order = cats[start:] + cats[:start]
-    made = 0
+    made = held = 0
+    dry = os.environ.get("DRY_RUN") == "1"
     for cat in order:
-        if made >= N: break
+        if made >= N or held >= 4: break
         items = [i for i in news_items(CATS[cat], cat) if not any(similar(i["title"], t) for t in done_titles)]
         log(cat, "- naye khabar:", len(items))
         for item in items[:6]:
@@ -699,6 +760,13 @@ def main():
                 if not bad: break
                 log("quality fail:", bad, "-", item["title"][:60])
             if bad: continue
+            why = fact_check(post, srcs, item)
+            if why:     # jaanch fail: blog par kuch nahi jaata, agli khabar
+                held += 1
+                log("JAANCH FAIL (post roki):", "; ".join(why), "-", item["title"][:60])
+                if held >= 4: break
+                continue
+            log("JAANCH PASS: srot padhe aur ank mile")
             post["labels"] = [cat] + [l for l in (post.get("labels") or []) if l not in ("...", cat)][:2]
             slug = re.sub(r"\W+", "-", post["title"])[:40] or "post"
             bpath = os.path.join(OUT, f"{time.strftime('%Y%m%d')}-{abs(hash(post['title'])) % 10**6}.jpg")
@@ -722,11 +790,16 @@ def main():
             content = build_html(post, srcs, item, img, banner_url, ai_used)
             open(os.path.join(OUT, f"{time.strftime('%Y%m%d')}-{slug}.html"), "w", encoding="utf-8").write(content)
             url = publish(post["title"], content, post["labels"])
+            if url == "dry-run" and not dry:   # banaayi par blog tak nahi pahunchi: "post ho gayi" mat likho
+                log("POST BLOG TAK NAHI GAYI: bhejne ka koi raasta nahi chala. GitHub Secrets mein BLOG_POST_URL / BLOG_POST_TOKEN jaancho.")
+                return 2
+            if dry:
+                log("DRY_RUN: sirf blog/out mein rakhi:", post["title"]); made += 1; break
             st["posted"].append({"title": item["title"], "blog_title": post["title"], "cat": cat, "date": time.strftime("%Y-%m-%d"), "url": url, "mode": MODE})
             done_titles.append(item["title"]); save_state(st); made += 1
             log("POST:", post["title"], "->", url, "(", MODE, ")")
             break
-    log(f"aaj {made} post bani")
+    log(f"aaj {made} post bani, jaanch mein {held} roki")
     return 0
 
 
