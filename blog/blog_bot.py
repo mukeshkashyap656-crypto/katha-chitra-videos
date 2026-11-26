@@ -909,14 +909,14 @@ def build_html(post, srcs, item, img, banner_url=None, ai_used=False):
         parts.append(f'<figure style="margin:14px 0"><div style="aspect-ratio:16/9;width:100%;max-width:640px"><iframe src="https://www.youtube.com/embed/{vid["id"]}" '
                      f'title="{html.escape(vid["title"])}" loading="lazy" style="width:100%;height:100%;border:0" frameborder="0" allowfullscreen></iframe></div>'
                      f'<figcaption><small>▶ वीडियो: {html.escape(vid["author"])} के आधिकारिक YouTube चैनल से (कंपनी या विभाग का अपना वीडियो)।</small></figcaption></figure>')
-    links = [(item.get("source") or "Khabar", item["link"])] if item.get("link") else []
+    links = [(item.get("source") or "खबर", item["link"])] if item.get("link") else []
     links += srcs[:4]
     seen, lis = set(), []
     for t, u in links:
         if u in seen: continue
         seen.add(u); lis.append(f'<li><a href="{html.escape(u)}" rel="nofollow noopener">{html.escape(t)}</a></li>')
-    parts.append("<h2>Srot</h2><ul>" + "".join(lis) + "</ul>")
-    parts.append("<p><small>Ye post AI ki madad se likhi gayi aur upar ke sroton se milayi gayi hai.</small></p>")
+    parts.append("<h2>स्रोत</h2><ul>" + "".join(lis) + "</ul>")
+    parts.append("<p><small>यह लेख AI की मदद से लिखा गया है और ऊपर दिए गए स्रोतों की जानकारी से मिलाकर तैयार किया गया है।</small></p>")
     return "\n".join(parts)
 
 
