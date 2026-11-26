@@ -568,7 +568,7 @@ def aws_bedrock(prompt_text):
     return txt
 
 
-def ask(prompt_text, image=None, want_json=True, hard=False):
+def ask(prompt_text, image=None, want_json=True, hard=False, aws=True):
     imgs = image if isinstance(image, (list, tuple)) else ([image] if image else [])
     contents = [types.Part.from_bytes(data=i, mime_type="image/jpeg") for i in imgs] + [prompt_text] if imgs else prompt_text
     chain = [("Gemini", lambda p: gemini(contents if p == prompt_text else p, want_json, hard))]
@@ -594,7 +594,7 @@ def ask(prompt_text, image=None, want_json=True, hard=False):
     import queue
     import threading
     prompt, errs = prompt_text, []
-    if hard and not imgs and aws_on():     # mushkil likhna/jaanch: pehle AWS; na chale to neeche wala purana tareeka
+    if aws and hard and not imgs and aws_on():     # mushkil likhna/jaanch: pehle AWS; na chale to neeche wala purana tareeka
         try:
             txt = aws_bedrock(prompt_text)
             res = parse(txt) if want_json else txt
@@ -982,6 +982,16 @@ def story_check(ep_json, bhag):
     except ValueError:
         return [{"line": "?", "what": "episode.json padhi nahi gayi", "fix": "episode.json theek karo"}]
     txt = "\n".join(f"{k}: {v[0] if isinstance(v, list) else v}" for k, v in lines.items())
+    serial = it.get("source") == "serial1987"
+    if serial and not it.get("facts"):      # source hi nahi to andaza nahi: ruko
+        return [{"line": "?", "what": "Is bhaag ka source (facts) nahi mila, isliye jaanch nahi ho sakti", "fix": "STORY_QUEUE mein facts jodo"}]
+    source = " ".join(it.get("facts") or [])
+    quoted = [{"line": str(k), "what": "Chaupai/shlok jaisi line diye gaye source mein nahi hai", "fix": "ise hatao ya saadi Hindi mein likho"}
+              for k, v in lines.items() for t in [str(v[0] if isinstance(v, list) and v else v).strip()]
+              if ("॥" in t or "।।" in t) and t not in source]
+    if quoted:
+        return quoted[:3]
+    check_aws = not any(u.startswith("AWS ") for u in USED)     # jisne likha wahi na jaanche
     valmiki_prompt = ("You are a scholar of Valmiki Ramayan (Bala Kanda only, NOT Tulsidas, NOT TV serials). Below are the narration "
               "lines of a short Hindi video. Topic: {t}; sargas (approx.): {s}.\n"
               "Find ONLY lines that clearly CONTRADICT Valmiki Ramayan or add an event/fact that is certainly NOT in it. "
@@ -1002,7 +1012,7 @@ def story_check(ep_json, bhag):
                   "If nothing is wrong: {{\"problems\":[]}}\n\nTopic: {t}\nFACTS:\n- {f}\n\nLINES:\n{l}"
                   ).format(t=it.get("topic", "?"), f="\n- ".join(it.get("facts") or []), l=txt)
     for _ in range(3):
-        raw = ask(prompt, want_json=False, hard=True)
+        raw = ask(prompt, want_json=False, hard=True, aws=check_aws)
         mt = re.search(r"\{.*\}", raw, re.DOTALL)
         try:
             items = list(json.loads(mt.group(0) if mt else raw).get("problems") or [])
@@ -1171,6 +1181,29 @@ def quick_answer(task):
     return data
 
 
+MAX_SOURCE_FIXES = 2
+
+
+def source_gate(data, ep):
+    """Video banne se PEHLE: source se jaancho, khud sudharo, phir bhi galti ho to roko. (data, bachi galtiyan).
+    Jaanch chal hi na paaye to Busy upar jaata hai: kaam baad ki line mein, video nahi banta."""
+    bhag = title_bhag() or re.sub(r"\D", "", os.path.basename(ep))
+    if not queue_item(bhag):
+        return data, []          # list ke bahar ka video: yahan source nahi hai
+    for rnd in range(MAX_SOURCE_FIXES + 1):
+        probs = story_check(_read(f"{ep}/episode.json"), bhag)
+        if not probs or rnd == MAX_SOURCE_FIXES:
+            return data, probs
+        print(f"Source jaanch: {len(probs)} galti, khud sudhaar {rnd + 1}/{MAX_SOURCE_FIXES}")
+        fixed = solve(f"BEFORE rendering, the source check of {ep} found problems. Fix ONLY these lines in {ep}/episode.json, "
+                      "using only the facts in plans/STORY_QUEUE.json; add nothing new (bump VERSION, render true).\n" +
+                      "\n".join(f"- line {p.get('line')}: {p.get('what')} -> {p.get('fix')}" for p in probs))
+        if fixed["action"] != "change" or not fixed["files"]:
+            return data, probs
+        write_files(fixed)
+    return data, []
+
+
 def mode_task():
     if "JAANCH-VIDEO" in os.environ.get("REQUEST", "").upper():
         return mode_review()
@@ -1213,6 +1246,14 @@ def mode_task():
             st["code_files"] = sorted(set(st.get("code_files", [])) | CODE_TOUCHED)
         if eps:
             st["episode"] = sorted(eps)[0]
+            data, left = source_gate(data, st["episode"])
+            if left:
+                data["render"] = False
+                msg += ("\n\n⛔ **Source jaanch pass nahi hui, isliye video NAHI banaya (post bhi nahi hoga):**\n" +
+                        "\n".join(f"- {p.get('line')}: {p.get('what')}" for p in left))
+                run(["gh", "label", "create", "dekhna-hai", "--repo", REPO, "--color", "d93f0b", "--force",
+                     "--description", "Jaanch fail: post nahi hua"], check=False)
+                run(["gh", "issue", "edit", str(issue), "--repo", REPO, "--add-label", "dekhna-hai"], check=False)
         st["fix_rounds"] = 0
         save_state(st)
         commit_push(branch, f"AI Helper (issue {issue}): {os.environ.get('ISSUE_TITLE', '')[:60]}")
