@@ -1,0 +1,71 @@
+name: AWS Claude test
+
+# Sirf haath se chalta hai. Claude (Anthropic) ko chhota sawaal bhejta hai.
+# Malik ne 26 Nov 2026 ko chat mein Anthropic ki terms aur Marketplace subscription manzoor ki hai.
+# Koi form nahi bharta aur account ki setting nahi badalta.
+# Pehli line (Nova) sirf yeh dekhne ke liye hai ki key US Region mein chalti hai ya nahi.
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Claude model check
+        env:
+          AWS_BEARER_TOKEN_BEDROCK: ${{ secrets.AWS_BEARER_TOKEN_BEDROCK }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, sys, urllib.request, urllib.error
+
+          key = os.environ.get("AWS_BEARER_TOKEN_BEDROCK", "").strip()
+          if not key:
+              sys.exit("AWS_BEARER_TOKEN_BEDROCK secret nahi mila.")
+
+          models = [
+              ("US key check (Nova Micro)", "us-east-1", "us.amazon.nova-micro-v1:0"),
+              ("Claude Haiku 5.5", "ap-southeast-2", "global.anthropic.claude-haiku-5-5"),
+              ("Claude Sonnet 5.5", "ap-southeast-2", "global.anthropic.claude-sonnet-5-5"),
+              ("Claude Opus 5.5", "ap-southeast-2", "global.anthropic.claude-opus-5-5"),
+              ("Claude Opus 5", "ap-southeast-2", "global.anthropic.claude-opus-5"),
+              ("Claude Sonnet 5", "ap-southeast-2", "global.anthropic.claude-sonnet-5"),
+              ("Claude Opus 4.8", "ap-southeast-2", "global.anthropic.claude-opus-4-8"),
+              ("Claude Opus 4.7", "ap-southeast-2", "global.anthropic.claude-opus-4-7"),
+              ("Claude Sonnet 4.6", "ap-southeast-2", "global.anthropic.claude-sonnet-4-6"),
+              ("Claude Opus 4.6", "ap-southeast-2", "global.anthropic.claude-opus-4-6-v1"),
+              ("Claude Haiku 4.5", "ap-southeast-2", "global.anthropic.claude-haiku-4-5-20251001-v1:0"),
+              ("Claude Opus 4.5", "ap-southeast-2", "global.anthropic.claude-opus-4-5-20251101-v1:0"),
+              ("Claude Sonnet 4.5", "ap-southeast-2", "global.anthropic.claude-sonnet-4-5-20250929-v1:0"),
+              ("Claude Opus 4.1", "us-east-1", "us.anthropic.claude-opus-4-1-20250805-v1:0"),
+          ]
+          body = json.dumps({
+              "messages": [{"role": "user", "content": [{"text": "Namaste, ek line mein jawab do."}]}],
+              "inferenceConfig": {"maxTokens": 20},
+          }).encode()
+
+          def call(region, model_id):
+              req = urllib.request.Request(
+                  f"https://bedrock-runtime.{region}.amazonaws.com/model/{model_id}/converse",
+                  data=body,
+                  headers={"Content-Type": "application/json", "Authorization": "Bearer " + key},
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=60) as r:
+                      out = json.load(r)
+                  out["output"]["message"]
+                  return True, ""
+              except urllib.error.HTTPError as e:
+                  kind = (e.headers.get("x-amzn-ErrorType") or "").split(":")[0]
+                  return False, f"HTTP {e.code} {re.sub(r'[^A-Za-z]', '', kind)}".strip()
+              except Exception as e:
+                  return False, type(e).__name__
+
+          lines = ["AWS Claude test"]
+          for name, region, model_id in models:
+              ok, err = call(region, model_id)
+              lines.append(f"{'CHALU' if ok else 'BAND '}  {name}  [{region}]  {err}".rstrip())
+          print("\n".join(lines))
+          PY
