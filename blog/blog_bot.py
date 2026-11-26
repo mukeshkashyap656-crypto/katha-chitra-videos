@@ -262,7 +262,7 @@ def openrouter_free():
 
 # (naam, pata, blog ki chaabi ka naam, model). Chaabi wale tabhi chalte hain jab secret ho; aakhri do bina chaabi ke.
 MORE_ROUTES = [
-    ("Groq", "https://api.groq.com/openai/v1", "GROQ_API_KEY", ["openai/gpt-oss-120b", "llama-3.3-70b-versatile"]),
+    ("Groq", "https://api.groq.com/openai/v1", "GROQ_API_KEY", ["openai/gpt-oss-120b", "openai/gpt-oss-20b"]),
     ("Cerebras", "https://api.cerebras.ai/v1", "CEREBRAS_API_KEY", ["gpt-oss-120b", "llama-3.3-70b"]),
     ("Mistral", "https://api.mistral.ai/v1", "MISTRAL_API_KEY", ["mistral-large-latest", "mistral-small-latest"]),
     ("SambaNova", "https://api.sambanova.ai/v1", "SAMBANOVA_API_KEY", ["Meta-Llama-3.3-70B-Instruct"]),
@@ -274,6 +274,11 @@ MORE_ROUTES = [
 ]
 GEM_SKIP_UNTIL = 0     # Gemini ka free quota khatam (429) hone par is run mein 10 minute tak use na aazmao (sab post mein samay barbaad hota tha)
 GEM_DEAD = set()       # jo model "no longer available" (404) bole, use is run mein dobara na aazmao
+
+
+def chhota_prompt(prompt, limit=2500):
+    """<srot> wala page-text chhota karo (baaki niyam poore rahein)."""
+    return re.sub(r"<srot>\n(.*?)\n</srot>", lambda m: "<srot>\n" + m.group(1)[:limit] + "\n</srot>", prompt, flags=re.S)
 
 
 def write_post(item):
@@ -384,10 +389,13 @@ def write_post(item):
         if key_env and not key:
             continue
         for model in models:
+            body = {"model": model, "messages": [{"role": "user", "content": nosearch}], "max_tokens": 6000}
+            if name == "Groq":   # free seema: lagbhag 8,000 token har minute (sawaal + jawab milakar), isliye chhoti request
+                body = {"model": model, "messages": [{"role": "user", "content": chhota_prompt(nosearch)}],
+                        "max_completion_tokens": 4000, "reasoning_effort": "low"}
             try:
                 r = requests.post(base + "/chat/completions", timeout=180,
-                                  headers={"Authorization": "Bearer " + key} if key else {},
-                                  json={"model": model, "messages": [{"role": "user", "content": nosearch}], "max_tokens": 6000})
+                                  headers={"Authorization": "Bearer " + key} if key else {}, json=body)
                 if r.status_code != 200:
                     raise RuntimeError(f"HTTP {r.status_code}: {r.text[:120]!r}")
                 post = parse_json(r.json()["choices"][0]["message"]["content"])
