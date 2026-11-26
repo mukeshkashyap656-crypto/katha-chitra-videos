@@ -1,0 +1,145 @@
+name: khabaradda Blog Helper
+
+# Issue ya comment mein "@blog <kaam>" likho (jaise "@blog assistant mein bye ka jawab badlo").
+# AI sirf blog/ folder badalta hai, alag branch par. Main mein tabhi judta hai jab maalik "@blog haan <code>" likhe.
+on:
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: blog-helper-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  kaam:
+    # Sirf repo ka maalik.
+    if: >-
+      !github.event.issue.pull_request &&
+      github.event.sender.login == github.repository_owner &&
+      ((github.event_name == 'issues' && contains(github.event.issue.body, '@blog')) ||
+       (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@blog') &&
+        !startsWith(github.event.comment.body, '@blog haan')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Aider lagao
+        run: |
+          pip install -q aider-chat
+          cp blog/gadget/make_gadget.py "$RUNNER_TEMP/make_gadget.py"
+      # is kadam ke paas GitHub ka token nahi hai
+      - name: AI se kaam
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY_KATHA || secrets.GEMINI_API_KEY }}
+          AIDER_MODEL: ${{ vars.AIDER_MODEL }}
+          REQUEST: ${{ github.event.comment.body || github.event.issue.body }}
+        run: |
+          if [ -z "$GEMINI_API_KEY" ]; then echo "GEMINI_API_KEY secret nahi mila" > "$RUNNER_TEMP/log.txt"; exit 1; fi
+          git config user.name blog-helper
+          git config user.email blog-helper@users.noreply.github.com
+          TASK=$(printf '%s' "$REQUEST" | sed 's/@blog//g')
+          START=$(git rev-parse HEAD)
+          for M in $AIDER_MODEL gemini/gemini-2.5-flash gemini/gemini-flash-latest gemini/gemini-flash-lite-latest; do
+            echo "model: $M" >> "$RUNNER_TEMP/log.txt"
+            aider --model "$M" --yes-always --no-check-update --no-analytics --no-gitignore \
+              --no-suggest-shell-commands --no-detect-urls --no-auto-lint --no-auto-test \
+              --read blog/RULES.md --read blog/SEEKH.md \
+              blog/gadget/khabar_saathi.html blog/blog_bot.py blog/awaaz_banao.py \
+              --message "$TASK" 2>&1 | tail -n 40 >> "$RUNNER_TEMP/log.txt" || true
+            git reset -q --hard HEAD   # adhoora (bina commit wala) badlav hatao
+            [ "$(git rev-parse HEAD)" != "$START" ] && break
+          done
+          [ "$(git rev-parse HEAD)" != "$START" ] || { echo "AI ne koi badlav nahi kiya" >> "$RUNNER_TEMP/log.txt"; exit 1; }
+      - name: Jaanch
+        run: |
+          {
+          BAD=$(git diff --name-only origin/main HEAD | grep -vE '^blog/' || true)
+          [ -z "$BAD" ] || { echo "blog/ ke bahar badlav: $BAD"; exit 1; }
+          python - <<'PY'
+          import glob
+          for f in glob.glob('blog/*.py'):
+              compile(open(f, encoding='utf-8').read(), f, 'exec')
+          s = open('blog/gadget/khabar_saathi.html', encoding='utf-8').read()
+          assert 'speechSynthesis' not in s and 'SpeechSynthesisUtterance' not in s, 'doosri awaaz mana hai'
+          PY
+          cp "$RUNNER_TEMP/make_gadget.py" blog/gadget/make_gadget.py
+          python -I blog/gadget/make_gadget.py
+          python -I -c "open('/tmp/g.js','w').write(open('blog/gadget/khabar_saathi_blogger.txt').read().split('<script>')[1].split('</script>')[0])"
+          node --check /tmp/g.js
+          if git diff -U0 origin/main | grep -E '^\+.*(AIza[0-9A-Za-z_-]{20}|gh[pousr]_[0-9A-Za-z]{20}|script\.google\.com/macros/s/)'; then echo "badlav mein key ya secret link hai"; exit 1; fi
+          git add blog/gadget
+          git diff --cached --quiet || git commit -qm "blog helper: gadget build"
+          } >> "$RUNNER_TEMP/log.txt" 2>&1
+      - name: Branch bhejo
+        id: bhejo
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          N: ${{ github.event.issue.number }}
+        run: |
+          gh auth setup-git
+          git push -qf origin "HEAD:refs/heads/ai/blog-issue-$N"
+          {
+            echo "✅ Kaam taiyar hai. Abhi laga NAHI hai."
+            echo
+            echo "Badlav dekho: https://github.com/$GITHUB_REPOSITORY/compare/main...ai/blog-issue-$N"
+            echo
+            echo '```'; git diff --stat origin/main HEAD; echo '```'
+            echo "Theek ho to yeh comment likho:"
+            echo
+            echo "\`@blog haan $(git rev-parse --short=10 HEAD)\`"
+          } > "$RUNNER_TEMP/c.md"
+          gh issue comment "$N" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/c.md"
+      - name: Nahi bana to batao
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          N: ${{ github.event.issue.number }}
+        run: |
+          { echo "⚠️ Yeh kaam poora nahi hua, kuch nahi badla."; echo '```'; tail -n 30 "$RUNNER_TEMP/log.txt" 2>/dev/null; echo '```'; } > "$RUNNER_TEMP/f.md"
+          gh issue comment "$N" --repo "$GITHUB_REPOSITORY" --body-file "$RUNNER_TEMP/f.md"
+
+  lagao:
+    if: >-
+      github.event_name == 'issue_comment' && !github.event.issue.pull_request &&
+      github.event.sender.login == github.repository_owner &&
+      startsWith(github.event.comment.body, '@blog haan')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Jo dikhaya tha wahi jodo
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          N: ${{ github.event.issue.number }}
+          SAID: ${{ github.event.comment.body }}
+        run: |
+          say() { gh issue comment "$N" --repo "$GITHUB_REPOSITORY" --body "$1"; }
+          CODE=$(printf '%s' "$SAID" | head -n1 | awk '{print $3}' | tr -cd '0-9a-f')
+          git fetch -q origin "ai/blog-issue-$N" || { say "⚠️ Is issue ka koi taiyar kaam nahi mila."; exit 1; }
+          if [ ${#CODE} -lt 10 ] || [ "$(git rev-parse --short=10 FETCH_HEAD)" != "$CODE" ]; then say "⚠️ Code match nahi hua. Aakhri comment wala poora code likho. Kuch nahi laga."; exit 1; fi
+          if [ -n "$(git diff --name-only HEAD...FETCH_HEAD | grep -vE '^blog/')" ]; then say "⚠️ blog/ ke bahar badlav hai. Kuch nahi laga."; exit 1; fi
+          git config user.name blog-helper
+          git config user.email blog-helper@users.noreply.github.com
+          git merge -q --no-ff FETCH_HEAD -m "blog helper: issue #$N (maalik ki haan par)" || { say "⚠️ Beech mein code badal gaya, jud nahi paaya. Kaam dobara likho."; exit 1; }
+          git push -q origin main
+          MSG="✅ GitHub par jud gaya."
+          if ! git diff --quiet HEAD^1 HEAD -- blog/gadget/khabar_saathi_blogger.txt; then
+            MSG="$MSG Assistant ka badlav LIVE blog par abhi nahi hai. Blogger > Layout > pehla HTML/JavaScript gadget mein yeh poora text daal kar Save karo: https://raw.githubusercontent.com/$GITHUB_REPOSITORY/$(git rev-parse HEAD)/blog/gadget/khabar_saathi_blogger.txt"
+          fi
+          say "$MSG"
