@@ -43,6 +43,8 @@ jobs:
           NVIDIA_API_KEY: ${{ secrets.NVIDIA_API_KEY_BLOG || secrets.NVIDIA_API_KEY }}
           COHERE_API_KEY: ${{ secrets.COHERE_API_KEY_BLOG || secrets.COHERE_API_KEY }}
           ZAI_API_KEY: ${{ secrets.ZAI_API_KEY_BLOG || secrets.ZAI_API_KEY }}
+          AWS_BEARER_TOKEN_BEDROCK: ${{ secrets.AWS_BEARER_TOKEN_BEDROCK }}
+          AWS_AI: ${{ vars.AWS_AI }}
           BLOG_ID: ${{ secrets.BLOG_ID }}
           BLOGGER_CLIENT_ID: ${{ secrets.BLOGGER_CLIENT_ID }}
           BLOGGER_CLIENT_SECRET: ${{ secrets.BLOGGER_CLIENT_SECRET }}
