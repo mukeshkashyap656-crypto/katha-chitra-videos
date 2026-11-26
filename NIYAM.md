@@ -20,6 +20,9 @@ Ye file kisi bhi AI (Gemini, DeepSeek, ChatGPT, Claude...) ko do aur bolo:
    Aaram/sunna = `stand` (haath kamar ke aage dheele). Pranam/aabhaar = `namaste` (hatheliyan seene par judi, cross kabhi nahi).
    Baat samjhana = `talk`. Aashirvaad/dilasa = `bless` (chehra naram: smile). Dukh = `dukh` (ek haath seene par).
    Do logon ke beech kam se kam 300 ki jagah, taaki haath ya kapde ek-doosre par na chadhein.
+10. Jaanch sakht (26 Nov 2026): video ke 12 BADE frame alag se dekhe jaate hain. Toota haath, cross/chadhe haath, kata kirdaar,
+    aag/cheez par khada kirdaar, naam ki galat spelling, line mein bola gaya kirdaar gayab, ya ulta bhaav = PASS nahi.
+
 Neeche saare niyam vistaar se hain.
 
 ---

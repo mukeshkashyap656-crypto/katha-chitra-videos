@@ -50,6 +50,9 @@ FPS=$(python3 -c "print(round(min(4.0, 100.0/float('$DUR')), 4))")
 ffmpeg -v error -y -i "$OUT/$NAME.mp4" -vf "fps=$FPS,scale=180:-1,tile=10x10" -frames:v 1 "$OUT/check_sheet.jpg"
 # aakhri 5 second (subscribe widget yahin dikhta hai): har 0.25 s
 ffmpeg -v error -y -ss "$(python3 -c "print(max(0.0, float('$DUR')-5.0))")" -i "$OUT/$NAME.mp4" -vf "fps=4,scale=180:-1,tile=10x2" -frames:v 1 "$OUT/ending_sheet.jpg"
+# paas se jaanch ke liye 12 BADE frame (2 sheet, 3x2): toote/cross haath, kate kirdaar, naam ki spelling chhoti sheet mein nahi dikhte
+FPS12=$(python3 -c "print(round(12.0/float('$DUR'), 5))")
+ffmpeg -v error -y -i "$OUT/$NAME.mp4" -vf "fps=$FPS12,scale=540:-1,tile=3x2" -frames:v 2 -q:v 3 "$OUT/close_%d.jpg" || echo "paas wali sheet nahi bani"
 # machine jaanch: cover sach mein pehla frame hai? (AI se nahi, ginti se)
 ffmpeg -v error -y -i "$OUT/$NAME.mp4" -frames:v 1 -vf "scale=540:960" /tmp/first.png
 ffmpeg -v error -y -i "$OUT/$COVER.jpg" -vf "scale=540:960" /tmp/cov.png

@@ -937,7 +937,7 @@ def mode_review():
     from concurrent.futures import ThreadPoolExecutor
     with ThreadPoolExecutor(max_workers=2) as ex:
         fs = ex.submit(story_check, ep_json, n)
-        verdict = review(sheet, ep_json, vid)
+        verdict = review(sheet, ep_json, vid, fetch_close(ep) if how == "render branch se" else None)
         probs = fs.result() if ep_json != "{}" else []
     msg = f"🔍 **Bhag {n} ki poori jaanch** ({how})\n\n{verdict['text']}"
     if probs:
@@ -1135,6 +1135,53 @@ def review_once(sheets, ep_json):
 
 
 
+CLOSE_CHECKS = {
+    "limb": "an arm, forearm or hand is detached / floating / broken at the elbow or wrist, or a body part is missing or doubled",
+    "hands": "hands are crossed or piled on each other, a namaste does not show two palms joined, or hand blobs have no fingers",
+    "cut": "a character who belongs in the shot is cut off by the left or right edge of the picture (a deliberate close-up of the speaker, cropping legs only, is fine)",
+    "placement": "a character stands on or inside an object (fire pit, altar, furniture) or overlaps another character so a face or hands are hidden",
+    "name": "a character or place name in the title, subtitle or label is misspelled, or spelled differently in two places",
+    "cast": "the spoken line on screen names a person or an event that is clearly not visible in that picture",
+    "emotion": "the main character's face or body clearly shows the opposite of the line (angry while comforting, sad at the moment of joy)",
+}
+
+
+def close_check(sheets, ep_json):
+    """BADE frames par ek-ek cheez ki jaanch. Wahi cheez DONO baar mile tabhi FAIL. Jawab na mile toh None (= PASS nahi)."""
+    prompt = (
+        "You are a frame-by-frame quality inspector of a 2D animated Hindi Ramayan Short. The images are LARGE frames taken evenly "
+        "through the video (left-to-right, top-to-bottom). Look at EVERY frame, every character, both arms from shoulder to fingertips. "
+        "Report only what you can clearly see. Allowed check ids:\n" + "\n".join(f"- {k}: {v}" for k, v in CLOSE_CHECKS.items()) +
+        "\nA small question-mark teaser, the logo and the subscribe widget are intentional. "
+        'Reply with ONLY valid JSON: {"found":[{"check":"<id>","frame":<1-12>,"what":"Hinglish, short","fix":"exact change"}]} '
+        '(empty list if nothing).\n\n# EPISODE\n' + ep_json)
+
+    def once(_):
+        for _try in range(2):
+            try:
+                txt = ask(prompt, image=sheets, want_json=False, hard=True)
+                d = json.loads(re.search(r"\{.*\}", txt, re.DOTALL).group(0))
+                if isinstance(d.get("found"), list):
+                    return [f for f in d["found"] if isinstance(f, dict) and f.get("check") in CLOSE_CHECKS]
+            except Exception as e:
+                print("paas wali jaanch nahi chali:", str(e)[:150])
+        return None
+    from concurrent.futures import ThreadPoolExecutor
+    with ThreadPoolExecutor(max_workers=2) as ex:
+        a, b = list(ex.map(once, range(2)))
+    if a is None or b is None:
+        return None
+    both = {f["check"] for f in a} & {f["check"] for f in b}
+    return {"hard": [f for f in a if f["check"] in both], "single": [f for f in a + b if f["check"] not in both]}
+
+
+def fetch_close(ep):
+    """Render branch ke bade frame. Purane render mein na hon toh khaali list."""
+    rb = "render-" + os.path.basename(ep)
+    got = [subprocess.run(["git", "show", f"origin/{rb}:close_{i}.jpg"], capture_output=True).stdout for i in (1, 2)]
+    return [g for g in got if g]
+
+
 def fetch_video(ep):
     """Render branch se asli MP4 laao (AI ko poora video dekhne-sunne ke liye). Na mile toh None."""
     rb = "render-" + os.path.basename(ep)
@@ -1214,7 +1261,7 @@ def watch_video(path, ep_json):
     return None
 
 
-def review(sheet, ep_json, video_path=None):
+def review(sheet, ep_json, video_path=None, close_sheets=None):
     """Kadi PASS/FAIL jaanch. Do baar jaanchta hai: seedha FAIL tabhi jab DONO baar wahi galti (niyam number) mile;
     number dono ka ausat. Jawab samajh na aaye, sheet na mile ya cover pehla frame na ho toh PASS nahi."""
     bad = lambda why: {"pass": False, "score": 0, "hard_fails": [why], "fix_text": why, "text": f"❌ {why}", "cannot_check": []}
@@ -1251,14 +1298,24 @@ def review(sheet, ep_json, video_path=None):
     content_ok = (not hard) and total >= PASS_SCORE and len(watch_high) < 2
     # video asli mein dekhi-suni na gayi ho toh PASS kabhi nahi (post rukta hai, baad mein sirf jaanch dobara)
     watched = isinstance((watch or {}).get("problems"), list)
-    ok = content_ok and watched
-    pending = content_ok and not watched      # aur koi galti nahi: sudhaar nahi, sirf dobara jaanch
+    # paas se jaanch (bade frame): jahan frame hain wahan ye zaroori hai
+    close = close_check(close_sheets, ep_json) if close_sheets else None
+    close_missing = bool(close_sheets) and close is None
+    for f in (close or {}).get("hard", []):
+        hard.append({"rule": "paas-jaanch " + f["check"], "what": f"frame {f.get('frame')}: {f.get('what')}", "fix": f.get("fix", "")})
+    content_ok = content_ok and not (close or {}).get("hard")
+    ok = content_ok and watched and not close_missing
+    pending = content_ok and (not watched or close_missing)      # aur koi galti nahi: sudhaar nahi, sirf dobara jaanch
     weak = [w for r in runs for w in (r.get("weak") or [])][:6]
     for pr in watch_high:
         weak.append({"what": f"(video dekha-suna {pr.get('time', '')}, {pr.get('kind', '')}) {pr['what']}", "fix": pr.get("fix", "")})
     cant = sorted({str(c) for r in runs for c in (r.get("cannot_check") or [])})
     lines = [f"**Faisla: {'✅ PASS' if ok else '❌ FAIL'}** — number {total}/70 (chahiye {PASS_SCORE}+, {len(runs)} jaanch ka ausat): " +
              ", ".join(f"{k} {v}" for k, v in sc.items())]
+    if close_missing:
+        lines.append("- ⏳ Bade frame wali paas se jaanch nahi ho paayi, isliye abhi PASS nahi.")
+    for f in (close or {}).get("single", [])[:5]:
+        lines.append(f"- ⚠️ (paas se jaanch, sirf ek baar kaha) frame {f.get('frame')}: {f.get('what')}")
     if not watched:
         lines.append("- ⏳ Asli video dekhi-suni nahi ja saki, isliye abhi PASS nahi.")
     for h in hard:
@@ -1301,7 +1358,7 @@ def finish(issue, branch, st, ep, run_url, retry=False):
         from concurrent.futures import ThreadPoolExecutor
         with ThreadPoolExecutor(max_workers=2) as ex:      # Kahani jaanch aur video jaanch saath-saath
             fs = ex.submit(story_check, ep_json, bh)
-            verdict = review(sheet, ep_json, fetch_video(ep))
+            verdict = review(sheet, ep_json, fetch_video(ep), fetch_close(ep))
             try:
                 sc_problems = fs.result()
             except Exception as e:      # Kahani jaanch chali hi nahi: ye bhi adhoori jaanch hai
