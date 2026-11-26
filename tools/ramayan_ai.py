@@ -494,7 +494,7 @@ def local_ai(p, j, hard=False):
 AWS_MODEL = "global.anthropic.claude-opus-4-6-v1"
 AWS_REGION = "ap-southeast-2"
 AWS_UNTIL = "2027-05-20"      # free plan khatam hone se pehle AWS apne aap band
-AWS_DAILY = 20                # din (UTC) mein itni hi AWS call; ye paise ki seema NAHI hai
+AWS_DAILY = 200               # din (UTC) mein itni AWS call (owner: credit khul kar, 27 Nov 2026); atke loop par rok, paise ki seema NAHI
 AWS_MAX_CHARS = 250000        # isse bada sawaal AWS ko nahi (credit bachane ke liye)
 AWS_SYSTEM = ("Do not invent events, quotes, chaupai or shlok. Quote scripture only if the exact words are in the text given to you. "
               "Keep Valmiki Ramayana and Ramcharitmanas separate.")
@@ -513,9 +513,19 @@ def aws_slot():
     if not token or not sha:
         return False
     day = time.strftime("%Y-%m-%d", time.gmtime())
-    for n in range(1, AWS_DAILY + 1):
+    head = {"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"}
+    try:        # aaj ki lagi baariyan ek hi baar mein padho, taaki 1 se ek-ek karke na tatolna pade
+        r = requests.get(f"https://api.github.com/repos/{REPO}/git/matching-refs/aws-use/{day}/", timeout=30, headers=head)
+        if r.status_code != 200:
+            print("AWS baari nahi mili: GitHub HTTP", r.status_code)
+            return False
+        last = max([int(x["ref"].rsplit("/", 1)[1]) for x in r.json()], default=0)
+    except Exception as e:
+        print("AWS baari nahi mili:", type(e).__name__)
+        return False
+    for n in range(last + 1, AWS_DAILY + 1):
         r = requests.post(f"https://api.github.com/repos/{REPO}/git/refs", timeout=30,
-                          headers={"Authorization": f"Bearer {token}", "Accept": "application/vnd.github+json"},
+                          headers=head,
                           json={"ref": f"refs/aws-use/{day}/{n}", "sha": sha})
         if r.status_code == 201:
             print(f"AWS baari {n}/{AWS_DAILY} ({day})")
