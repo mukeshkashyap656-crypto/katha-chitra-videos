@@ -3,7 +3,7 @@
  "COVER_NAME": "Ramayan_Bhag10_Cover",
  "TAG": "रामायण कथा",
  "BHAG": 10,
- "VERSION": 6,
+ "VERSION": 7,
  "QUESTION": "अहिल्या को श्राप से किसने मुक्त किया?",
  "LINES": {
   "n1": [
@@ -271,7 +271,7 @@
      "pose": "bow",
      "face": "joy",
      "look": "left",
-     "tilt": -7
+     "tilt": -3
     }
    ],
    "show": "विदाई: अहिल्या झुककर प्रणाम करती; राम और लक्ष्मण हाथ जोड़े",
@@ -287,27 +287,27 @@
    "cast": [
     {
      "who": "vishwamitra",
-     "x": 700,
+     "x": 680,
      "pose": "walk",
      "face": "neutral",
      "look": "right",
-     "to_x": 1160
+     "to_x": 1060
     },
     {
      "who": "ram",
-     "x": 430,
+     "x": 415,
      "pose": "walk",
      "face": "smile",
      "look": "right",
-     "to_x": 890
+     "to_x": 790
     },
     {
      "who": "lakshman",
-     "x": 160,
+     "x": 150,
      "pose": "walk",
      "face": "neutral",
      "look": "right",
-     "to_x": 620
+     "to_x": 520
     }
    ],
    "show": "विश्वामित्र आगे, पीछे राम और लक्ष्मण, तीनों मिथिला के रास्ते पर चलते हुए"
