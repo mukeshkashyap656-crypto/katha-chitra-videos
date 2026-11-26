@@ -1,0 +1,70 @@
+name: AWS compare test
+
+# Sirf haath se chalta hai. 4 model ko ek hi Kevat wala sawaal deta hai.
+# Jawab public log mein dikhte hain. Koi video ya post nahi.
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Kevat script compare
+        env:
+          AWS_BEARER_TOKEN_BEDROCK: ${{ secrets.AWS_BEARER_TOKEN_BEDROCK }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, sys, urllib.request, urllib.error
+
+          key = os.environ.get("AWS_BEARER_TOKEN_BEDROCK", "").strip()
+          if not key:
+              sys.exit("AWS_BEARER_TOKEN_BEDROCK secret nahi mila.")
+
+          models = [
+              ("Claude Opus 4.6", "ap-southeast-2", "global.anthropic.claude-opus-4-6-v1"),
+              ("DeepSeek V3.2", "ap-southeast-2", "deepseek.v3.2"),
+              ("Kimi K2.5", "ap-southeast-2", "moonshotai.kimi-k2.5"),
+              ("Mistral Large 3", "ap-southeast-2", "mistral.mistral-large-3-675b-instruct"),
+          ]
+          PROMPT = "\n".join([
+              "Katha Chitra YouTube channel ke liye Ramayan ka ek chhota Hindi video script likho. Vishay: Kevat aur Shri Ram.",
+              "Niyam:",
+              "1. Saral Hindi, Devanagari mein.",
+              "2. 8 scene. Har scene mein sutradhar ya paatra ki 1-2 chhoti line.",
+              "3. Valmiki Ramayan aur Ramcharitmanas ki baat alag rakho. Batao ki yeh prasang kis granth se hai.",
+              "4. Apni taraf se koi nayi ghatna ya nakli shlok mat jodo.",
+              "5. Pehli line aisi ho ki dekhne wala ruk jaye.",
+          ])
+          body = json.dumps({
+              "messages": [{"role": "user", "content": [{"text": PROMPT}]}],
+              "inferenceConfig": {"maxTokens": 3000},
+          }).encode()
+
+          def call(region, model_id):
+              req = urllib.request.Request(
+                  f"https://bedrock-runtime.{region}.amazonaws.com/model/{model_id}/converse",
+                  data=body,
+                  headers={"Content-Type": "application/json", "Authorization": "Bearer " + key},
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=180) as r:
+                      out = json.load(r)
+                  text = "".join(c.get("text", "") for c in out["output"]["message"]["content"])
+                  use = out.get("usage", {})
+                  info = f"stop={out.get('stopReason')} in={use.get('inputTokens')} out={use.get('outputTokens')}"
+                  return True, text, info
+              except urllib.error.HTTPError as e:
+                  kind = (e.headers.get("x-amzn-ErrorType") or "").split(":")[0]
+                  return False, "", f"HTTP {e.code} {re.sub(r'[^A-Za-z]', '', kind)}".strip()
+              except Exception as e:
+                  return False, "", type(e).__name__
+
+          for name, region, model_id in models:
+              ok, text, info = call(region, model_id)
+              print(f"=== {name}: {'CHALU' if ok else 'BAND'} {info}")
+              for line in text.splitlines():
+                  print("| " + line)
+          PY
