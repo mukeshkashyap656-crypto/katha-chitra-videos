@@ -577,7 +577,7 @@ def fetch_photos(queries, n=5):
                     for h in r.json().get("hits", []):
                         cand.append((h["id"], h.get("largeImageURL"), "Photo: %s / Pixabay" % h.get("user", ""), h.get("pageURL")))
                 elif prov == "openverse":
-                    r = requests.get("https://api.openverse.org/v1/images/", timeout=30, params={"q": q, "license": "cc0,pdm", "page_size": 10, "aspect_ratio": "wide"})
+                    r = requests.get("https://api.openverse.org/v1/images/", timeout=30, params={"q": q, "license": "cc0,pdm", "category": "photograph", "page_size": 10, "aspect_ratio": "wide"})
                     for im in r.json().get("results", []):
                         if (im.get("width") or 0) >= 1000 and im.get("url"):
                             cand.append((im["id"], im["url"], "Tasveer: %s (CC0/Public Domain)" % (im.get("title") or q), im.get("foreign_landing_url")))
@@ -785,25 +785,21 @@ def main():
             log("JAANCH PASS: srot padhe aur ank mile")
             post["labels"] = [cat] + [l for l in (post.get("labels") or []) if l not in ("...", cat)][:2]
             slug = re.sub(r"\W+", "-", post["title"])[:40] or "post"
-            bpath = os.path.join(OUT, f"{time.strftime('%Y%m%d')}-{abs(hash(post['title'])) % 10**6}.jpg")
-            banner_url = None
-            ai_used = False
+            # Sirf ASLI photo: AI tasveer ya banner nahi. Asli photo na mile to post ruk jaati hai.
             try:
-                if os.environ.get("DRY_RUN") != "1" and make_ai_image(post, bpath):
-                    banner_url = host_image(bpath); ai_used = bool(banner_url)
+                queries = [post.get("image_query") or "smartphone"] + list(post.get("photo_queries") or [])
+                photos = fetch_photos(queries)
             except Exception as e:
-                log("AI tasveer nahi bani:", e)
-            try:
-                if not banner_url:
-                    make_banner(post, bpath); banner_url = host_image(bpath)
-            except Exception as e:
-                log("banner nahi bana:", e)
-            img = None if banner_url else find_image(post.get("image_query") or "news")
-            try:
-                post["body_html"] = insert_photos(post["body_html"], fetch_photos(post.get("photo_queries")))
-            except Exception as e:
-                log("vishay wali photos nahi lagi:", e)
-            content = build_html(post, srcs, item, img, banner_url, ai_used)
+                log("photo nahi mili:", e); photos = []
+            if not photos:
+                held += 1
+                log("POST ROKI: asli photo nahi mili -", item["title"][:60])
+                continue
+            cover, rest = photos[0], photos[1:]
+            post["body_html"] = insert_photos(post["body_html"], rest)
+            cover_html = (f'<p><img src="{html.escape(cover["url"])}" alt="{html.escape(post["title"])}" style="width:100%;height:auto"/>'
+                          f'<br/><small><a href="{html.escape(cover["page"])}" rel="nofollow noopener">{html.escape(cover["credit"])}</a>। यह सांकेतिक फ़ोटो है।</small></p>\n')
+            content = cover_html + build_html(post, srcs, item, None)
             open(os.path.join(OUT, f"{time.strftime('%Y%m%d')}-{slug}.html"), "w", encoding="utf-8").write(content)
             url = publish(post["title"], content, post["labels"])
             if url == "dry-run" and not dry:   # banaayi par blog tak nahi pahunchi: "post ho gayi" mat likho

@@ -7,8 +7,8 @@ Ye blog "sari khabar, Hindi mein" ke liye hai, 6 vishay baari-baari se: Mobile G
 3. Post apne shabdon mein, nayi samajh ke saath: "kya hua, iska matlab kya, kisko kya karna chahiye". Kisi ka text copy nahi.
 4. Heading seedhi aur sachchi. Clickbait ya jhooth nahi.
 5. Har post ke neeche sroton ke link. Aur ek chhoti line: post AI ki madad se likhi aur sroton se milayi gayi.
-6. Tasveer: sirf CC0 / public-domain, 1200px+ chaudi, credit ke saath. Na mile to bina tasveer (kabhi galat tasveer nahi).
-7. Pehle DRAFT mein jaati hai. Owner dekhkar MODE=live karta hai, tab apne aap publish.
+6. Tasveer: sirf ASLI camera photo, free licence wali (Pexels, Pixabay, Openverse CC0/PDM), credit ke saath. Asli photo na mile to post ruk jaati hai. (Owner ka faisla, 26 Nov 2026.)
+7. Owner ka faisla (26 Nov 2026): jaanch pass hone ke baad post apne aap live ho. Email wale raaste mein draft ya live Blogger ki Settings > Email se tay hota hai.
 8. Ek jaisi/duplicate khabar nahi (posted.json se milaan).
 9. Mukhya ruk-jaane waali galti (kam shabd, srot nahi, ginti fail) = post nahi, agle din dobara.
 10. Mobile gaming ke khaas niyam: hack, cheat, mod APK, pirated game, free diamond/UC/redeem code ke daave, account becha-kharida, ya game ke niyam todne ka tareeka KABHI nahi (Google AdSense aur game company dono ke niyam ke khilaaf). Code mein ye shabd mile to post apne aap ruk jaati hai.
@@ -22,13 +22,13 @@ Ye blog "sari khabar, Hindi mein" ke liye hai, 6 vishay baari-baari se: Mobile G
 - Shuru mein 2 line ka hook: kaun si kimat, kiske liye (gamer / camera / battery / student).
 - Har phone ke liye: kimat, processor, RAM+storage, battery+charging, camera, ek line "kiske liye", 2 achhi baatein, 1 kami.
 - Aakhir mein ek tulna table (sab phone ek saath) aur "mera pick" (kam budget / best camera / best battery).
-- Har phone ke saath uski photo (official ya free-licence), sirf asli photo; photo na mile to banner hi.
+- Photo sirf asli aur free-licence wali; khaas model ki photo na mile to saaf "सांकेतिक फ़ोटो" likho. Banner nahi.
 - FAQ (3-4 sawaal), "kharidne se pehle" list, kimat badal sakti hai wala note.
 - Spec sirf wahi likhna jo asli source se mila ho; andaza nahi. Jo pata na ho, "nahi mila" ya chhod do.
 - Kisi site ka text copy nahi, apne shabdon mein, aam bolchaal ki Hindi.
 
 ## Khabaradda ki apni pehchaan (sabse alag dikhne ke liye)
-- Photo ka look har post mein ek jaisa: gehra neela background, kesariya patti, "khabaradda | seedha sach, seedhi kimat" line. Phone ki apni banayi tasveer, kisi company ki photo nahi.
+- Photo asli ho; apni banayi phone ki tasveer ya banner nahi.
 - Har post mein ek "Khabaradda ka seedha jawab" hissa: "Agar X chahiye to ye lo, Y chahiye to wo lo" (battery / RAM / brand / kam budget).
 - Har post mein ek "Kisko mat lena" line: kis tarah ke user ko ye phone/cheez nahi leni chahiye.
 - Seedhi, aam bolchaal ki bhasha; "seedha sach" wala lehja; badhaa-chadhaa kar kuch nahi.
@@ -36,13 +36,11 @@ Ye blog "sari khabar, Hindi mein" ke liye hai, 6 vishay baari-baari se: Mobile G
 ## Asli photo ka rasta (copyright-free)
 1. Pehle us khaas model ki photo: Wikimedia Commons ya Openverse (sirf CC0 / public domain, ya aisi licence jisme credit dekar commercial use ho). Photo ke neeche credit (naam + link) zaroor likho.
 2. Na mile to us brand/segment ki aam smartphone photo: Pexels, Pixabay, Unsplash (inki licence mein commercial use free hai).
-3. Wo bhi na mile to khabaradda ka apna banaya card (blog/img jaisa). Purane model ki photo naye model ke naam se kabhi mat lagao.
+3. Wo bhi na mile to post roko. Purane model ki photo naye model ke naam se kabhi mat lagao.
 4. Company ki official photo / review site ki photo bina ijazat kabhi nahi.
 
-## AI se tasveer (copyright-free rasta)
-- Bot pehle AI se apni nayi tasveer banata hai (Cloudflare FLUX, na chale to Hugging Face), phir khabaradda ka card.
-- AI wali tasveer ke neeche likhna: "Yeh tasveer AI se banayi gayi hai, asli product alag dikh sakta hai."
-- AI se kisi khaas phone model ki "asli jaisi" photo banane ka daava mat karo.
+## AI se tasveer
+- Blog par AI se bani ya khud banayi tasveer/banner NAHI lagti (owner ka faisla, 26 Nov 2026).
 
 ## Post se pehle apni jaanch (owner ka kehna, 26 Nov 2026: "GitHub khud check kare, phir post ho")
 - Pehle shabd, srot, lipi aur mana vishay ki jaanch; phir srot ka page padh kar post ka har ank (daam, tareekh, spec) milaaya jaata hai.
