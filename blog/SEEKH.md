@@ -16,6 +16,8 @@ Bot har post likhne se pehle sirf "SEEKH SHURU" aur "SEEKH KHATAM" ke beech ki l
 - image_query aur photo_queries usi cheez ki asli photo maangein jis par lekh hai; wahi cheez na mile to vishay se judi asli photo, aur use us cheez ki photo mat batao.
 - Post kisi app, brand ya cheez par ho (jaise WhatsApp) to usi ka icon aur usi se judi asli photo lagao; image_query aur photo_queries mein uska naam zaroor ho. Bejod photo se behtar hai post rokna.
 - Har post par uske vishay ka icon ho, sirf app wali post par nahi: shuru mein ek bada vishay-icon (app/brand ho to uska asli official icon, warna sahi emoji) aur har h3 par us hisse se juda icon.
+- Roz alag vishay: pichhli 3 post wala vishay aur pichhli 5 post wali cheez ya brand dobara mat lo.
+- Kai phone/product wali post mein har ek ka usi exact model ka real visual ho (free licence photo, warna company ke official YouTube channel ki video, warna official page ka link). Amazon, Flipkart ya Google se photo utha kar nahi.
 <!-- SEEKH KHATAM -->
 
 ## Code khud lagata hai
