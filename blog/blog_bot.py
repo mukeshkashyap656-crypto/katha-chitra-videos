@@ -5,6 +5,7 @@ Roz: Google News se aaj ki khabar -> Gemini (Google Search grounding) se verify 
 Env: GEMINI_API_KEY (+ optional OPENROUTER_API_KEY), BLOG_ID, BLOGGER_CLIENT_ID, BLOGGER_CLIENT_SECRET,
      BLOGGER_REFRESH_TOKEN, MODE=draft|live (default draft), N_POSTS (default 2), DRY_RUN=1 (Blogger ko kuch nahi bhejta)
 """
+import email.utils
 import hashlib
 import datetime
 import html, json, os, re, sys, time, difflib
@@ -16,13 +17,12 @@ STATE = os.path.join(HERE, "posted.json")
 IST = datetime.timezone(datetime.timedelta(hours=5, minutes=30))
 BLOG_FEED = "https://mukeshnewsdaily.blogspot.com/feeds/posts/default?alt=json&max-results=25"
 OUT = os.path.join(HERE, "out")
-CATS = {   # label -> Google News sawaal. Bot baari-baari se vishay badalta hai.
-    "Mobile Gaming": ["मोबाइल गेमिंग न्यूज़", "BGMI Free Fire नया अपडेट", "नया मोबाइल गेम लॉन्च"],
-    "Mobile & Tech": ["नया स्मार्टफोन लॉन्च भारत", "टेक न्यूज़ भारत", "मोबाइल अपडेट एंड्रॉयड आईफोन"],
-    "AI & Apps": ["AI नया टूल", "नया ऐप लॉन्च भारत", "ChatGPT Gemini नया फीचर"],
-    "Cricket & Khel": ["क्रिकेट न्यूज़ आज", "IPL न्यूज़", "भारत खेल समाचार"],
-    "Film & OTT": ["नई फिल्म रिलीज़", "OTT नई वेब सीरीज़", "बॉलीवुड न्यूज़"],
-    "Desh Duniya": ["भारत सरकार नई योजना", "आज की बड़ी खबर भारत", "विज्ञान अंतरिक्ष ISRO न्यूज़"],
+CATS = {   # label -> Google News sawaal. Sirf owner ke tay 5 vishay (26 Nov 2026).
+    "Mobile": ["नया स्मार्टफोन लॉन्च भारत", "नया मोबाइल फोन कीमत फीचर"],
+    "Tech": ["WhatsApp नया फीचर", "नया ऐप AI टूल भारत", "एंड्रॉयड आईफोन अपडेट"],
+    "Gaming": ["मोबाइल गेमिंग न्यूज़", "BGMI Free Fire नया अपडेट", "नया मोबाइल गेम लॉन्च"],
+    "Sarkari Naukri": ["सरकारी नौकरी भर्ती आवेदन शुरू", "भर्ती अधिसूचना आखिरी तारीख"],
+    "Yojana": ["सरकारी योजना आवेदन शुरू", "भारत सरकार नई योजना पात्रता"],
 }
 # In vishayon par bot kabhi post nahi banata (galti se nuksaan / sensitive): sehat-ilaaj, paisa-share-nivesh, chunaav-rajneeti, hatya-balatkar-hadsa, dharm-vivaad
 BLOCKED = re.compile(r"(?i)(हत्या|मौत|मृत|रेप|बलात्कार|हादसा|आत्महत्या|चुनाव|वोट|पार्टी|भाजपा|कांग्रेस|शेयर|सेंसेक्स|निवेश|क्रिप्टो|बिटकॉइन|इलाज|दवा|बीमारी|कैंसर|टीका|वैक्सीन|दंगा|धर्म|मंदिर|मस्जिद|murder|rape|election|stock|sensex|invest|crypto|bitcoin|cancer|vaccine|riot)")
@@ -77,12 +77,9 @@ def google_news(q):
 
 # Seedhe khule khabar feed (Google News band ho tab bhi chalein). Koi feed na chale to baaki chalte hain.
 FEEDS = {
-    "Mobile Gaming": ["https://gadgets.ndtv.com/rss/games", "https://www.gadgets360.com/rss/games/news", "https://hindi.news18.com/rss/khabar/tech/tech.xml"],
-    "Mobile & Tech": ["https://gadgets.ndtv.com/rss/mobiles/news", "https://www.gadgets360.com/rss/news", "https://hindi.news18.com/rss/khabar/tech/tech.xml"],
-    "AI & Apps": ["https://gadgets.ndtv.com/rss/apps/news", "https://www.gadgets360.com/rss/news", "https://hindi.news18.com/rss/khabar/tech/tech.xml"],
-    "Cricket & Khel": ["https://sports.ndtv.com/rss/cricket", "https://www.espncricinfo.com/rss/content/story/feeds/0.xml", "https://sports.ndtv.com/rss/all"],
-    "Film & OTT": ["https://khabar.ndtv.com/rss/entertainment", "https://www.bollywoodhungama.com/rss/news.xml", "https://hindi.news18.com/rss/khabar/entertainment/entertainment.xml"],
-    "Desh Duniya": ["https://feeds.bbci.co.uk/hindi/rss.xml", "https://khabar.ndtv.com/rss", "https://navbharattimes.indiatimes.com/rssfeedstopstories.cms"],
+    "Mobile": ["https://gadgets.ndtv.com/rss/mobiles/news", "https://www.gadgets360.com/rss/news", "https://hindi.news18.com/rss/khabar/tech/tech.xml"],
+    "Tech": ["https://gadgets.ndtv.com/rss/apps/news", "https://www.gadgets360.com/rss/news", "https://hindi.news18.com/rss/khabar/tech/tech.xml"],
+    "Gaming": ["https://gadgets.ndtv.com/rss/games", "https://www.gadgets360.com/rss/games/news"],
 }
 
 
@@ -96,15 +93,47 @@ def _parse_feed(content, default_source=""):
         tag = it.tag.split("}")[-1]
         if tag not in ("item", "entry"):
             continue
-        t = ""; link = ""; src = default_source
+        t = ""; link = ""; src = default_source; when = ""
         for ch in it:
             ct = ch.tag.split("}")[-1]
             if ct == "title": t = (ch.text or "").strip()
             elif ct == "link": link = (ch.text or ch.attrib.get("href") or "").strip()
             elif ct == "source" and (ch.text or "").strip(): src = ch.text.strip()
+            elif ct in ("pubDate", "published", "date") and (ch.text or "").strip(): when = ch.text.strip()
         if t:
-            out.append({"title": t, "link": link, "source": src})
+            out.append({"title": t, "link": link, "source": src, "date": when})
     return out
+
+
+MAX_AGE_HOURS = 48
+MONTHS = [("जनवरी", "january"), ("फरवरी", "february"), ("मार्च", "march"), ("अप्रैल", "april"), ("मई", "may"), ("जून", "june"),
+          ("जुलाई", "july"), ("अगस्त", "august"), ("सितंबर", "september"), ("अक्टूबर", "october"), ("नवंबर", "november"), ("दिसंबर", "december")]
+
+
+def taaza(date_text, now=None):
+    """True tabhi jab khabar ki chhapne ki tareekh padhi ja sake aur 48 ghante ke andar ho. Tareekh nahi = taaza nahi."""
+    if not date_text:
+        return False
+    try:
+        d = email.utils.parsedate_to_datetime(date_text)
+    except Exception:
+        try:
+            d = datetime.datetime.fromisoformat(date_text.replace("Z", "+00:00"))
+        except Exception:
+            return False
+    if d.tzinfo is None:
+        d = d.replace(tzinfo=datetime.timezone.utc)
+    age = (now or datetime.datetime.now(datetime.timezone.utc)) - d
+    return -datetime.timedelta(hours=2) <= age <= datetime.timedelta(hours=MAX_AGE_HOURS)
+
+
+def purana_mahina(title, now=None):
+    """Heading mein 'din + mahina' ho aur woh mahina 2 se 6 mahine pehle ka ho (jaise November mein '15 अगस्त') to True."""
+    month = (now or datetime.datetime.now(IST)).month
+    for n, (hi, en) in enumerate(MONTHS, 1):
+        if 2 <= (month - n) % 12 <= 6 and re.search(r"(?i)[0-9०-९]{1,2}\s*(?:%s|\b%s\b)" % (hi, en), title):
+            return True
+    return False
 
 
 def _get_feed(url, source, tries=2):
@@ -160,8 +189,10 @@ def news_items(queries, cat=None):
         for fu in FEEDS.get(cat, []):
             raw += _get_feed(fu, urllib.parse.urlparse(fu).netloc)
         log("seedhe feed ke baad kul khabar:", len(raw))
-    if len(raw) < 3 and cat:
-        raw += gemini_headlines(cat, queries)
+    # Gemini headlines mein chhapne ki tareekh nahi aati, isliye woh ab nahi li jaati.
+    kul = len(raw)
+    raw = [it for it in raw if taaza(it.get("date")) and not purana_mahina(it["title"])]
+    log("taaza (48 ghante ki, tareekh wali) khabar:", len(raw), "/", kul)
     items, seen = [], set()
     for it in raw:
         t = it["title"]
@@ -181,9 +212,9 @@ Niyam (zaroori):
 - Google Search se 2-3 bharosemand srot dekhkar tathya verify karo. Jo verify na ho wo mat likho.
 - Post tumhare apne shabdon mein ho, kisi lekh ka text copy nahi. Aaj ki saaf bolchaal wali Hindi.
 - LIPI (zaroori): title, description, body_html aur har heading POORI DEVANAGARI (हिन्दी) lipi mein likho, Roman/Hinglish mein bilkul nahi. Sirf brand, phone/game ke naam aur technical shabd (jaise BGMI, 5G, RAM, Snapdragon) English mein rakh sakte ho.
-- Pehli 2 line mein hi sabse kaam ki baat (hook): kya naya hai aur player ke liye abhi kya zaroori hai. "Namaskar/aaj hum baat karenge" jaise shuruaat mana.
+- Pehli 2 line mein hi sabse kaam ki baat (hook): kya naya hai aur padhne wale ke liye abhi kya zaroori hai. "Namaskar/aaj hum baat karenge" jaise shuruaat mana.
 - Dhaancha: hook -> <h2> "Kya-kya naya aaya" (chhoti bullet list) -> <h2> "Tareekhein" (<table> mein: tareekh | kya) -> <h2> "Aaj hi karne wale kaam" (2-4 bullet, deadline wali baat sabse upar) -> <h2> "Aksar puchhe sawaal" (2-3 sawaal-jawab, jaise "update nahi dikh raha to?").
-- Gamer wali seedhi bolchaal (tum/aap), chhote vaakya, ek paragraph mein 2-3 line se zyada nahi. Bhari-bharkam shabd mana.
+- Aam aadmi wali seedhi bolchaal (aap); mushkil ya tech shabd ka aasan matlab saath mein, chhote vaakya, ek paragraph mein 2-3 line se zyada nahi. Bhari-bharkam shabd mana.
 - Heading seedhi aur sachchi, clickbait nahi.
 - Daam/tareekh/spec/update ki details sirf tab jab srot mein ho.
 - Sehat/ilaaj, paisa/share/nivesh, chunaav/rajneeti, hatya/hadsa, dharm-vivaad par kuch mat likho. Aisi khabar aaye to {{"skip": true}} do.
@@ -425,6 +456,7 @@ def quality_ok(post, srcs, item):
     if not srcs and not item.get("link"): why.append("srot nahi")
     if re.search(r"(?i)\b(shocking|you won't believe|chaunk|चौंक)", post["title"]): why.append("clickbait heading")
     if "<h1" in post["body_html"].lower(): why.append("h1 mana")
+    if purana_mahina(post["title"]): why.append("heading mein mahino purani tareekh")
     _txt = plain(post["body_html"])
     _dev = len(re.findall(r"[\u0900-\u097F]", _txt)); _lat = len(re.findall(r"[A-Za-z]", _txt))
     if _dev < 0.5 * (_dev + _lat) or not re.search(r"[\u0900-\u097F]", post["title"]): why.append("Devanagari lipi nahi (Roman/Hinglish mein likhi)")
@@ -1031,6 +1063,10 @@ def main():
                                           "padhne wale ke kaam ki samjhaish do. Naya tathya ya ank mat banao.")
             if bad: continue
             why = fact_check(post, srcs, item)
+            if not why and cat in ("Sarkari Naukri", "Yojana"):   # niyam: official sarkari site zaroori
+                links = [item.get("link") or ""] + [u for _, u in srcs]
+                if not any(re.search(r"\.(gov|nic)\.in$", urllib.parse.urlparse(u).netloc) and len(fetch_source_text(u)) >= 400 for u in links if u):
+                    why = ["official sarkari site ka srot nahi mila"]
             if why:     # jaanch fail: blog par kuch nahi jaata, agli khabar
                 held += 1
                 log("JAANCH FAIL (post roki):", "; ".join(why), "-", item["title"][:60])
