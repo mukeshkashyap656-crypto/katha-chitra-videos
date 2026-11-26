@@ -125,3 +125,9 @@ NIYAM.md mein naya niyam jude to yahan bhi jodo.
 - Tyohar wala Short ho to FESTIVAL.md ke niyam: tyohar se 1-2 din pehle, kahani asli granth se.
 - Issue mein tabhi likho jab owner ko kuch dekhna/karna ho.
 - Model, tool ya version band ho jaye to naya pehle chhote test mein; purana chalta version bacha kar.
+
+## 14. Nayi baatein (27 Nov 2026)
+- AWS (Opus 4.6) chalu hai (repo variable AWS_AI = on). Bina photo wala mushkil likhna/jaanch pehle AWS par, na chale to purana tareeka. 200 call roz; AWS 20 May 2027 ke baad band. Issue #32 par asli test pass.
+- AWS Free plan hi rahe, Upgrade kabhi nahi. Owner: credit khul kar istemal karo. Billing abhi jaanchni baaki.
+- AWS ka jawab bhi galat ho sakta hai: kahani hamesha srot se milao.
+- Blog mein bhi AWS juda (alag ginti 100 roz). Free Fire, Car, Katha (auto-youtube repo) mein AWS backup ka code hai, wahan secret lagna aur asli test baaki.
