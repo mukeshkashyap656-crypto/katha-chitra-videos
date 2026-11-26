@@ -1,0 +1,94 @@
+name: AWS Other models test
+
+# Sirf haath se chalta hai. Har model ko ek chhota sawaal bhejta hai.
+# Malik ne 26 Nov 2026 ko chat mein DeepSeek, MiniMax, Mistral AI, Moonshot AI, NVIDIA,
+# OpenAI aur Cohere ki terms aur Marketplace subscription manzoor ki hai.
+# Cohere ka koi chalu text model AWS cards par nahi mila, isliye yahan nahi hai.
+# Koi form nahi bharta aur account ki setting nahi badalta.
+on:
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Other model check
+        env:
+          AWS_BEARER_TOKEN_BEDROCK: ${{ secrets.AWS_BEARER_TOKEN_BEDROCK }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, sys, urllib.request, urllib.error
+
+          key = os.environ.get("AWS_BEARER_TOKEN_BEDROCK", "").strip()
+          if not key:
+              sys.exit("AWS_BEARER_TOKEN_BEDROCK secret nahi mila.")
+
+          models = [
+              ("DeepSeek V3.2", "ap-southeast-2", "deepseek.v3.2"),
+              ("DeepSeek V3.1", "ap-southeast-2", "deepseek.v3-v1:0"),
+              ("MiniMax M2.5", "ap-southeast-2", "minimax.minimax-m2.5"),
+              ("MiniMax M2.1", "ap-southeast-2", "minimax.minimax-m2.1"),
+              ("MiniMax M2", "ap-southeast-2", "minimax.minimax-m2"),
+              ("Kimi K3.1", "ap-southeast-2", "global.moonshotai.kimi-k3.1"),
+              ("Kimi K3", "ap-southeast-2", "global.moonshotai.kimi-k3"),
+              ("Kimi K2.5", "ap-southeast-2", "moonshotai.kimi-k2.5"),
+              ("Kimi K2 Thinking", "ap-southeast-2", "moonshot.kimi-k2-thinking"),
+              ("Nemotron Nano 12B VL", "ap-southeast-2", "nvidia.nemotron-nano-12b-v2"),
+              ("Nemotron Nano 9B", "ap-southeast-2", "nvidia.nemotron-nano-9b-v2"),
+              ("Nemotron Nano 3 30B", "ap-southeast-2", "nvidia.nemotron-nano-3-30b"),
+              ("Nemotron 3 Super 120B", "ap-southeast-2", "nvidia.nemotron-super-3-120b"),
+              ("gpt-oss 120B", "ap-southeast-2", "openai.gpt-oss-120b-1:0"),
+              ("gpt-oss 20B", "ap-southeast-2", "openai.gpt-oss-20b-1:0"),
+              ("Ministral 14B", "ap-southeast-2", "mistral.ministral-3-14b-instruct"),
+              ("Devstral 2", "ap-southeast-2", "mistral.devstral-2-123b"),
+              ("Magistral Small", "ap-southeast-2", "mistral.magistral-small-2509"),
+              ("Ministral 8B", "ap-southeast-2", "mistral.ministral-3-8b-instruct"),
+              ("Ministral 3B", "ap-southeast-2", "mistral.ministral-3-3b-instruct"),
+              ("Mistral 7B", "ap-southeast-2", "mistral.mistral-7b-instruct-v0:2"),
+              ("Mistral Large 2402", "ap-southeast-2", "mistral.mistral-large-2402-v1:0"),
+              ("Mistral Large 3", "ap-southeast-2", "mistral.mistral-large-3-675b-instruct"),
+              ("Mixtral 8x7B", "ap-southeast-2", "mistral.mixtral-8x7b-instruct-v0:1"),
+              ("GPT-6.2-astra", "ap-southeast-2", "global.openai.gpt-6.2-astra"),
+              ("GPT-6.2-sol", "ap-southeast-2", "global.openai.gpt-6.2-sol"),
+              ("GPT-6-astra", "ap-southeast-2", "global.openai.gpt-6-astra"),
+              ("GPT-6.1-sol", "ap-southeast-2", "global.openai.gpt-6.1-sol"),
+              ("GPT-6.1-terra", "ap-southeast-2", "global.openai.gpt-6.1-terra"),
+              ("GPT-6-sol", "ap-southeast-2", "global.openai.gpt-6-sol"),
+              ("GPT-6-luna", "ap-southeast-2", "global.openai.gpt-6-luna"),
+              ("GPT-5.6-sol", "ap-southeast-2", "global.openai.gpt-5.6-sol"),
+              ("GPT-5.6-terra", "ap-southeast-2", "global.openai.gpt-5.6-terra"),
+              ("GPT-5.6-luna", "ap-southeast-2", "global.openai.gpt-5.6-luna"),
+              ("GPT-5.5", "ap-southeast-2", "global.openai.gpt-5.5"),
+              ("GPT-5.4", "ap-southeast-2", "global.openai.gpt-5.4"),
+          ]
+          body = json.dumps({
+              "messages": [{"role": "user", "content": [{"text": "Namaste, ek line mein jawab do."}]}],
+              "inferenceConfig": {"maxTokens": 20},
+          }).encode()
+
+          def call(region, model_id):
+              req = urllib.request.Request(
+                  f"https://bedrock-runtime.{region}.amazonaws.com/model/{model_id}/converse",
+                  data=body,
+                  headers={"Content-Type": "application/json", "Authorization": "Bearer " + key},
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=60) as r:
+                      out = json.load(r)
+                  out["output"]["message"]
+                  return True, ""
+              except urllib.error.HTTPError as e:
+                  kind = (e.headers.get("x-amzn-ErrorType") or "").split(":")[0]
+                  return False, f"HTTP {e.code} {re.sub(r'[^A-Za-z]', '', kind)}".strip()
+              except Exception as e:
+                  return False, type(e).__name__
+
+          lines = ["AWS Other models test"]
+          for name, region, model_id in models:
+              ok, err = call(region, model_id)
+              lines.append(f"{'CHALU' if ok else 'BAND '}  {name}  [{region}]  {err}".rstrip())
+          print("\n".join(lines))
+          PY
