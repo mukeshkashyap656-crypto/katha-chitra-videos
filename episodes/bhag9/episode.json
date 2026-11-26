@@ -1,0 +1,524 @@
+{
+ "NAME": "Ramayan_Bhag9_Ganga_ka_Janm",
+ "COVER_NAME": "Ramayan_Bhag9_Cover",
+ "BHAG": 9,
+ "VERSION": 1,
+ "QUESTION": "गंगा किसकी बेटी थीं?",
+ "LINES": {
+  "n1": [
+   "गंगा किसकी बेटी थीं? देवताओं ने उन्हें क्यों माँगा?",
+   "+0%",
+   "+0Hz"
+  ],
+  "vm1": [
+   "राम, पर्वतराज हिमवान की दो बेटियाँ थीं — बड़ी गंगा, छोटी उमा।",
+   "-12%",
+   "-16Hz"
+  ],
+  "dev1": [
+   "हे हिमवान, गंगा को हमें दे दीजिए। तीनों लोक पवित्र होंगे।",
+   "-15%",
+   "-25Hz"
+  ],
+  "him1": [
+   "तीनों लोकों के भले के लिए... मेरी बेटी तुम्हारी।",
+   "-8%",
+   "-10Hz"
+  ],
+  "n2": [
+   "छोटी बेटी उमा ने कठिन तपस्या की। महादेव शिव प्रसन्न हुए, विवाह हुआ।",
+   "+0%",
+   "+0Hz"
+  ],
+  "dev2": [
+   "महादेव, अपना तेज रोक लीजिए! तीनों लोक नहीं सह पाएँगे!",
+   "-15%",
+   "-25Hz"
+  ],
+  "sh1": [
+   "रोकूँगा। पर जो बह चुका, उसे कौन सँभालेगा?",
+   "-9%",
+   "-25Hz"
+  ],
+  "n3": [
+   "शिव जी का तेज अग्नि ने धारण किया, फिर गंगा ने। गंगा से पर्वत पर गिरा।",
+   "+0%",
+   "+0Hz"
+  ],
+  "n4": [
+   "वहीं जन्मे कार्तिकेय — देवताओं के सेनापति! कृत्तिकाओं ने पाला।",
+   "+0%",
+   "+0Hz"
+  ],
+  "n5": [
+   "लेकिन अहिल्या को श्राप से किसने मुक्त किया? अगले भाग में! कमेंट में लिखिए: जय श्री राम। सब्सक्राइब कीजिए।",
+   "+0%",
+   "+0Hz"
+  ]
+ },
+ "SPEAKER": {
+  "vm1": "vishwamitra",
+  "dev1": "indra",
+  "him1": "himavan",
+  "dev2": "indra",
+  "sh1": "shiva"
+ },
+ "KEYWORDS": {
+  "n1": [
+   "गंगा",
+   "बेटी"
+  ],
+  "vm1": [
+   "हिमवान",
+   "गंगा"
+  ],
+  "dev1": [
+   "पवित्र"
+  ],
+  "him1": [
+   "भले"
+  ],
+  "n2": [
+   "तपस्या",
+   "शिव"
+  ],
+  "dev2": [
+   "तेज"
+  ],
+  "sh1": [
+   "कौन"
+  ],
+  "n3": [
+   "अग्नि",
+   "गंगा"
+  ],
+  "n4": [
+   "कार्तिकेय",
+   "सेनापति"
+  ],
+  "n5": [
+   "अहिल्या"
+  ]
+ },
+ "NEW_CHARS": {
+  "himavan": {
+   "name": "पर्वतराज हिमवान",
+   "kind": "m",
+   "crown": true,
+   "jewel": true,
+   "beard": "#c0c0c0",
+   "mous": "#c0c0c0",
+   "bare": true,
+   "skin": "#e0a878",
+   "hair": "#c0c0c0",
+   "tunic": "#e8f0f6",
+   "sash": "#6aa6d8",
+   "upper": "#f6f0e2",
+   "lower": "#e8f0f6",
+   "hem": "#6aa6d8",
+   "skirt": 1.4,
+   "age": 1
+  },
+  "ganga": {
+   "name": "देवी गंगा",
+   "kind": "f",
+   "big": true,
+   "glow": "gold",
+   "skin": "#f0c890",
+   "hair": "#140c08",
+   "saree": "#9ec8e0",
+   "blouse": "#f6f0e2",
+   "border": "#f2c230",
+   "jewel": true,
+   "tilak": true,
+   "mala": true,
+   "tall": 1.05,
+   "fw": 1.0,
+   "fh": 1.04
+  },
+  "uma": {
+   "name": "देवी उमा",
+   "kind": "f",
+   "big": true,
+   "glow": "gold",
+   "skin": "#e8b887",
+   "hair": "#140c08",
+   "saree": "#d9342b",
+   "blouse": "#f2c230",
+   "border": "#f6f0e2",
+   "jewel": true,
+   "tilak": true,
+   "tall": 0.96,
+   "fw": 0.94,
+   "fh": 0.97
+  },
+  "shiva": {
+   "name": "महादेव शिव",
+   "kind": "m",
+   "big": true,
+   "glow": "gold",
+   "skin": "#e8e0d2",
+   "hair": "#2a1a14",
+   "jatabun": "#2a1a14",
+   "tilak": true,
+   "mala": true,
+   "bare": true,
+   "tunic": "#c28a4a",
+   "lower": "#c28a4a",
+   "upper": "#e8e0d2",
+   "sash": "#6b4a2a",
+   "hem": "#6b4a2a",
+   "ajina": "#c28a4a",
+   "skirt": 1.3,
+   "age": 1
+  },
+  "indra": {
+   "name": "इंद्र",
+   "kind": "m",
+   "big": true,
+   "glow": "gold",
+   "crown": true,
+   "jewel": true,
+   "skin": "#e0a070",
+   "hair": "#140c08",
+   "mous": "#140c08",
+   "bare": true,
+   "tunic": "#2f6aa8",
+   "lower": "#2f6aa8",
+   "upper": "#f2c230",
+   "sash": "#f2c230",
+   "hem": "#f2c230",
+   "skirt": 1.4
+  },
+  "agni": {
+   "name": "अग्नि देव",
+   "kind": "m",
+   "big": true,
+   "glow": "gold",
+   "jewel": true,
+   "skin": "#e0743a",
+   "hair": "#d9342b",
+   "mous": "#8e1b2b",
+   "bare": true,
+   "tunic": "#d9342b",
+   "lower": "#d9342b",
+   "upper": "#f2a03a",
+   "sash": "#f2c230",
+   "hem": "#f2c230",
+   "skirt": 1.4,
+   "jatabun": "#d9342b",
+   "beard": "#a02a1c",
+   "beardlen": 0.9
+  },
+  "kartikeya": {
+   "name": "कार्तिकेय",
+   "kind": "m",
+   "child": true,
+   "glow": "gold",
+   "skin": "#f0c870",
+   "hair": "#140c08",
+   "tilak": true,
+   "jewel": true,
+   "bare": true,
+   "tunic": "#f2c230",
+   "lower": "#f2c230",
+   "upper": "#f2c230",
+   "sash": "#c0392b",
+   "hem": "#e8902a",
+   "skirt": 1.3,
+   "jatabun": "#140c08"
+  }
+ },
+ "VOICES": {
+  "shiva": [
+   "en-US-AndrewMultilingualNeural",
+   "hi-IN-MadhurNeural"
+  ]
+ },
+ "SHOTS": [
+  {
+   "line": "n1",
+   "bg": "river",
+   "mood": "wonder",
+   "chip": "गंगा कौन?",
+   "cast": [
+    {
+     "who": "ganga",
+     "x": 680,
+     "pose": "stand",
+     "face": "smile",
+     "look": "front"
+    }
+   ],
+   "show": "देवी गंगा नदी किनारे खड़ी, सुनहरी चमक, चेहरे पर शांत मुस्कान; सवाल जगाता माहौल"
+  },
+  {
+   "line": "vm1",
+   "bg": "cloudvan",
+   "cam": "two",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 300,
+     "pose": "stand",
+     "face": "neutral",
+     "look": "right"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 800,
+     "pose": "talk",
+     "face": "smile",
+     "look": "left"
+    }
+   ],
+   "show": "विश्वामित्र मुस्कुराकर राम को कथा सुनाते हैं; राम ध्यान से सुनते हैं"
+  },
+  {
+   "line": "vm1",
+   "at_word": "उमा",
+   "bg": "divine",
+   "cam": "wide",
+   "mood": "wonder",
+   "chip": "दो बेटियाँ",
+   "cast": [
+    {
+     "who": "himavan",
+     "x": 200,
+     "pose": "bless",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "ganga",
+     "x": 580,
+     "pose": "stand",
+     "face": "smile",
+     "look": "left"
+    },
+    {
+     "who": "uma",
+     "x": 1060,
+     "pose": "stand",
+     "face": "smile",
+     "look": "left"
+    }
+   ],
+   "show": "हिमवान गर्व से अपनी दो बेटियों के साथ; गंगा और उमा दोनों सुंदर, मुस्कुराती हुई"
+  },
+  {
+   "line": "dev1",
+   "bg": "divine",
+   "cam": "two",
+   "cast": [
+    {
+     "who": "indra",
+     "x": 380,
+     "pose": "namaste",
+     "face": "firm",
+     "look": "right"
+    },
+    {
+     "who": "himavan",
+     "x": 940,
+     "pose": "stand",
+     "face": "worry",
+     "look": "left"
+    }
+   ],
+   "show": "इंद्र हाथ जोड़कर हिमवान से गंगा माँगते हैं; हिमवान चिंतित चेहरे से सुनते हैं"
+  },
+  {
+   "line": "him1",
+   "bg": "divine",
+   "cam": "speaker",
+   "mood": "sorrow",
+   "cast": [
+    {
+     "who": "himavan",
+     "x": 380,
+     "pose": "dukh",
+     "face": "sad",
+     "look": "right"
+    },
+    {
+     "who": "ganga",
+     "x": 940,
+     "pose": "namaste",
+     "face": "sad",
+     "look": "left"
+    }
+   ],
+   "show": "हिमवान भारी मन से बेटी को विदा करते हैं, एक हाथ सीने पर; गंगा हाथ जोड़े विदाई लेती हैं"
+  },
+  {
+   "line": "n2",
+   "bg": "divine",
+   "cam": "two",
+   "mood": "wonder",
+   "chip": "शिव-उमा विवाह",
+   "cast": [
+    {
+     "who": "uma",
+     "x": 380,
+     "pose": "namaste",
+     "face": "joy",
+     "look": "right"
+    },
+    {
+     "who": "shiva",
+     "x": 940,
+     "pose": "bless",
+     "face": "smile",
+     "look": "left"
+    }
+   ],
+   "show": "शिव और उमा का विवाह; उमा हाथ जोड़े प्रसन्न, शिव मुस्कुराकर आशीर्वाद देते हैं; सुनहरा माहौल"
+  },
+  {
+   "line": "dev2",
+   "bg": "cloudvan",
+   "cam": "two",
+   "mood": "fear",
+   "chip": "तेज रोकिए!",
+   "cast": [
+    {
+     "who": "indra",
+     "x": 380,
+     "pose": "namaste",
+     "face": "worry",
+     "look": "right"
+    },
+    {
+     "who": "shiva",
+     "x": 940,
+     "pose": "stand",
+     "face": "firm",
+     "look": "left"
+    }
+   ],
+   "show": "इंद्र घबराकर हाथ जोड़कर शिव से विनती करते हैं; शिव दृढ़ चेहरे से सुनते हैं"
+  },
+  {
+   "line": "sh1",
+   "bg": "cloudvan",
+   "cam": "speaker",
+   "cast": [
+    {
+     "who": "indra",
+     "x": 330,
+     "pose": "stand",
+     "face": "worry",
+     "look": "right"
+    },
+    {
+     "who": "shiva",
+     "x": 800,
+     "pose": "talk",
+     "face": "stern",
+     "look": "left"
+    }
+   ],
+   "show": "शिव गंभीरता से सवाल करते हैं कि तेज कौन सँभालेगा; इंद्र चिंतित"
+  },
+  {
+   "line": "n3",
+   "bg": "river",
+   "cam": "wide",
+   "mood": "wonder",
+   "chip": "अग्नि से गंगा में",
+   "cast": [
+    {
+     "who": "agni",
+     "x": 300,
+     "pose": "raise",
+     "face": "shock",
+     "look": "right"
+    },
+    {
+     "who": "ganga",
+     "x": 760,
+     "pose": "raise",
+     "face": "worry",
+     "look": "left"
+    }
+   ],
+   "show": "अग्नि तेज उठाकर गंगा को देते हैं; गंगा ताप से विचलित, हाथ उठाए; चमकदार माहौल"
+  },
+  {
+   "line": "n4",
+   "bg": "morning",
+   "cam": "wide",
+   "mood": "joy",
+   "chip": "कार्तिकेय जन्मे",
+   "cast": [
+    {
+     "who": "ganga",
+     "x": 300,
+     "pose": "bless",
+     "face": "joy",
+     "look": "right"
+    },
+    {
+     "who": "kartikeya",
+     "x": 680,
+     "pose": "stand",
+     "face": "joy",
+     "look": "front"
+    },
+    {
+     "who": "indra",
+     "x": 1060,
+     "pose": "namaste",
+     "face": "joy",
+     "look": "left"
+    }
+   ],
+   "show": "सुनहरी चमक वाले बालक कार्तिकेय बीच में; गंगा आशीर्वाद देती, इंद्र खुशी से हाथ जोड़ते"
+  },
+  {
+   "line": "n5",
+   "bg": "cloudvan",
+   "cam": "two",
+   "mood": "wonder",
+   "chip": "अगला भाग",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 420,
+     "pose": "namaste",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "vishwamitra",
+     "x": 940,
+     "pose": "bless",
+     "face": "smile",
+     "look": "left"
+    }
+   ],
+   "show": "राम हाथ जोड़कर सुनते, विश्वामित्र मुस्कुराकर आशीर्वाद देते; अगले भाग की उत्सुकता"
+  }
+ ],
+ "COVER": {
+  "bg": "river",
+  "tag": "गंगा किसकी बेटी?",
+  "cast": [
+   {
+    "who": "himavan",
+    "x": 400,
+    "pose": "dukh",
+    "face": "sad",
+    "look": "right"
+   },
+   {
+    "who": "ganga",
+    "x": 900,
+    "pose": "stand",
+    "face": "smile",
+    "look": "left"
+   }
+  ]
+ }
+}
