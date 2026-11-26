@@ -20,6 +20,8 @@ Bot har post likhne se pehle sirf "SEEKH SHURU" aur "SEEKH KHATAM" ke beech ki l
 - Kai phone/product wali post mein har ek ka usi exact model ka real visual ho (free licence photo, warna company ke official YouTube channel ki video, warna official page ka link). Amazon, Flipkart ya Google se photo utha kar nahi.
 - Video: sirf usi cheez ka, company ya vibhag ke apne official YouTube channel wala. official_video_url ka link pakka pata na ho to khaali chhodo; andaaza ya doosre channel ka link nahi.
 - Aam aadmi ek baar padh kar samajh jaye: chhote vaakya, bolchaal ke shabd, mushkil ya tech shabd ka usi jagah aasan matlab; shuru mein seedha saar, kuch karna ho to 1-2-3 kadam.
+- Likhne se pehle socho ki search karne wala kya jaanna chahta hai, pehle subheading tay karo; kaam ke aam sawaal ka jawab sirf diye gaye source ke tathya se, apni bhasha mein.
+- Kisi ke lekh ko copy, translate ya shabd badal kar apna banana, AI-detector se bachne ki chaal, ya kisi site ki photo save karke badalna kabhi nahi.
 <!-- SEEKH KHATAM -->
 
 ## Code khud lagata hai
@@ -39,6 +41,12 @@ Padhi gayi: Satish K Videos, "50k Daily Traffic From Google Discover" (youtube.c
 - Insaan ke karne ki (bot nahi): apni nayi post apne WhatsApp/Telegram channel par daalna, site ko phone par tez rakhna, lagataar post karna.
 - Nahi li: "bahar se traffic bhejo to Discover pakka" (ek vyakti ka tajurba, Google ne aisa vaada nahi kiya); "AMP zaroori" (Google ke Discover page mein AMP sirf ek raasta hai); paid notification tool (video mein affiliate link tha); video ka "sona sasta, jaldi dekhein warna pachhtayenge" jaisa udaharan (clickbait).
 - Baaki guide ke link: @ISHANGURU aur @mybigguide ke pate par "404 Not Found" aaya; @SaddamKassim ka page khaali khula. Inse kuch nahi seekha gaya.
+
+## YouTube se seekh 2 (26 Nov 2026, shaam)
+Saddam Kassim (@SaddamKassim): "News Blog Tutorial 2025" (e-pcQcvtHIk) aur "Content Writing Full Course" (ZI8Zx2FmAy8), likhi baaton ke chune hue hisse.
+- Li: Google Trends se vishay; kuch din tak chalne wali dilchaspi; padhne wale ka asli sawaal; pehle heading; table/list.
+- Bilkul nahi li: doosre blog ka lekh copy karke translate aur paraphrase tool se ghumana, AI-detector/Google se bachne ki chaal, kisi ki photo save karke thumbnail banana.
+- Sahi channel: mybigguide = @mybigguidehindi, ISHAN GURU = @ishanguruofficial. In dono ki koi video nahi padhi.
 
 ## Khabar Saathi (blog ka assistant) ke niyam
 
