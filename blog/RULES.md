@@ -46,6 +46,8 @@ Bhandar mein nayi photo tabhi jodo jab use aankh se dekh liya ho aur licence pag
 ## Roz 2 post, alag vishay (Owner, 26 Nov 2026: "5 post nhi, alag alag topic par 2 post daily")
 Claude ka kaam subah 11:41 par ek aur shaam 5:41 par ek post ki koshish karta hai; din mein 2 se zyada nahi, dono alag vishay. Vishay baari-baari (Mobile, Tech, Gaming, Sarkari Naukri, Yojana). GitHub bot backup hai: din mein ek hi post (rule 1).
 
+Computer band rehne ke liye (Owner: "Automatic karo esko bhi"): shaam wali run agle din ki 2 post Blogger mein pehle se schedule karti hai (10:30 AM aur 5:00 PM IST). Raat mein badal sakne wali khabar schedule nahi hoti. Lagataar kai din computer band ho to sirf pehle se schedule hui post jaati hai.
+
 ## Free tasveer khud dhoondhna (Owner, 26 Nov 2026: har blog post aur article mein)
 - Sirf aisi licence jisme credit dekar kamai wale blog par lagana allowed ho; "NC" ya "ND" wali nahi. Credit aur source link zaroor.
 - Haath se ya Claude se khojte waqt: Pexels, Pixabay, Unsplash, Wikimedia Commons, Openverse; har photo aankh se dekho.
