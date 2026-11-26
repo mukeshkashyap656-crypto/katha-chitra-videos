@@ -598,7 +598,22 @@ def _dl(url, path, hdr=None):
 COMMONS_UA = "khabaradda-bot/1.0 (https://mukeshnewsdaily.blogspot.com/)"
 
 
-def commons_candidates(data):
+# photo ke naam mein vishay dikhna chahiye (warna Commons/Openverse kuch bhi de deta hai)
+AAM_SHABD = set("the and with for from new old photo image close closeup hand hands person people using budget modern india indian rear front side best top india's".split())
+
+
+def judi_hui(query, text):
+    """True tabhi jab photo ke naam/tag mein khoj ke kam se kam 2 khaas shabd hon (1 hi ho to wahi); purani archive photo nahi."""
+    t = str(text or "")
+    if re.search(r"(?<!\d)1[89]\d\d(?!\d)|DPLA|\(IA ", t): return False
+    words = {w for w in re.findall(r"[a-z0-9]{3,}", query.lower()) if w not in AAM_SHABD}
+    if not words: return False
+    have = set(re.findall(r"[a-z0-9]+", t.lower()))
+    hits = sum(1 for w in words if w in have or w + "s" in have or w.rstrip("s") in have)
+    return hits >= min(2, len(words))
+
+
+def commons_candidates(data, query=None):
     """Commons ke jawab se sirf CC0 / public domain, JPEG, 1200px+ photos; khoj ke kram mein."""
     out = []
     pages = (data.get("query") or {}).get("pages") or {}
@@ -608,6 +623,7 @@ def commons_candidates(data):
         lic = str((meta.get("LicenseShortName") or {}).get("value", "")).strip().lower()
         if lic not in ("cc0", "public domain") or i.get("mime") != "image/jpeg" or (i.get("width") or 0) < 1200:
             continue
+        if query is not None and not judi_hui(query, pg.get("title")): continue
         url = i.get("thumburl") if i["width"] > 1600 else i.get("url")
         who = plain(str((meta.get("Artist") or {}).get("value", ""))).strip()[:60]
         credit = "Photo: %sWikimedia Commons (%s)" % (who + " / " if who else "", "CC0" if lic == "cc0" else "Public Domain")
@@ -639,11 +655,12 @@ def fetch_photos(queries, n=5):
                                      params={"action": "query", "format": "json", "generator": "search", "gsrnamespace": 6, "gsrlimit": 20,
                                              "gsrsearch": q + " filetype:bitmap", "prop": "imageinfo", "iiprop": "url|size|mime|extmetadata",
                                              "iiurlwidth": 1600, "iiextmetadatafilter": "LicenseShortName|Artist"})
-                    cand = commons_candidates(r.json())
+                    cand = commons_candidates(r.json(), q)
                 elif prov == "openverse":
                     r = requests.get("https://api.openverse.org/v1/images/", timeout=30, params={"q": q, "license": "cc0,pdm", "category": "photograph", "page_size": 10, "aspect_ratio": "wide"})
                     for im in r.json().get("results", []):
-                        if (im.get("width") or 0) >= 1000 and im.get("url"):
+                        naam = " ".join([str(im.get("title") or "")] + [str(t.get("name", "")) for t in (im.get("tags") or [])])
+                        if (im.get("width") or 0) >= 1000 and im.get("url") and judi_hui(q, naam):
                             cand.append((im["id"], im["url"], "Tasveer: %s (CC0/Public Domain)" % (im.get("title") or q), im.get("foreign_landing_url")))
                 for pid, url, credit, page in cand:
                     key = (prov, pid)
@@ -663,6 +680,16 @@ def fetch_photos(queries, n=5):
         if got: out.append(got)
         else: log("is vishay ki photo nahi mili:", q)
     return out
+
+
+WA_ICON = ('<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/60px-WhatsApp.svg.png" alt="WhatsApp आइकन" width="24" height="24" '
+           'style="width:24px !important;height:24px !important;display:inline-block;vertical-align:middle;margin:0 8px 0 0"/>')
+
+
+def vishay_icon(title, body_html):
+    """WhatsApp wali post: har h3 ke shuru mein emoji ki jagah WhatsApp ka asli icon."""
+    if not re.search(r"whatsapp|(व्हाट्स|वॉट्स|व्हॉट्स) ?(ऐप|एप)", title, re.I): return body_html
+    return re.sub(r"(<h3[^>]*>)\s*(?:(?!<)[^\w\s\u0900-\u097F\"'(])*\s*", lambda m: m.group(1) + WA_ICON, body_html, flags=re.I)
 
 
 def insert_photos(body_html, photos):
@@ -863,7 +890,7 @@ def main():
             if cover.get("w", 0) < 1200:
                 log("dhyan: 1200px chaudi cover photo nahi mili")
             rest = [p for p in photos if p is not cover]
-            post["body_html"] = insert_photos(post["body_html"], rest)
+            post["body_html"] = insert_photos(vishay_icon(post["title"], post["body_html"]), rest)
             cover_html = (f'<p><img src="{html.escape(cover["url"])}" alt="{html.escape(post["title"])}" style="width:100%;height:auto"/>'
                           f'<br/><small><a href="{html.escape(cover["page"])}" rel="nofollow noopener">{html.escape(cover["credit"])}</a>। यह सांकेतिक फ़ोटो है।</small></p>\n')
             content = cover_html + build_html(post, srcs, item, None)
@@ -879,6 +906,9 @@ def main():
             log("POST:", post["title"], "->", url, "(", MODE, ")")
             break
     log(f"aaj {made} post bani, jaanch mein {held} roki")
+    if not made:   # khali haath: run hara (green) na dikhe, taaki pata chale
+        log("AAJ KOI POST NAHI BANI: upar ki wajah dekhein.")
+        return 2
     return 0
 
 

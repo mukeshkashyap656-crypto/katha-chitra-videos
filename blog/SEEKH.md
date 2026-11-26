@@ -14,6 +14,7 @@ Bot har post likhne se pehle sirf "SEEKH SHURU" aur "SEEKH KHATAM" ke beech ki l
 - Sarkari yojana, naukri ya pariksha ki khabar ho to rajya ya vibhag ka naam saaf likho aur batao ki ye kiske liye hai.
 - body_html mein har h3 subheading ke shuru mein usi vishay se juda ek icon (emoji) lagao; icon ki bharmaar nahi.
 - image_query aur photo_queries usi cheez ki asli photo maangein jis par lekh hai; wahi cheez na mile to vishay se judi asli photo, aur use us cheez ki photo mat batao.
+- Post kisi app, brand ya cheez par ho (jaise WhatsApp) to usi ka icon aur usi se judi asli photo lagao; image_query aur photo_queries mein uska naam zaroor ho. Bejod photo se behtar hai post rokna.
 <!-- SEEKH KHATAM -->
 
 ## Code khud lagata hai
