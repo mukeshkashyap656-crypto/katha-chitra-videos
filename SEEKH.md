@@ -122,3 +122,13 @@ Ek doosre creator ki pauranik video ke chune hue frames se sirf TAREEKA liya hai
 3. Likhai: ek baar mein sirf kuch shabd (2-4), aur us line ka sabse zaroori ek shabd peela. Chehre ya zaroori harkat par likhai na aaye.
 4. Pehchaan: naya kirdaar pehli baar aaye to chhoti patti mein uska naam (zaroorat ho to rishta, srot se jaancha hua). Likhai wali doosri patti se takraaye nahi.
 Dhyan: agar engine abhi peela shabd ya naam-patti nahi bana sakta, to pehle tools/engine mein chhota badlaav karke test karo; na ban paaye to "ho gaya" mat likho, owner ko saaf batao.
+
+## Reference video se seekh: director ki tarah banwao (26 Nov 2026, owner: "Ok kro")
+Ek doosre creator ki "Direct, don't describe" video ke chune hue frames se sirf TAREEKA (awaaz nahi suni, daawe nahi jaanche). NIYAM.md se takraav ho to NIYAM.md maano.
+1. Pehle look pakka karo: animation se pehle kuch still frame banao aur khud jaancho; roop theek ho tabhi poora render. Owner ki manzoori ka naya intezaar mat jodo.
+2. Kami saaf likho: "achha nahi" nahi; likho kis shot mein kya kharab hai, jaise "roshni ke kinare bahut sakht", phir wahi theek karo.
+3. Achha hissa bachao: naya version bigad jaye to pichhle achhe version par lauto aur sirf zaroori cheez badlo.
+4. Khaas pal: bade waar, vardan ya divya roshni se pehle scene thoda dheema ya halka andhera, phir asar.
+5. Harkat: ghaas/kapde hawa ke jhonke se hilein, paas ki cheez badi aur tez dikhe, roshni aas-paas ki cheezon par bhi pade.
+6. Jhatka nahi: roshni, chamak ya badlaav ek frame mein achanak na aaye; kai frame mein bane aur utre.
+Dhyan: 4 aur 5 engine mein na ban sakein to pehle chhote test mein jaancho; na ban paaye to "ho gaya" mat likho.
