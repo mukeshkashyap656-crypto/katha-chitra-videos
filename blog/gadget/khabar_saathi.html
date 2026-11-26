@@ -1,0 +1,136 @@
+<!-- khabaradda : khabar saathi (greeting aur sawaal-jawab). Koi key nahi, jawab sirf isi blog ke lekhon se. -->
+<style>
+#khs{box-sizing:border-box;max-width:620px;margin:16px auto 4px;padding:12px 14px;border:1px solid rgba(103,232,249,.55);border-radius:12px;background:linear-gradient(160deg,#0a1b30,#060d18);box-shadow:0 0 18px rgba(34,211,238,.28);text-align:left;color:#dbe4f3;font:400 14px/1.6 'Noto Sans Devanagari',sans-serif;text-transform:none;letter-spacing:0;white-space:normal}
+#khs *{box-sizing:border-box}
+#khs .top{display:flex;align-items:center;gap:8px}
+#khs .wave{display:flex;align-items:center;gap:3px;height:20px}
+#khs .wave i{width:3px;height:6px;border-radius:2px;background:#67e8f9;box-shadow:0 0 6px #22d3ee}
+#khs.talk .wave i{animation:khsw .7s ease-in-out infinite alternate}
+#khs .wave i:nth-child(2){animation-delay:.15s}#khs .wave i:nth-child(3){animation-delay:.3s}#khs .wave i:nth-child(4){animation-delay:.45s}#khs .wave i:nth-child(5){animation-delay:.6s}
+@keyframes khsw{to{height:20px}}
+#khs .name{flex:1;font-weight:700;color:#a5f3fc}
+#khs button{cursor:pointer;border:1px solid rgba(103,232,249,.5);border-radius:18px;background:#0b2238;color:#cffafe;font:600 12px/1.4 'Noto Sans Devanagari',sans-serif;padding:6px 11px;margin:0}
+#khs .out{margin:8px 0;max-height:210px;overflow:auto}
+#khs .out p{margin:0 0 4px;color:#e6f6ff;font-size:14px;line-height:1.6}
+#khs .out p.q{color:#7dd3fc;text-align:right}
+#khs .out a{display:block;color:#67e8f9;text-decoration:underline;margin:2px 0}
+#khs .chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px}
+#khs form{display:flex;gap:6px;margin:0}
+#khs input{flex:1;min-width:0;border:1px solid rgba(103,232,249,.45);border-radius:18px;background:#030a14;color:#fff;font-size:16px;padding:6px 12px;height:36px}
+#khs .note{margin-top:6px;font-size:11px;color:#7f93ad}
+@media (prefers-reduced-motion:reduce){#khs.talk .wave i{animation:none}}
+</style>
+<script>
+//<![CDATA[
+(function(){
+if(window.__khs)return;window.__khs=1;
+function start(){
+ var head=document.querySelector('.Header .header-widget')||document.querySelector('.Header');
+ if(!head)return;
+ function el(t,c,x){var e=document.createElement(t);if(c)e.className=c;if(x)e.textContent=x;return e;}
+ function btn(x,f){var b=el('button','',x);b.type='button';b.onclick=f;return b;}
+ function get(k){try{return localStorage.getItem(k)}catch(e){return null}}
+ function set(k,v){try{localStorage.setItem(k,v)}catch(e){}}
+ var muted=get('khsMute')==='1',synth=window.speechSynthesis,posts=null;
+ var box=el('div');box.id='khs';
+ var top=el('div','top'),wave=el('span','wave');for(var i=0;i<5;i++)wave.appendChild(el('i'));
+ var soundBtn=btn('',function(){muted=!muted;set('khsMute',muted?'1':'0');label();if(muted){hush()}else{say(greetText)}});
+ function label(){soundBtn.textContent=muted?'🔇 आवाज़ बंद':'🔊 आवाज़ चालू';}
+ top.appendChild(wave);top.appendChild(el('span','name','खबर साथी · khabaradda'));if(synth)top.appendChild(soundBtn);label();
+ var out=el('div','out');out.setAttribute('aria-live','polite');
+ var chips=el('div','chips'),form=el('form'),input=el('input');
+ input.type='text';input.placeholder='अपना सवाल लिखें…';input.setAttribute('aria-label','सवाल');input.maxLength=150;
+ form.appendChild(input);
+ var SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(SR)form.appendChild(btn('🎤',function(){hush();var r=new SR();r.lang='hi-IN';r.onresult=function(e){ask(e.results[0][0].transcript)};r.onerror=function(){line('माइक से आवाज़ नहीं मिली। आप लिखकर पूछ सकते हैं।')};try{r.start()}catch(e){}}));
+ var go=el('button','','पूछें');go.type='submit';form.appendChild(go);
+ form.onsubmit=function(e){e.preventDefault();var q=input.value.trim();if(q){input.value='';ask(q)}};
+ box.appendChild(top);box.appendChild(out);box.appendChild(chips);box.appendChild(form);
+ box.appendChild(el('div','note','मैं अपने-आप चलने वाला सहायक हूँ। जवाब इसी ब्लॉग के लेखों से देता हूँ।'));
+ head.appendChild(box);
+
+ function line(t,c){var p=el('p',c,t);out.appendChild(p);out.scrollTop=out.scrollHeight;return p;}
+ function link(p){var a=el('a','','➜ '+p.title);a.href=p.url;out.appendChild(a);}
+ function hush(){if(synth)synth.cancel();box.classList.remove('talk');}
+ function say(t){
+  if(!synth||muted||!t)return;hush();
+  var parts=t.match(/[^।.?!]+[।.?!]*/g)||[t];
+  parts.forEach(function(s,n){var u=new SpeechSynthesisUtterance(s);u.lang='hi-IN';
+   var v=synth.getVoices().filter(function(v){return /^hi/i.test(v.lang)})[0];if(v)u.voice=v;
+   u.onstart=function(){box.classList.add('talk')};if(n===parts.length-1)u.onend=u.onerror=function(){box.classList.remove('talk')};synth.speak(u);});
+ }
+ function reply(t){line(t);say(t);}
+ function article(){
+  if(!/\/\d{4}\/\d{2}\/.+\.html$/.test(location.pathname))return null;
+  var b=document.querySelector('.post-body'),h=document.querySelector('.post-title');if(!b||!h)return null;
+  var c=b.cloneNode(true);[].forEach.call(c.querySelectorAll('script,style,figure,table.tr-caption-container,small'),function(x){x.remove()});
+  [].forEach.call(c.querySelectorAll('p,h2,h3,li,div,br'),function(x){x.appendChild(document.createTextNode('\n'))});
+  var rows=c.textContent.split('\n').map(function(s){return s.trim()}).filter(function(s){return s.length>30&&!/^(फ़ोटो|फोटो|Photo|स्रोत)/i.test(s)});
+  return {title:h.textContent.trim(),rows:rows};
+ }
+ function greeting(){
+  var h=new Date().getHours();
+  var g=h>=5&&h<12?'सुप्रभात':h>=12&&h<17?'नमस्कार, शुभ दोपहर':h>=17&&h<21?'शुभ संध्या':'नमस्ते, रात के इस समय भी आपका स्वागत है';
+  var a=article();
+  return g+'! khabaradda पर आपका स्वागत है। '+(a?'आप यह लेख पढ़ रहे हैं: '+a.title+'।':'मैं खबर साथी हूँ। पूछिए, आप क्या पढ़ना चाहेंगे?');
+ }
+ function strip(h){var d=new DOMParser().parseFromString(h.replace(/<\/(p|h\d|li|div)>|<br\s*\/?>/gi,' $&'),'text/html');[].forEach.call(d.querySelectorAll('script,style'),function(x){x.remove()});return d.body.textContent.replace(/\s+/g,' ');}
+ function load(){
+  if(posts)return Promise.resolve(posts);
+  return fetch('/feeds/posts/default?alt=json&max-results=150').then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
+   posts=(j.feed.entry||[]).map(function(e){var l=(e.link||[]).filter(function(l){return l.rel==='alternate'})[0];
+    return {title:e.title.$t,url:l?l.href:'/',text:strip((e.content||e.summary||{$t:''}).$t),labels:(e.category||[]).map(function(c){return c.term.toLowerCase()})}});
+   return posts;});
+ }
+ var MAP={mobile:['मोबाइल','फोन','फ़ोन'],phone:['मोबाइल','फोन','फ़ोन'],naukri:['नौकरी','भर्ती'],job:['नौकरी','भर्ती'],yojana:['योजना'],game:['गेम','gaming'],gaming:['गेम'],message:['मैसेज'],whatsapp:['व्हाट्सऐप'],budget:['बजट'],price:['दाम','कीमत'],daam:['दाम','कीमत'],schedule:['शेड्यूल'],camera:['कैमरा'],battery:['बैटरी']};
+ var STOP=' kya hai hain ka ki ke ko me mein par aur batao bataye bataiye mujhe koi kaise kab the is wala wali news khabar the what how about tell show क्या है हैं का की के को में पर और बताओ बताइए मुझे कोई कैसे कब इस वाला वाली खबर ख़बर बारे लेख पोस्ट ';
+ function words(q){var w=q.toLowerCase().split(/[\s,.?!।:'"()]+/).filter(function(s){return s.length>1&&STOP.indexOf(' '+s+' ')<0});return w.map(function(s){return [s].concat(MAP[s]||[])});}
+ function search(q){
+  var w=words(q);
+  load().then(function(list){
+   var hits=list.map(function(p){var t=p.title.toLowerCase(),b=p.text.toLowerCase(),sc=0,n=0;
+    w.forEach(function(alt){var s=0;alt.forEach(function(a){if(t.indexOf(a)>=0)s=Math.max(s,3);else if(p.labels.indexOf(a)>=0)s=Math.max(s,2);else if(b.indexOf(a)>=0)s=Math.max(s,1)});if(s){sc+=s;n++}});
+    return {p:p,sc:sc,n:n}}).filter(function(x){return x.n&&x.n*2>=w.length}).sort(function(a,b){return b.sc-a.sc}).slice(0,3);
+   if(!hits.length){reply('इस बारे में हमारे ब्लॉग पर अभी मुझे कुछ नहीं मिला। मैं सिर्फ़ इसी ब्लॉग के लेखों से जवाब देता हूँ।');return;}
+   var best=hits[0].p,s=best.text.split(/(?<=[।?!])\s+|(?<=\.)\s+(?=[^\d])/).filter(function(s){var l=s.toLowerCase();return s.length>25&&s.length<300&&w.some(function(alt){return alt.some(function(a){return l.indexOf(a)>=0})})})[0];
+   reply(s?'हमारे लेख में लिखा है: '+s.trim():'इससे जुड़े लेख नीचे हैं।');hits.forEach(function(x){link(x.p)});out.scrollTop=out.scrollHeight;
+  }).catch(function(){reply('अभी लेख खोल नहीं पाया। थोड़ी देर बाद फिर पूछिए।')});
+ }
+ function latest(label){
+  load().then(function(list){var l=list.filter(function(p){return !label||p.labels.indexOf(label)>=0}).slice(0,3);
+   if(!l.length){reply('इस हिस्से में अभी कोई लेख नहीं है।');return;}
+   reply('सबसे नया लेख है: '+l[0].title);l.forEach(link);out.scrollTop=out.scrollHeight;}).catch(function(){reply('अभी लेख खोल नहीं पाया। थोड़ी देर बाद फिर पूछिए।')});
+ }
+ function summary(full){
+  var a=article();if(!a){reply('कोई लेख खोलिए, फिर मैं उसके बारे में बता दूँगा।');return;}
+  reply((full?a.title+'। ':'इस लेख की शुरुआत: ')+(full?a.rows:a.rows.slice(0,2)).join(' '));
+ }
+ function ask(q){
+  line(q,'q');var s=q.toLowerCase().trim();
+  if(/^(hi|hello|hey|namaste|namaskar|नमस्ते|नमस्कार|हेलो|हैलो)[\s!.]*$/.test(s))return reply(greetText);
+  if(/(kitne baje|time kya|samay kya|what time|समय क्या|कितने बजे|टाइम क्या)/.test(s))return reply('आपके फ़ोन या कंप्यूटर के हिसाब से अभी '+new Date().toLocaleTimeString('hi-IN',{hour:'numeric',minute:'2-digit'})+' हो रहे हैं।');
+  if(/(aaj ki (tarikh|date)|today.?s date|आज (की )?(तारीख|तारीख़)|आज कौन सा दिन)/.test(s))return reply('आज '+new Date().toLocaleDateString('hi-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'})+' है।');
+  if(/(tum kaun|who are you|tumhara naam|aap kaun|तुम कौन|आप कौन|तुम्हारा नाम|आपका नाम)/.test(s))return reply('मैं खबर साथी हूँ, khabaradda का अपने-आप चलने वाला सहायक।');
+  if(/(blog kis|kiska blog|owner|kisne (banaya|likha)|किसका ब्लॉग|ब्लॉग किस|किसने (बनाया|लिखा))/.test(s))return reply('यह khabaradda ब्लॉग है। यहाँ लेख MUKESH News के नाम से छपते हैं।');
+  if(/(contact|sampark|संपर्क)/.test(s)){reply('संपर्क का पन्ना नीचे है।');link({title:'Contact',url:'/p/contact.html'});return;}
+  if(/(ye lekh|yeh lekh|ye article|summary|saransh|यह लेख|ये लेख|सारांश|किस बारे में)/.test(s))return summary(false);
+  if(/(lekh sunao|padh ?kar sunao|read (it|aloud)|लेख सुनाओ|पढ़कर सुनाओ)/.test(s))return summary(true);
+  if(/(latest|taaza|taza|nayi khabar|aaj ki khabar|ताज़ा|ताजा|नई खबर|आज की खबर)/.test(s))return latest();
+  if(!words(s).length)return reply('थोड़ा और साफ़ पूछिए, जैसे: मोबाइल की नई खबर।');
+  search(s);
+ }
+ chips.appendChild(btn('ताज़ा खबर',function(){ask('ताज़ा खबर')}));
+ if(article()){chips.appendChild(btn('यह लेख किस बारे में?',function(){ask('यह लेख किस बारे में?')}));chips.appendChild(btn('लेख सुनाओ',function(){muted=false;label();ask('लेख सुनाओ')}));}
+ chips.appendChild(btn('समय क्या हुआ?',function(){ask('समय क्या हुआ?')}));
+ if(synth)chips.appendChild(btn('⏹ रोकें',hush));
+ var greetText=greeting();
+ var gp=line(''),k=0,tm=setInterval(function(){k+=2;gp.textContent=greetText.slice(0,k);if(k>=greetText.length)clearInterval(tm)},35);
+ /* browser bina chhue awaaz nahi chalne dete: pehli baar chhune par greeting bolo (ek visit mein ek baar) */
+ var done=false;try{done=sessionStorage.getItem('khsHi')==='1'}catch(e){}
+ function first(e){document.removeEventListener('click',first,true);if(done||box.contains(e.target)||(e.target.closest&&e.target.closest('a')))return;done=true;try{sessionStorage.setItem('khsHi','1')}catch(x){}say(greetText);}
+ if(!done&&synth)document.addEventListener('click',first,true);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
+})();
+//]]>
+</script>
