@@ -99,7 +99,7 @@ NIYAM.md mein naya niyam jude to yahan bhi jodo.
 - Heading chip 2-3 shabd. Chip, naam-patti, widget kabhi chehra ya pair na dhakein. Naya kirdaar pehli baar aaye to naam pehchaan mein aaye (engine naam-patti na bana sake to daawa mat karo).
 - Mushkil baat chhote ginti/icon se.
 - Awaaz: kathavachak = Adam. Baaki har kirdaar apni alag free awaaz aur sur. Kathavachak sirf hook, jodne aur aakhir mein; kahani sanvaad se chale.
-- Aakhri line wahi bole jisne aakhri dialogue bola, apni awaaz mein, YouTube subscribe wali baat ke saath. Adam sirf tab jab aakhri dialogue kathavachak ka ho.
+- Aakhri subscribe wali line hamesha Adam (kathavachak) ki awaaz mein ho, YouTube subscribe wali baat ke saath (owner, 27 Nov 2026).
 - Adam na chale to chupchap doosri awaaz se auto-post nahi: pehle owner ko khabar.
 - Har line ek barabar zor ki; lambe chup nahi. Owner ko batao kaunsi awaaz kiski hai.
 
