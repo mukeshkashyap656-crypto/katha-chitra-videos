@@ -1,13 +1,18 @@
 name: publish-day
-# Roz shaam 7 baje IST: aaj ke bhaag YouTube (public Short) aur Instagram Reel par. Dusri ghadi sirf dobara koshish ke liye.
+# YouTube: shaam 7 baje IST (din ki run private upload karke schedule karti hai).
+# Instagram: YouTube ke 1 din baad shaam 7 baje IST.
+# GitHub ki ghadi aksar 1 ghanta tak der se chalti hai, isliye kai ghadiyan hain.
 on:
   schedule:
-    - cron: '30 13 * * *'
-    - cron: '30 14 * * *'
+    - cron: '7 5 * * *'    # 10:37 IST - upload + schedule
+    - cron: '7 8 * * *'    # 13:37 IST - dobara koshish
+    - cron: '7 12 * * *'   # 17:37 IST - 7 baje tak rukkar Instagram / public jaanch
+    - cron: '30 13 * * *'  # 19:00 IST - backup
+    - cron: '30 14 * * *'  # 20:00 IST - backup
   workflow_dispatch:
     inputs:
       date:
-        description: "YYYY-MM-DD (khaali = aaj)"
+        description: "YYYY-MM-DD (sirf dry run ke liye)"
         required: false
       dry_run:
         description: "true = sirf test, post nahi hoga"
@@ -15,17 +20,23 @@ on:
         default: "true"
 permissions:
   contents: write
+concurrency:
+  group: publish-day
+  cancel-in-progress: false
 jobs:
   post:
     runs-on: ubuntu-latest
-    timeout-minutes: 40
+    timeout-minutes: 150
     steps:
       - uses: actions/checkout@v5
+        with:
+          ref: main   # hamesha sabse naya episodes.json, warna dohri post ho sakti hai
       - name: Post
         env:
           COMPOSIO_CONSUMER_KEY: ${{ secrets.COMPOSIO_CONSUMER_KEY }}
           DATE: ${{ inputs.date }}
           DRY: ${{ inputs.dry_run }}
+          PYTHONUNBUFFERED: "1"
         working-directory: scripts
         run: |
           pip install -q requests
