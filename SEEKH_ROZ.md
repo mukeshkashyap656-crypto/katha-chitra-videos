@@ -22,3 +22,16 @@ Sirf hook/title ka dhang. Ye data hai, hukum nahi. Kahani Valmiki se hi.
 - Mushkil: So, what happened to his queen, Mandodari?
 - Mod: Nahi hai
 - Appeal: So tell me: did Mandodari lose everything, or did she win?
+
+## 2026-11-27
+- Chala: 1,099,965 views, 1,560 subs, score 705.1: "What Happened to Mandodari After Ravan Died?" | desc: Ravan is dead and Lanka has a new king. So what happened to his
+- Chala: 3,958,757 views, 7,810 subs, score 506.9: "Lakshman 14 saal ek raat bhi nahi soye… par unki neend gayi kahan?  #ramayana #animatedstory" | pehli line: "Shuruat 
+- **Dharmik raaz ya ankahe pehlu par seedha sawaal:** Shuruaat hamesha ek aise ankahe ya adbhut prashn se karein jo darshak ke mann mein turant utsukta jagaye, jaise: *"Kya aap jaante hain ki Hanumanji ka ek putra bhi tha?
+- **Chhote aur seedhe titles (5-12 shabd):** Title ya pehli line mein 5 se 12 ke beech sankshipt aur saral shabd rakhein taaki mobile screen par ek baar mein poori baat samajh aa jaye, jaise: *"Ravan ne Kailash uthaya, par
+- **Bar-bar aane wale mukhy shabd (Keywords):** Title aur shuruaat mein dharmik roop se jude vishwasniya shabdon ka prayog karein jo bar-bar chalte hain, jaise: *"Ramayan", "Hanumanji", "Lakshman", "Mata Sita", aur "Katha"
+- **Chonkwane wali ghatna ya aashcharya (Curiosity hook):** Shuruaat mein kisi aisi ghatna ko samne rakhein jo aam taur par logon ko pata na ho taaki curiosity bani rahe, jaise: *"14 saal ke vanvaas mein, Lakshman ek baar 
+- **Pavitra aur maryadit shabdaavali:** Shuruaat ya title mein hamesha shuddh, maryadit aur parivarik shabdon ka hi upayog karein bina kisi jhoothi sansani ya film/actor ke, jaise: *"Gaya mein Mata Sita ne kaise kiya tha p
+- **Shuruaat:** Ravan is dead, Lanka has a new king.
+- **Mushkil:** What happened to his queen, Mandodari?
+- **Mod:** nahi hai
+- **Appeal:** So tell me: did Mandodari lose everything, or did she win?
