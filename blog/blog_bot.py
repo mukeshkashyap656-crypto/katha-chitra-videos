@@ -273,6 +273,7 @@ MORE_ROUTES = [
     ("Kilo", "https://ai-gateway.kilo.ai/api/v1", "", ["kilo-auto/free"]),
 ]
 GEM_SKIP_UNTIL = 0     # Gemini ka free quota khatam (429) hone par is run mein 10 minute tak use na aazmao (sab post mein samay barbaad hota tha)
+OVH_WAITS = 0          # ek run mein OVH ke liye zyada se zyada 3 baar rukna (warna run ka samay khatam ho jata hai)
 GEM_DEAD = set()       # jo model "no longer available" (404) bole, use is run mein dobara na aazmao
 
 
@@ -283,7 +284,7 @@ def chhota_prompt(prompt, limit=2500):
 
 def write_post(item):
     """Returns (post dict, sources list). Gemini grounded -> OpenRouter fallback."""
-    global GEM_SKIP_UNTIL
+    global GEM_SKIP_UNTIL, OVH_WAITS
     prompt = PROMPT.format(**item)
     seekh = lessons()
     if seekh:
@@ -396,7 +397,8 @@ def write_post(item):
             try:
                 r = requests.post(base + "/chat/completions", timeout=180,
                                   headers={"Authorization": "Bearer " + key} if key else {}, json=body)
-                if r.status_code == 429 and name == "OVH":   # bina chaabi wali free seema har minute ki hai: ruk kar EK baar aur
+                if r.status_code == 429 and name == "OVH" and OVH_WAITS < 3:   # bina chaabi wali free seema har minute ki hai: ruk kar EK baar aur
+                    OVH_WAITS += 1
                     log("OVH: thodi der ruk kar dobara")
                     time.sleep(65)
                     r = requests.post(base + "/chat/completions", timeout=180, json=body)
