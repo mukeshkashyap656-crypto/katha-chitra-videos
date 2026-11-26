@@ -48,3 +48,6 @@ Ye blog "sari khabar, Hindi mein" ke liye hai, 6 vishay baari-baari se: Mobile G
 - Ye mashini milaan hai: har tarah ki galti nahi pakadta.
 - Post blog tak na pahunche to run fail (laal) dikhta hai aur khabar "posted" mein nahi likhi jaati.
 - Secret pata ya TOKEN kabhi log mein nahi likhna.
+
+## Likhne ki seekh
+- Bot har post se pehle blog/SEEKH.md ki seekh padhta hai. RULES.md bot khud nahi padhta; ye insaanon aur sahayak ke liye hai.
