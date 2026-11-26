@@ -7,7 +7,7 @@ Ye blog "sari khabar, Hindi mein" ke liye hai, 6 vishay baari-baari se: Mobile G
 3. Post apne shabdon mein, nayi samajh ke saath: "kya hua, iska matlab kya, kisko kya karna chahiye". Kisi ka text copy nahi.
 4. Heading seedhi aur sachchi. Clickbait ya jhooth nahi.
 5. Har post ke neeche sroton ke link. Aur ek chhoti line: post AI ki madad se likhi aur sroton se milayi gayi.
-6. Tasveer: sirf ASLI camera photo, free licence wali (Pexels, Pixabay, Openverse CC0/PDM), credit ke saath. Asli photo na mile to post ruk jaati hai. (Owner ka faisla, 26 Nov 2026.)
+6. Tasveer (Owner ka faisla, 26 Nov 2026, dopahar; pehle wale photo-niyam ki jagah): pehle Pexels/Pixabay (chaabi ho to), phir blog/photo_bhandar.json ki dekhi hui free-licence asli photo (credit + licence + "सांकेतिक फ़ोटो"), aur mel wali photo na mile to Khabaradda ka apna saada cover. AI se bani tasveer nahi.
 7. Owner ka faisla (26 Nov 2026): jaanch pass hone ke baad post apne aap live ho. Email wale raaste mein draft ya live Blogger ki Settings > Email se tay hota hai.
 8. Ek jaisi/duplicate khabar nahi (posted.json se milaan).
 9. Mukhya ruk-jaane waali galti (kam shabd, srot nahi, ginti fail) = post nahi, agle din dobara.
@@ -22,25 +22,26 @@ Ye blog "sari khabar, Hindi mein" ke liye hai, 6 vishay baari-baari se: Mobile G
 - Shuru mein 2 line ka hook: kaun si kimat, kiske liye (gamer / camera / battery / student).
 - Har phone ke liye: kimat, processor, RAM+storage, battery+charging, camera, ek line "kiske liye", 2 achhi baatein, 1 kami.
 - Aakhir mein ek tulna table (sab phone ek saath) aur "mera pick" (kam budget / best camera / best battery).
-- Photo sirf asli aur free-licence wali; khaas model ki photo na mile to saaf "सांकेतिक फ़ोटो" likho. Banner nahi.
+- Photo sirf asli aur free-licence wali; khaas model ki photo na mile to saaf "सांकेतिक फ़ोटो" likho. Banner nahi (apna cover: rule 6).
 - FAQ (3-4 sawaal), "kharidne se pehle" list, kimat badal sakti hai wala note.
 - Spec sirf wahi likhna jo asli source se mila ho; andaza nahi. Jo pata na ho, "nahi mila" ya chhod do.
 - Kisi site ka text copy nahi, apne shabdon mein, aam bolchaal ki Hindi.
 
 ## Khabaradda ki apni pehchaan (sabse alag dikhne ke liye)
-- Photo asli ho; apni banayi phone ki tasveer ya banner nahi.
+- Photo asli ho; apni banayi phone ki tasveer nahi (saada cover sirf rule 6 wali majboori mein).
 - Har post mein ek "Khabaradda ka seedha jawab" hissa: "Agar X chahiye to ye lo, Y chahiye to wo lo" (battery / RAM / brand / kam budget).
 - Har post mein ek "Kisko mat lena" line: kis tarah ke user ko ye phone/cheez nahi leni chahiye.
 - Seedhi, aam bolchaal ki bhasha; "seedha sach" wala lehja; badhaa-chadhaa kar kuch nahi.
 
 ## Asli photo ka rasta (copyright-free)
+Bhandar mein nayi photo tabhi jodo jab use aankh se dekh liya ho aur licence page se mila ho; bachchon ya niji jaankari wali photo nahi.
 1. Pehle us khaas model ki photo: Wikimedia Commons ya Openverse (sirf CC0 / public domain, ya aisi licence jisme credit dekar commercial use ho). Photo ke neeche credit (naam + link) zaroor likho.
 2. Na mile to us brand/segment ki aam smartphone photo: Pexels, Pixabay, Unsplash (inki licence mein commercial use free hai).
-3. Wo bhi na mile to post roko. Purane model ki photo naye model ke naam se kabhi mat lagao.
+3. Wo bhi na mile to apna Khabaradda cover lagao (rule 6). Purane model ki photo naye model ke naam se kabhi mat lagao.
 4. Company ki official photo / review site ki photo bina ijazat kabhi nahi.
 
 ## AI se tasveer
-- Blog par AI se bani ya khud banayi tasveer/banner NAHI lagti (owner ka faisla, 26 Nov 2026).
+- Blog par AI se bani tasveer NAHI lagti. Khud banaya saada cover sirf tab jab mel wali asli photo na mile (rule 6).
 
 ## Post se pehle apni jaanch (owner ka kehna, 26 Nov 2026: "GitHub khud check kare, phir post ho")
 - Pehle shabd, srot, lipi aur mana vishay ki jaanch; phir srot ka page padh kar post ka har ank (daam, tareekh, spec) milaaya jaata hai.

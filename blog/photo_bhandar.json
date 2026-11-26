@@ -1,0 +1,239 @@
+{
+ "note": "Har photo 26 Nov 2026 ko aankh se dekh kar chuni gayi; licence Wikimedia Commons ke page se.",
+ "topics": [
+  [
+   "cricket",
+   "\\bcricket\\b|\\bipl\\b"
+  ],
+  [
+   "isro",
+   "\\bisro\\b|\\bpslv\\b|\\brocket\\b|space mission"
+  ],
+  [
+   "kheti",
+   "\\bfarm(er|ers|ing)?\\b|\\bagriculture\\b|\\bcrops?\\b|\\bkisan\\b"
+  ],
+  [
+   "film",
+   "\\bcinema\\b|\\bmovies?\\b|\\bfilms?\\b|\\bott\\b|web series|\\bnetflix\\b"
+  ],
+  [
+   "gaming",
+   "\\bgam(e|es|ing|er)\\b|\\bbgmi\\b|free fire|\\besports\\b"
+  ],
+  [
+   "battery",
+   "\\bbattery\\b|\\bcharg(e|er|ing)\\b|power ?bank"
+  ],
+  [
+   "camera",
+   "\\bcamera\\b|phone photography"
+  ],
+  [
+   "network",
+   "\\b5g\\b|\\b4g\\b|network tower|mobile tower|\\btelecom\\b|cell tower"
+  ],
+  [
+   "chat",
+   "\\bwhatsapp\\b|\\bmessag(e|es|ing)\\b|\\bchat\\b|\\btelegram\\b"
+  ],
+  [
+   "ai",
+   "\\bai\\b|artificial intelligence|\\brobot\\b|\\bchatbot\\b|\\bchatgpt\\b|\\bgemini\\b"
+  ],
+  [
+   "laptop",
+   "\\blaptops?\\b|\\bnotebook computer\\b"
+  ],
+  [
+   "smartphone",
+   "\\bsmart ?phones?\\b|\\b(mobile )?phones?\\b"
+  ]
+ ],
+ "photos": [
+  {
+   "topic": "smartphone",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/af/Man_on_a_smartphone_%28Unsplash%29.jpg/1280px-Man_on_a_smartphone_%28Unsplash%29.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Man_on_a_smartphone_(Unsplash).jpg",
+   "license": "CC0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "author": "Gilles Lambert"
+  },
+  {
+   "topic": "smartphone",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/e/e6/Eira%2C_Helsinki%2C_Finland_%28Unsplash%29.jpg/1280px-Eira%2C_Helsinki%2C_Finland_%28Unsplash%29.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Eira,_Helsinki,_Finland_(Unsplash).jpg",
+   "license": "CC0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "author": "Toni Hukkanen"
+  },
+  {
+   "topic": "smartphone",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/2/26/Hand_holding_%28Unsplash%29.jpg/1280px-Hand_holding_%28Unsplash%29.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Hand_holding_(Unsplash).jpg",
+   "license": "CC0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "author": "Samson Vowles"
+  },
+  {
+   "topic": "smartphone",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/7/75/Businessman_with_coffee_outdoors_%28Unsplash%29.jpg/1280px-Businessman_with_coffee_outdoors_%28Unsplash%29.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Businessman_with_coffee_outdoors_(Unsplash).jpg",
+   "license": "CC0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "author": "Rohit Tandon"
+  },
+  {
+   "topic": "camera",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/b/bb/Smartphone_photographer_%28Unsplash%29.jpg/1280px-Smartphone_photographer_%28Unsplash%29.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Smartphone_photographer_(Unsplash).jpg",
+   "license": "CC0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "author": "James Sutton"
+  },
+  {
+   "topic": "camera",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/88/Lake_of_the_Woods%2C_United_States_%28Unsplash%29.jpg/1280px-Lake_of_the_Woods%2C_United_States_%28Unsplash%29.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Lake_of_the_Woods,_United_States_(Unsplash).jpg",
+   "license": "CC0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "author": "Dayne Topkin"
+  },
+  {
+   "topic": "gaming",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/1/17/Playing_with_smartphone.jpg/1280px-Playing_with_smartphone.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Playing_with_smartphone.jpg",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "author": "Santeri Viinamäki"
+  },
+  {
+   "topic": "gaming",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4b/Hands_holding_video_game_controller_%2850811892858%29.jpg/1280px-Hands_holding_video_game_controller_%2850811892858%29.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Hands_holding_video_game_controller_(50811892858).jpg",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0/",
+   "author": "Vu Hoang"
+  },
+  {
+   "topic": "battery",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/6/61/Dead_battery_%28Unsplash%29.jpg/1280px-Dead_battery_%28Unsplash%29.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Dead_battery_(Unsplash).jpg",
+   "license": "CC0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "author": "rawpixel.com"
+  },
+  {
+   "topic": "battery",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/36/Charging_smartphone_with_powerbank_20180312.jpg/1280px-Charging_smartphone_with_powerbank_20180312.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Charging_smartphone_with_powerbank_20180312.jpg",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "author": "Santeri Viinamäki"
+  },
+  {
+   "topic": "battery",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/5/53/Charging_a_smartphone_with_a_USB_power_bank.jpg/1280px-Charging_a_smartphone_with_a_USB_power_bank.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Charging_a_smartphone_with_a_USB_power_bank.jpg",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "author": "Mk2010"
+  },
+  {
+   "topic": "network",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/cb/Mount_Utsayantha_fire_tower.JPG/1280px-Mount_Utsayantha_fire_tower.JPG",
+   "page": "https://commons.wikimedia.org/wiki/File:Mount_Utsayantha_fire_tower.JPG",
+   "license": "CC BY-SA 3.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/3.0/",
+   "author": "Brendan J. O'Reilly"
+  },
+  {
+   "topic": "laptop",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/8b/Laptop_on_a_neat_desk_%28Unsplash%29.jpg/1280px-Laptop_on_a_neat_desk_%28Unsplash%29.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Laptop_on_a_neat_desk_(Unsplash).jpg",
+   "license": "CC0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "author": "Norbert Levajsics"
+  },
+  {
+   "topic": "laptop",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/c0/Laptop_on_desk_book_stacks_%28Unsplash%29.jpg/1280px-Laptop_on_desk_book_stacks_%28Unsplash%29.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Laptop_on_desk_book_stacks_(Unsplash).jpg",
+   "license": "CC0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "author": "Freddie Marriage"
+  },
+  {
+   "topic": "ai",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/UBTECH_Alpha_1PRO_Humanoid_Robot_-_hack4no_2016.jpg/1280px-UBTECH_Alpha_1PRO_Humanoid_Robot_-_hack4no_2016.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:UBTECH_Alpha_1PRO_Humanoid_Robot_-_hack4no_2016.jpg",
+   "license": "CC BY 2.0",
+   "license_url": "https://creativecommons.org/licenses/by/2.0/",
+   "author": "Kartverket"
+  },
+  {
+   "topic": "chat",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4c/Texting_while_traveling_%28Unsplash%29.jpg/1280px-Texting_while_traveling_%28Unsplash%29.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Texting_while_traveling_(Unsplash).jpg",
+   "license": "CC0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "author": "Josh Felise"
+  },
+  {
+   "topic": "chat",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0c/Texting_over_iced_coffee_%28Unsplash%29.jpg/1280px-Texting_over_iced_coffee_%28Unsplash%29.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Texting_over_iced_coffee_(Unsplash).jpg",
+   "license": "CC0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "author": "rawpixel.com"
+  },
+  {
+   "topic": "cricket",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/a/a5/A_Modern_Cricket_Bat.jpg/1280px-A_Modern_Cricket_Bat.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:A_Modern_Cricket_Bat.jpg",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "author": "Arv94"
+  },
+  {
+   "topic": "cricket",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/4c/Sidmouth_Cricket_Club_%28geograph_5407702%29.jpg/1280px-Sidmouth_Cricket_Club_%28geograph_5407702%29.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Sidmouth_Cricket_Club_(geograph_5407702).jpg",
+   "license": "CC BY-SA 2.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/2.0/",
+   "author": "BatAndBall"
+  },
+  {
+   "topic": "film",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/c/ce/Movie_theater_seats_%28Unsplash%29.jpg/1280px-Movie_theater_seats_%28Unsplash%29.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Movie_theater_seats_(Unsplash).jpg",
+   "license": "CC0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "author": "Elijah Flores"
+  },
+  {
+   "topic": "film",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/3/33/TV_remote_control_in_hand_20170128.jpg/1280px-TV_remote_control_in_hand_20170128.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:TV_remote_control_in_hand_20170128.jpg",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "author": "Santeri Viinamäki"
+  },
+  {
+   "topic": "kheti",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/9/9c/Wheat_fields_IN_Haryana.jpg/1280px-Wheat_fields_IN_Haryana.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:Wheat_fields_IN_Haryana.jpg",
+   "license": "CC0",
+   "license_url": "https://creativecommons.org/publicdomain/zero/1.0/",
+   "author": "Aman Rania"
+  },
+  {
+   "topic": "isro",
+   "url": "https://thumb.wikimedia.org/wikipedia/commons/thumb/8/80/ISRO_PSLV_%282020%29_07.jpg/1280px-ISRO_PSLV_%282020%29_07.jpg",
+   "page": "https://commons.wikimedia.org/wiki/File:ISRO_PSLV_(2020)_07.jpg",
+   "license": "CC BY-SA 4.0",
+   "license_url": "https://creativecommons.org/licenses/by-sa/4.0/",
+   "author": "Ank Kumar"
+  }
+ ]
+}

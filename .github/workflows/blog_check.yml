@@ -56,3 +56,38 @@ jobs:
         run: |
           [ -z "$A" ] && { echo "CLOUDFLARE NAHI"; exit 0; }
           curl -s -X POST "https://api.cloudflare.com/client/v4/accounts/$A/ai/run/@cf/meta/llama-3.3-70b-instruct-fp8-fast" -H "Authorization: Bearer $C" -d '{"messages":[{"role":"user","content":"Ek line mein Hindi mein namaste likho"}],"max_tokens":60}' | python3 -c "import sys,json;d=json.load(sys.stdin);print('Cloudflare AI:', 'CHALA' if d.get('success') else 'FAIL '+str(d.get('errors'))[:150])"
+
+  photo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with: { python-version: '3.12' }
+      - run: pip install -q --upgrade requests pillow
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq fonts-noto-core libfribidi0
+      - name: Photo bhandar ki har photo utarti hai? Apna cover banta hai?
+        run: |
+          mkdir -p blog/out && python3 - <<'PY'
+          import sys, os, json, time
+          sys.path.insert(0, "blog")
+          import blog_bot as b
+          from PIL import features
+          lib = json.load(open("blog/photo_bhandar.json", encoding="utf-8"))
+          bad = []
+          for p in lib["photos"]:
+              try:
+                  path = b._dl(p["url"], "/tmp/x.jpg", {"User-Agent": b.COMMONS_UA})
+                  if b.image_width(path) < 1200: bad.append(("chhoti", p["page"]))
+              except Exception as e:
+                  bad.append((str(e)[:80], p["page"]))
+              time.sleep(2)
+          print("PHOTO: %d mein se %d sahi" % (len(lib["photos"]), len(lib["photos"]) - len(bad)))
+          for x in bad: print("  KHARAB:", x)
+          print("HINDI jod (raqm):", features.check("raqm"), "| Hindi font:", next((f for f in b.HINDI_FONTS if os.path.exists(f)), "NAHI"))
+          b.make_own_cover({"title": "WhatsApp में अब संदेश पहले से तय समय पर भेज सकेंगे"}, "AI & Apps", "/tmp/cover.jpg")
+          print("COVER bana:", os.path.getsize("/tmp/cover.jpg"), "bytes")
+          if bad: sys.exit(1)
+          PY
+      - uses: actions/upload-artifact@v4
+        with: { name: cover-jaanch, path: /tmp/cover.jpg }

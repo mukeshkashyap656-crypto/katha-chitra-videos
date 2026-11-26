@@ -5,6 +5,7 @@ Roz: Google News se aaj ki khabar -> Gemini (Google Search grounding) se verify 
 Env: GEMINI_API_KEY (+ optional OPENROUTER_API_KEY), BLOG_ID, BLOGGER_CLIENT_ID, BLOGGER_CLIENT_SECRET,
      BLOGGER_REFRESH_TOKEN, MODE=draft|live (default draft), N_POSTS (default 2), DRY_RUN=1 (Blogger ko kuch nahi bhejta)
 """
+import hashlib
 import datetime
 import html, json, os, re, sys, time, difflib
 import urllib.parse, xml.etree.ElementTree as ET
@@ -584,6 +585,8 @@ def host_image(path):
                              json={"message": "blog image", "content": base64.b64encode(open(path, "rb").read()).decode()})
             if r.status_code in (200, 201):
                 return f"https://cdn.jsdelivr.net/gh/{repo}@main/{name}"
+            if r.status_code == 422 and os.path.basename(path).startswith("lib-"):   # bhandar ki photo pehle se chadhi hai
+                return f"https://cdn.jsdelivr.net/gh/{repo}@main/{name}"
             log("image upload", r.status_code, r.text[:100])
         except Exception as e:
             log("image upload fail:", e)
@@ -699,6 +702,100 @@ def vishay_icon(title, body_html):
     return re.sub(r"(<h3[^>]*>)\s*(?:(?!<)[^\w\s\u0900-\u097F\"'(])*\s*", lambda m: m.group(1) + WA_ICON, body_html, flags=re.I)
 
 
+def credit_html(ph):
+    out = f'<a href="{html.escape(ph["page"])}" rel="nofollow noopener">{html.escape(ph["credit"])}</a>'
+    if ph.get("license_url"):
+        out += f' (<a href="{html.escape(ph["license_url"])}" rel="nofollow noopener">licence</a>)'
+    return out
+
+
+def bhandar_photos(queries, title="", n=4):
+    """Bina chaabi wala raasta: blog/photo_bhandar.json ki pehle se dekhi hui free-licence photos.
+    Sakht milaan: MUKHYA khoj (queries[0]) ka vishay bhandar mein na ho to khaali list (tab apna cover banta hai)."""
+    try:
+        lib = json.load(open(os.path.join(HERE, "photo_bhandar.json"), encoding="utf-8"))
+    except Exception as e:
+        log("photo bhandar nahi khula:", str(e)[:80]); return []
+    def vishay(q):
+        return next((t for t, rx in lib["topics"] if re.search(rx, str(q), re.I)), None)
+    qs = [str(q) for q in (queries or []) if str(q).strip()]
+    if not qs or not vishay(qs[0]): return []
+    seed = int(hashlib.md5(title.encode()).hexdigest()[:8], 16)
+    out, used, topics_done = [], set(), set()
+    for q in qs:
+        t = vishay(q)
+        if not t or t in topics_done: continue
+        topics_done.add(t)
+        pool = [p for p in lib["photos"] if p["topic"] == t and p["url"] not in used]
+        pool = pool[seed % len(pool):] + pool[:seed % len(pool)] if pool else []
+        for p in pool:
+            path = os.path.join(OUT, "lib-" + hashlib.md5(p["url"].encode()).hexdigest()[:12] + ".jpg")
+            try:
+                _dl(p["url"], path, {"User-Agent": COMMONS_UA})
+            except Exception as e:
+                log("bhandar photo utarne mein dikkat:", str(e)[:80]); continue
+            used.add(p["url"])
+            out.append({"url": host_image(path) or p["url"], "credit": f'फ़ोटो: {p["author"]} / Wikimedia Commons, {p["license"]}',
+                        "page": p["page"], "license_url": p["license_url"], "q": q, "w": image_width(path)})
+            break
+        if len(out) >= n: break
+    return out
+
+
+HINDI_FONTS = ["/usr/share/fonts/truetype/noto/NotoSansDevanagari-Bold.ttf", "/usr/share/fonts/truetype/lohit-devanagari/Lohit-Devanagari.ttf",
+               "/usr/share/fonts/truetype/freefont/FreeSansBold.ttf"]
+
+
+def make_own_cover(post, cat, path):
+    """Khabaradda ka apna saada cover (jab mel wali asli photo na mile). Hindi font + sahi jod (raqm) ho to Hindi shirshak,
+    warna sirf English banner_title (toote Hindi akshar kabhi nahi)."""
+    from PIL import Image, ImageDraw, ImageFont, features
+    W, H = 1280, 720
+    colours = [(18, 52, 86), (20, 83, 70), (92, 40, 62), (70, 52, 110), (112, 62, 20), (30, 64, 120)]
+    bg = colours[int(hashlib.md5(str(cat).encode()).hexdigest()[:4], 16) % len(colours)]
+    im = Image.new("RGB", (W, H), bg)
+    d = ImageDraw.Draw(im)
+    d.rectangle([0, 0, W, 14], fill=(255, 196, 0)); d.rectangle([0, H - 110, W, H], fill=(255, 255, 255))
+    font_path = next((f for f in HINDI_FONTS if os.path.exists(f)), None)
+    hindi = bool(font_path) and features.check("raqm")
+    if hindi:
+        text = str(post["title"]).strip()
+        mk = lambda z: ImageFont.truetype(font_path, z, layout_engine=ImageFont.Layout.RAQM)
+        latin = lambda z: _font(z)
+    else:
+        text = str(post.get("banner_title") or "KHABARADDA").upper()
+        mk = latin = lambda z: _font(z)
+    # Hindi font mein aksar English akshar/chinh nahi hote: har tukda uske sahi font se (warna dibbe bante hain)
+    def runs(t):
+        return re.findall(r"[\u0900-\u097F\u200c\u200d]+|[^\u0900-\u097F\u200c\u200d]+", t)
+    def pick(r, z):
+        return mk(z) if "\u0900" <= r[0] <= "\u097f" else latin(z)
+    def width(t, z):
+        return sum(d.textlength(r, font=pick(r, z)) for r in runs(t))
+    def draw(x, base, t, z, fill):   # sab tukde ek hi aadhaar rekha par
+        for r in runs(t):
+            f = pick(r, z)
+            d.text((x, base), r, font=f, fill=fill, anchor="ls"); x += d.textlength(r, font=f)
+    for size in (84, 74, 64, 56, 48, 42):
+        lines, cur = [], ""
+        for word in text.split():
+            nxt = (cur + " " + word).strip()
+            if width(nxt, size) > W - 180 and cur: lines.append(cur); cur = word
+            else: cur = nxt
+        lines.append(cur)
+        step = int(size * 1.45)
+        if len(lines) * step <= 440 and all(width(x, size) <= W - 160 for x in lines): break
+    y = 110 + max(0, (440 - len(lines) * step) // 2)
+    for ln in lines:
+        draw(90, y + size, ln, size, (255, 255, 255)); y += step
+    tag = str(cat).strip()
+    if tag and (hindi or tag.isascii()):
+        draw(90, 76, tag, 34, (255, 196, 0))
+    d.text((90, H - 84), "khabaradda", font=_font(46), fill=bg)
+    im.save(path, "JPEG", quality=92)
+    return path
+
+
 def insert_photos(body_html, photos):
     """Har heading (h2/h3) ke theek baad ek photo + credit. Photos kam hon to baaki headings bina photo ke."""
     if not photos: return body_html
@@ -707,7 +804,7 @@ def insert_photos(body_html, photos):
         ph = next(it, None)
         if not ph: return m.group(0)
         return (m.group(0) + f'<p><img src="{html.escape(ph["url"])}" alt="{html.escape(ph["q"])}" style="width:100%;max-width:640px;height:auto"/>'
-                f'<br/><small><a href="{html.escape(ph["page"])}" rel="nofollow noopener">{html.escape(ph["credit"])}</a></small></p>')
+                f'<br/><small>{credit_html(ph)}</small></p>')
     new = re.sub(r"</h[23]>", rep, body_html, flags=re.I)
     rest = list(it)
     if rest and new == body_html:   # koi heading nahi: shuru mein rakh do
@@ -911,23 +1008,39 @@ def main():
             log("JAANCH PASS: srot padhe aur ank mile")
             post["labels"] = [cat] + [l for l in (post.get("labels") or []) if l not in ("...", cat)][:2]
             slug = re.sub(r"\W+", "-", post["title"])[:40] or "post"
-            # Sirf ASLI photo: AI tasveer ya banner nahi. Asli photo na mile to post ruk jaati hai.
+            # Photo ka kram: 1) Pexels/Pixabay (chaabi ho to) 2) apna photo bhandar (bina chaabi) 3) apna Khabaradda cover. (Owner, 26 Nov 2026)
+            queries = [post.get("image_query") or ""] + list(post.get("photo_queries") or [])
             try:
-                queries = [post.get("image_query") or "smartphone"] + list(post.get("photo_queries") or [])
                 photos = fetch_photos(queries)
             except Exception as e:
                 log("photo nahi mili:", e); photos = []
             if not photos:
-                held += 1
-                log("POST ROKI: asli photo nahi mili -", item["title"][:60])
-                continue
-            cover = next((p for p in photos if p.get("w", 0) >= 1200), photos[0])
-            if cover.get("w", 0) < 1200:
-                log("dhyan: 1200px chaudi cover photo nahi mili")
-            rest = [p for p in photos if p is not cover]
-            post["body_html"] = insert_photos(vishay_icon(post["title"], post["body_html"]), rest)
-            cover_html = (f'<p><img src="{html.escape(cover["url"])}" alt="{html.escape(post["title"])}" style="width:100%;height:auto"/>'
-                          f'<br/><small><a href="{html.escape(cover["page"])}" rel="nofollow noopener">{html.escape(cover["credit"])}</a>। यह सांकेतिक फ़ोटो है।</small></p>\n')
+                try:
+                    photos = bhandar_photos(queries, post["title"])
+                    if photos: log("photo bhandar se", len(photos), "photo lagi")
+                except Exception as e:
+                    log("photo bhandar fail:", str(e)[:100]); photos = []
+            post["body_html"] = vishay_icon(post["title"], post["body_html"])
+            if photos:
+                cover = next((p for p in photos if p.get("w", 0) >= 1200), photos[0])
+                if cover.get("w", 0) < 1200:
+                    log("dhyan: 1200px chaudi cover photo nahi mili")
+                post["body_html"] = insert_photos(post["body_html"], [p for p in photos if p is not cover])
+                cover_html = (f'<p><img src="{html.escape(cover["url"])}" alt="{html.escape(post["title"])}" style="width:100%;height:auto"/>'
+                              f'<br/><small>{credit_html(cover)}। यह सांकेतिक फ़ोटो है।</small></p>\n')
+            else:
+                hosted = None
+                try:
+                    path = os.path.join(OUT, "cover-" + hashlib.md5((post["title"] + str(time.time())).encode()).hexdigest()[:12] + ".jpg")
+                    hosted = host_image(make_own_cover(post, cat, path))
+                except Exception as e:
+                    log("apna cover fail:", str(e)[:100])
+                if not hosted:
+                    held += 1
+                    log("POST ROKI: na photo mili, na apna cover chadh paaya -", item["title"][:60])
+                    continue
+                log("mel wali photo nahi mili: apna Khabaradda cover laga")
+                cover_html = f'<p><img src="{html.escape(hosted)}" alt="{html.escape(post["title"])}" style="width:100%;height:auto"/></p>\n'
             content = cover_html + build_html(post, srcs, item, None)
             open(os.path.join(OUT, f"{time.strftime('%Y%m%d')}-{slug}.html"), "w", encoding="utf-8").write(content)
             url = publish(post["title"], content, post["labels"])
