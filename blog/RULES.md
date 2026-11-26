@@ -43,8 +43,8 @@ Bhandar mein nayi photo tabhi jodo jab use aankh se dekh liya ho aur licence pag
 ## AI se tasveer
 - Blog par AI se bani tasveer NAHI lagti. Khud banaya saada cover sirf tab jab mel wali asli photo na mile (rule 6).
 
-## Har vishay par roz post (Owner, 26 Nov 2026 shaam: "har topic par roz post honi chahiye, phir dekhte konsa topic chalega")
-Claude ka subah 8:17 aur shaam 6:17 wala kaam Mobile, Tech, Gaming, Sarkari Naukri, Yojana mein se har ek par roz ek post ki koshish karta hai (jaanch fail ho to woh vishay chhootta hai). GitHub bot backup hai: din mein ek hi post (rule 1), aur vishay aur cheez badal-badal kar.
+## Roz 2 post, alag vishay (Owner, 26 Nov 2026: "5 post nhi, alag alag topic par 2 post daily")
+Claude ka kaam subah 8:17 par ek aur shaam 6:17 par ek post ki koshish karta hai; din mein 2 se zyada nahi, dono alag vishay. Vishay baari-baari (Mobile, Tech, Gaming, Sarkari Naukri, Yojana). GitHub bot backup hai: din mein ek hi post (rule 1).
 
 ## Free tasveer khud dhoondhna (Owner, 26 Nov 2026: har blog post aur article mein)
 - Sirf aisi licence jisme credit dekar kamai wale blog par lagana allowed ho; "NC" ya "ND" wali nahi. Credit aur source link zaroor.
