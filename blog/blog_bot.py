@@ -396,6 +396,10 @@ def write_post(item):
             try:
                 r = requests.post(base + "/chat/completions", timeout=180,
                                   headers={"Authorization": "Bearer " + key} if key else {}, json=body)
+                if r.status_code == 429 and name == "OVH":   # bina chaabi wali free seema har minute ki hai: ruk kar EK baar aur
+                    log("OVH: thodi der ruk kar dobara")
+                    time.sleep(65)
+                    r = requests.post(base + "/chat/completions", timeout=180, json=body)
                 if r.status_code != 200:
                     raise RuntimeError(f"HTTP {r.status_code}: {r.text[:120]!r}")
                 post = parse_json(r.json()["choices"][0]["message"]["content"])
