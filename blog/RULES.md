@@ -12,7 +12,7 @@ Ye blog "sari khabar, Hindi mein" ke liye hai, 6 vishay baari-baari se: Mobile G
 8. Ek jaisi/duplicate khabar nahi (posted.json se milaan).
 9. Mukhya ruk-jaane waali galti (kam shabd, srot nahi, ginti fail) = post nahi, agle din dobara.
 10. Mobile gaming ke khaas niyam: hack, cheat, mod APK, pirated game, free diamond/UC/redeem code ke daave, account becha-kharida, ya game ke niyam todne ka tareeka KABHI nahi (Google AdSense aur game company dono ke niyam ke khilaaf). Code mein ye shabd mile to post apne aap ruk jaati hai.
-11. Asli event dikhane ke liye: game company ke OFFICIAL YouTube trailer ka embed (channel ka naam jaanch ke). Dusri sites ya press ki photo/screenshot utha ke nahi (copyright). Owner apne gameplay screenshot haath se daal sakta hai. Video na mile to CC0 tasveer ya bina tasveer.
+11. VIDEO (Owner, 26 Nov 2026: "jisme lga sakte hai lga doh"): jis post ke vishay ka asli official video mile, usme tasveer ke saath video bhi lage. Poora tareeka neeche "Video lagane ka tareeka" mein. Dusri sites ya press ki photo/screenshot utha ke nahi (copyright). Owner apne gameplay screenshot haath se daal sakta hai.
 12. Bachchon wale khel hon to jua/paise ka laalach nahi dikhana. Khabar seedhi aur sachchi.
 13. BAND vishay (bot kabhi nahi likhta, khabar ka shirshak mile to hi chhod deta hai): sehat/ilaaj/dawa, paisa/share/nivesh/crypto, chunaav/rajneeti/partiyan, hatya/balatkar/hadsa/maut, dharm-vivaad/dange. Galti se nuksaan ya bhadkaane wali khabar AI se nahi likhni.
 14. "Desh Duniya" mein sirf sarkari yojana, vigyan, ISRO jaisi seedhi khabar, sirf tathya aur srot, apni raay nahi.
@@ -42,6 +42,25 @@ Bhandar mein nayi photo tabhi jodo jab use aankh se dekh liya ho aur licence pag
 
 ## AI se tasveer
 - Blog par AI se bani tasveer NAHI lagti. Khud banaya saada cover sirf tab jab mel wali asli photo na mile (rule 6).
+
+## Roz alag vishay (Owner, 26 Nov 2026)
+Pichhli 3 post wala vishay aur pichhli 5 post wali app, brand ya cheez dobara nahi.
+
+## Free tasveer khud dhoondhna (Owner, 26 Nov 2026: har blog post aur article mein)
+- Sirf aisi licence jisme credit dekar kamai wale blog par lagana allowed ho; "NC" ya "ND" wali nahi. Credit aur source link zaroor.
+- Haath se ya Claude se khojte waqt: Pexels, Pixabay, Unsplash, Wikimedia Commons, Openverse; har photo aankh se dekho.
+- GitHub bot photo dekh nahi sakta, isliye uska raasta rule 6 wala hi hai (khuli khoj band rahe).
+- Amazon, Flipkart, Google Images, company/news site se photo utha kar nahi.
+
+## Video lagane ka tareeka
+1. Video sirf us company, app, game ya sarkari vibhag ke APNE official YouTube channel ka. Kisi YouTuber ya news channel ka nahi.
+2. Channel ke andar us cheez ka naam khojo (youtube.com/@HANDLE/search?query=NAAM).
+3. https://www.youtube.com/oembed?format=json&url=VIDEO_LINK se title aur author_url (channel ka handle) milao. Naam milta-julta hona kaafi nahi.
+4. Bilkul wahi model ya feature ho (Pro/Lite/5G ka fark dekho). Sahi video na mile to post bina video ke jaaye.
+5. <figure> mein 16:9 embed, neeche likho kiska video hai; vigyapan ho to saaf likho ki yeh company ka vigyapan hai. Video download karke dobara upload nahi.
+6. Live post par computer aur phone, dono screen par dekho.
+7. Kai phone wali post: pehle us model ki free tasveer, na mile to official video, wo bhi na mile to official page ka link aur saaf likho ki video nahi mila.
+GitHub bot: video sirf code ki OFFICIAL list wale jaanche hue handle se aur title milne par lagta hai; wo poora video dekh nahi sakta aur har product ke neeche alag video nahi lagata. Naya handle sirf upar ke kadam 3 se jaanch kar jodo.
 
 ## Post se pehle apni jaanch (owner ka kehna, 26 Nov 2026: "GitHub khud check kare, phir post ho")
 - Pehle shabd, srot, lipi aur mana vishay ki jaanch; phir srot ka page padh kar post ka har ank (daam, tareekh, spec) milaaya jaata hai.

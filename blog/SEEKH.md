@@ -18,6 +18,7 @@ Bot har post likhne se pehle sirf "SEEKH SHURU" aur "SEEKH KHATAM" ke beech ki l
 - Har post par uske vishay ka icon ho, sirf app wali post par nahi: shuru mein ek bada vishay-icon (app/brand ho to uska asli official icon, warna sahi emoji) aur har h3 par us hisse se juda icon.
 - Roz alag vishay: pichhli 3 post wala vishay aur pichhli 5 post wali cheez ya brand dobara mat lo.
 - Kai phone/product wali post mein har ek ka usi exact model ka real visual ho (free licence photo, warna company ke official YouTube channel ki video, warna official page ka link). Amazon, Flipkart ya Google se photo utha kar nahi.
+- Video: sirf usi cheez ka, company ya vibhag ke apne official YouTube channel wala. official_video_url ka link pakka pata na ho to khaali chhodo; andaaza ya doosre channel ka link nahi.
 <!-- SEEKH KHATAM -->
 
 ## Code khud lagata hai

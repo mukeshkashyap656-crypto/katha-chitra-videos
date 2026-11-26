@@ -189,7 +189,7 @@ Niyam (zaroori):
 - Sehat/ilaaj, paisa/share/nivesh, chunaav/rajneeti, hatya/hadsa, dharm-vivaad par kuch mat likho. Aisi khabar aaye to {{"skip": true}} do.
 - Gaming mein KABHI mat likho: cheat, hack, mod APK, pirated/crack game, free diamond/UC/redeem code ke jhoothe daave, ya account becha-kharida. Sirf khabar, update, review, tips jo game ke niyam ke andar hon.
 - Game ke screenshot/logo ki baat sirf shabdon mein; tasveer tum nahi doge.
-Sirf ek JSON do: {{"title": "...", "description": "150 akshar ka saar", "labels": ["...", "..."], "image_query": "english 2-3 words, generic (jaise smartphone gaming)", "photo_queries": ["english 2-4 shabd, post ki har mukhya cheez/vishay ke liye alag asli photo ki khoj (3 se 5), jaise smartphone battery, 5G network, gaming phone"], "banner_title": "English, max 4 shabd, jaise BGMI 4.7 UPDATE", "banner_sub": "English, max 6 shabd", "chips": ["English, 3 tak: 24 NOV: GALA REGISTRATION ENDS"], "official_video_url": "is event/update ka OFFICIAL YouTube trailer ka link (game company ke apne channel ka), na mile to khaali", "body_html": "..."}}"""
+Sirf ek JSON do: {{"title": "...", "description": "150 akshar ka saar", "labels": ["...", "..."], "image_query": "english 2-3 words, generic (jaise smartphone gaming)", "photo_queries": ["english 2-4 shabd, post ki har mukhya cheez/vishay ke liye alag asli photo ki khoj (3 se 5), jaise smartphone battery, 5G network, gaming phone"], "banner_title": "English, max 4 shabd, jaise BGMI 4.7 UPDATE", "banner_sub": "English, max 6 shabd", "chips": ["English, 3 tak: 24 NOV: GALA REGISTRATION ENDS"], "official_video_url": "isi app/phone/game/yojana (bilkul wahi model ya feature) ke video ka YouTube link, sirf company ya vibhag ke APNE official channel ka; link pakka na ho to khaali, andaaza nahi", "body_html": "..."}}"""
 
 
 def lessons():
@@ -812,22 +812,39 @@ def insert_photos(body_html, photos):
     return new
 
 
-OFFICIAL = [x.strip().lower() for x in os.environ.get(
-    "OFFICIAL_CHANNELS", "battlegrounds mobile india,bgmi,krafton,free fire,garena,pubg mobile,supercell,activision,riot games,epic games").split(",")]
+# Sirf wahi channel jinka pata (handle) aankh se jaancha gaya ho (26 Nov 2026). Naam ke tukde se milaan nahi:
+# "free fire" naam wala koi bhi channel official nahi hota. Naya handle jaanch ke baad hi jodo.
+OFFICIAL = {x.strip().lower().lstrip("@") for x in (os.environ.get("OFFICIAL_CHANNELS") or
+            "WhatsApp,TecnoMobileIndia,hmddevices,SamsungIndia,realmemobiles").split(",") if x.strip()}
+VIDEO_AAM = set("the and for with new official video trailer teaser india indian channel launch is here now how to your you of in on a an tvc 30sec sec shorts update app mobile phone smartphone game 5g 4g".split())
 
 
-def official_video(url):
-    """Sirf game company ke apne YouTube channel ka video (oEmbed se channel ka naam jaanch ke). Embed karna allowed hai, copy nahi."""
+def video_judi_hui(video_title, post_text, author):
+    """Video ke naam mein post wali cheez ke kam se kam 2 khaas shabd hon; ank wale model-naam (F70, P4s) bhi milein."""
+    words = lambda t: set(re.findall(r"[a-z0-9]+", str(t).lower()))
+    v, p = words(video_title), words(post_text)
+    if len((v & p) - VIDEO_AAM) < 2: return False
+    model = lambda ws: {w for w in ws - VIDEO_AAM if re.search(r"[a-z]", w) and re.search(r"[0-9]", w)}
+    return not model(v) or bool(model(v) & model(p))
+
+
+def official_video(url, post_text=""):
+    """Company/vibhag ke apne YouTube channel ka, isi vishay ka video (oEmbed se jaanch). Embed karna, copy nahi."""
     m = re.search(r"(?:youtu\.be/|v=|/embed/|/shorts/)([A-Za-z0-9_-]{11})", url or "")
     if not m: return None
     try:
         r = requests.get("https://www.youtube.com/oembed", timeout=20,
                          params={"url": "https://www.youtube.com/watch?v=" + m.group(1), "format": "json"})
         r.raise_for_status()
-        author = r.json().get("author_name", "").lower()
-        if any(o in author for o in OFFICIAL):
-            return {"id": m.group(1), "title": r.json().get("title", ""), "author": r.json().get("author_name", "")}
-        log("video official channel ka nahi:", author)
+        j = r.json()
+        handle = str(j.get("author_url", "")).rstrip("/").rsplit("/@", 1)
+        handle = handle[1].lower() if len(handle) == 2 else ""
+        if handle not in OFFICIAL:
+            log("video jaanche hue official channel ka nahi:", j.get("author_name", ""))
+        elif not video_judi_hui(j.get("title", ""), post_text, j.get("author_name", "")):
+            log("video is post ke vishay ka nahi lagta:", str(j.get("title", ""))[:80])
+        else:
+            return {"id": m.group(1), "title": j.get("title", ""), "author": j.get("author_name", "")}
     except Exception as e:
         log("video jaanch fail:", e)
     return None
@@ -837,15 +854,15 @@ def build_html(post, srcs, item, img, banner_url=None, ai_used=False):
     parts = []
     if banner_url:
         parts.append(f'<p><img src="{html.escape(banner_url)}" alt="{html.escape(post["title"])}" style="width:100%;height:auto"/>' + ('<br/><small>Yeh tasveer AI se banayi gayi hai, asli product alag dikh sakta hai.</small>' if ai_used else '') + '</p>')
-    vid = official_video(post.get("official_video_url"))
-    if vid:
-        parts.append(f'<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden"><iframe src="https://www.youtube.com/embed/{vid["id"]}" '
-                     f'title="{html.escape(vid["title"])}" style="position:absolute;top:0;left:0;width:100%;height:100%" frameborder="0" allowfullscreen></iframe></div>'
-                     f'<p><small>Official video: {html.escape(vid["author"])} (YouTube)</small></p>')
-    if img and not vid and not banner_url:
+    vid = official_video(post.get("official_video_url"), f'{post.get("title", "")} {item.get("title", "")}')
+    if img and not banner_url:
         parts.append(f'<p><img src="{html.escape(img["url"])}" alt="{html.escape(post["title"])}" style="width:100%;height:auto"/>'
                      f'<br/><small>Tasveer: <a href="{html.escape(img["page"])}" rel="nofollow">{html.escape(img["title"])}</a> (CC0/Public Domain)</small></p>')
     parts.append(post["body_html"])
+    if vid:   # tasveer ke saath, lekh ke baad; <figure> ko assistant padhte waqt chhod deta hai
+        parts.append(f'<figure style="margin:14px 0"><div style="aspect-ratio:16/9;width:100%;max-width:640px"><iframe src="https://www.youtube.com/embed/{vid["id"]}" '
+                     f'title="{html.escape(vid["title"])}" loading="lazy" style="width:100%;height:100%;border:0" frameborder="0" allowfullscreen></iframe></div>'
+                     f'<figcaption><small>▶ वीडियो: {html.escape(vid["author"])} के आधिकारिक YouTube चैनल से (कंपनी या विभाग का अपना वीडियो)।</small></figcaption></figure>')
     links = [(item.get("source") or "Khabar", item["link"])] if item.get("link") else []
     links += srcs[:4]
     seen, lis = set(), []
