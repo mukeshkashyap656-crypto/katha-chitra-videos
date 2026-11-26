@@ -747,6 +747,10 @@ def main():
     order = cats[start:] + cats[:start]
     made = held = 0
     dry = os.environ.get("DRY_RUN") == "1"
+    web = os.environ.get("BLOG_POST_URL", "").strip().rstrip(";").strip().strip("'\"`").strip()
+    # sirf haan/na likhte hain, secret ki value kabhi nahi
+    log("bhejne ka link:", "khaali" if not web else "roop sahi" if web.startswith("https://script.google.com/") and web.endswith("/exec") else "GALAT roop",
+        "| TOKEN:", "bhara hai" if os.environ.get("BLOG_POST_TOKEN") else "khaali")
     for cat in order:
         if made >= N or held >= 4: break
         items = [i for i in news_items(CATS[cat], cat) if not any(similar(i["title"], t) for t in done_titles)]
