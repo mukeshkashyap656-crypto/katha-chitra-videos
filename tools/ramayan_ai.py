@@ -572,7 +572,7 @@ def ask(prompt_text, image=None, want_json=True, hard=False, aws=True):
     imgs = image if isinstance(image, (list, tuple)) else ([image] if image else [])
     contents = [types.Part.from_bytes(data=i, mime_type="image/jpeg") for i in imgs] + [prompt_text] if imgs else prompt_text
     chain = [("Gemini", lambda p: gemini(contents if p == prompt_text else p, want_json, hard))]
-    if not imgs and not hard:   # tasveer sirf Gemini dekh sakta hai; mushkil kaam bhi sirf achha Gemini (warna Busy -> baad mein)
+    if not imgs and not hard:
         chain += [("OpenRouter", lambda p: openrouter(p, want_json)),
                   ("Cloudflare", lambda p: cloudflare(p, want_json)),
                   ("Groq", lambda p: groq(p, want_json)),
@@ -583,6 +583,12 @@ def ask(prompt_text, image=None, want_json=True, hard=False, aws=True):
                   ("Cohere", lambda p: cohere(p, want_json)),
                   ("HuggingFace", lambda p: huggingface(p, want_json)),
                   ("ZAI", lambda p: zai(p, want_json))]
+    elif not imgs and hard:   # mushkil kaam: Gemini ke baad sabse achhe free AI (chhote nahi, par limit khatam ho to ye chale)
+        chain += [("OpenRouter", lambda p: openrouter(p, want_json)),
+                  ("Mistral", lambda p: mistral(p, want_json)),
+                  ("NVIDIA", lambda p: nvidia(p, want_json)),
+                  ("Cohere", lambda p: cohere(p, want_json)),
+                  ("SambaNova", lambda p: sambanova(p, want_json))]
     def parse(txt):
         mt = re.search(r"\{.*\}", txt, re.DOTALL)
         data = json.loads(mt.group(0) if mt else txt)
@@ -642,8 +648,8 @@ def ask(prompt_text, image=None, want_json=True, hard=False, aws=True):
                 print("Daud ka jeetne wala AI:", nm)
                 return res
             errs.append(f"{nm}: {err}")
-    if not imgs and not hard:
-        for name, fn in (("OVH", ovh), ("Kilo", kilo)):     # bina chaabi wale reserve: sirf jab upar wale sab fail
+    if not imgs:        # reserve raaste: limit khatam ho to hard ho ya na ho, ye chale
+        for name, fn in (("OVH", ovh), ("Kilo", kilo)):
             try:
                 t = fn(prompt_text, want_json)
                 res = parse(t) if want_json else t
@@ -651,7 +657,7 @@ def ask(prompt_text, image=None, want_json=True, hard=False, aws=True):
                 return res
             except Exception as e:
                 errs.append(f"{name}: {str(e)[:60]}")
-    if not imgs and not hard:                     # sab free AI fail: aakhri sahara, apne computer par chhota AI
+    if not imgs:        # aakhri sahara: apne computer par AI (hard ke liye bada model)
         try:
             t = local_ai(prompt_text, want_json, hard)
             return parse(t) if want_json else t
@@ -1820,7 +1826,7 @@ def mode_queue():
         try:
             mode_task()
         except (Busy, ValueError) as e:
-            queue_issue(n, str(e), quiet=True); return          # still busy: keep the rest for the next slot
+            queue_issue(n, str(e), quiet=True)                  # busy: is issue ko wapas line mein, par baaki ko try karo
         except Exception as e:
             comment(n, f"⚠️ Subah wali koshish mein galti hui. Yahin dobara `@ai ...` likhiye.\n\n<sub>{str(e)[:300]}</sub>")
 
