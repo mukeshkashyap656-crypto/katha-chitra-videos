@@ -126,7 +126,9 @@ function start(){
   if(/(contact|sampark|संपर्क)/.test(s)){reply('संपर्क का पन्ना नीचे है।');link({title:'Contact',url:'/p/contact.html'});return;}
   if(/(ye lekh|yeh lekh|ye article|summary|saransh|यह लेख|ये लेख|सारांश|किस बारे में)/.test(s))return summary(false);
   if(/(lekh sunao|padh ?kar sunao|read (it|aloud)|लेख सुनाओ|पढ़कर सुनाओ)/.test(s))return summary(true);
-  if(/(latest|taaza|taza|nayi khabar|aaj ki khabar|ताज़ा|ताजा|नई खबर|आज की खबर)/.test(s))return latest();
+  if(/(latest|taaza|taza|nayi khabar|aaj ki khabar|ताज़ा|ताजा|नई खबर|आज की खबर)/.test(s)){
+   var cat=[[/mobile|मोबाइल/,'mobile'],[/naukri|नौकरी/,'sarkari naukri'],[/yojana|योजना/,'yojana'],[/gam(e|ing)|गेम/,'gaming'],[/\btech\b|टेक/,'tech']].filter(function(c){return c[0].test(s)})[0];
+   return latest(cat&&cat[1]);}
   if(AI_URL)return smart(q);
   if(!words(s).length)return reply('थोड़ा और साफ़ पूछिए, जैसे: मोबाइल की नई खबर।');
   search(s);
