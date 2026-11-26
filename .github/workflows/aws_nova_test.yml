@@ -1,0 +1,80 @@
+name: AWS Nova test
+
+# Sirf haath se chalta hai. Sirf Amazon ke Nova model ko chhota sawaal bhejta hai.
+# Koi video ya post nahi. Log mein key, account ya error ka poora message nahi aata.
+on:
+  workflow_dispatch:
+    inputs:
+      region:
+        description: "Wahi AWS Region jisme key banayi (jaise ap-southeast-2)"
+        required: true
+        type: string
+
+permissions: {}
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Nova model check
+        env:
+          AWS_BEARER_TOKEN_BEDROCK: ${{ secrets.AWS_BEARER_TOKEN_BEDROCK }}
+          REGION: ${{ inputs.region }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, sys, urllib.request, urllib.error
+
+          key = os.environ.get("AWS_BEARER_TOKEN_BEDROCK", "").strip()
+          region = os.environ.get("REGION", "").strip()
+          if not key:
+              sys.exit("AWS_BEARER_TOKEN_BEDROCK secret nahi mila.")
+          if not re.fullmatch(r"(us|eu|ap|ca|sa)-[a-z]+-[0-9]", region):
+              sys.exit("Region galat likha hai. Misaal: ap-southeast-2")
+
+          geo = {"us": "us.", "eu": "eu.", "ap": "apac."}.get(region[:2])
+
+          def ids(base):
+              return [base] + ([geo + base] if geo else [])
+
+          models = {
+              "Nova Micro": ids("amazon.nova-micro-v1:0"),
+              "Nova Lite": ids("amazon.nova-lite-v1:0"),
+              "Nova Pro": ids("amazon.nova-pro-v1:0"),
+              "Nova 2 Lite": ["global.amazon.nova-2-lite-v1:0"],
+          }
+          body = json.dumps({
+              "messages": [{"role": "user", "content": [{"text": "Namaste, ek line mein jawab do."}]}],
+              "inferenceConfig": {"maxTokens": 50},
+          }).encode()
+
+          def call(model_id):
+              req = urllib.request.Request(
+                  f"https://bedrock-runtime.{region}.amazonaws.com/model/{model_id}/converse",
+                  data=body,
+                  headers={"Content-Type": "application/json", "Authorization": "Bearer " + key},
+              )
+              try:
+                  with urllib.request.urlopen(req, timeout=60) as r:
+                      out = json.load(r)
+                  out["output"]["message"]["content"][0]["text"]
+                  return True, ""
+              except urllib.error.HTTPError as e:
+                  kind = (e.headers.get("x-amzn-ErrorType") or "").split(":")[0]
+                  return False, f"HTTP {e.code} {re.sub(r'[^A-Za-z]', '', kind)}".strip()
+              except Exception as e:
+                  return False, type(e).__name__
+
+          lines = [f"AWS Nova test, region {region}"]
+          for name, candidates in models.items():
+              errors = []
+              for model_id in candidates:
+                  ok, err = call(model_id)
+                  if ok:
+                      lines.append(f"CHALU  {name}  ({model_id})")
+                      break
+                  errors.append(f"{model_id}: {err}")
+              else:
+                  lines.append(f"BAND   {name}  [{'; '.join(errors)}]")
+          print("\n".join(lines))
+          PY
