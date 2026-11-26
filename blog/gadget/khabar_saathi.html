@@ -24,6 +24,8 @@
 //<![CDATA[
 (function(){
 if(window.__khs)return;window.__khs=1;
+/* asli AI jodna ho to apni Apps Script ka /exec pata yahan likhein (ai_backend.gs dekhein). Khali = sirf blog se jawab. API key yahan KABHI nahi. */
+var AI_URL='';
 function start(){
  var head=document.querySelector('.Header .header-widget')||document.querySelector('.Header');
  if(!head)return;
@@ -46,7 +48,7 @@ function start(){
  var go=el('button','','पूछें');go.type='submit';form.appendChild(go);
  form.onsubmit=function(e){e.preventDefault();var q=input.value.trim();if(q){input.value='';ask(q)}};
  box.appendChild(top);box.appendChild(out);box.appendChild(chips);box.appendChild(form);
- box.appendChild(el('div','note','मैं अपने-आप चलने वाला सहायक हूँ। जवाब इसी ब्लॉग के लेखों से देता हूँ।'));
+ box.appendChild(el('div','note',AI_URL?'मैं AI सहायक हूँ, गलती कर सकता हूँ। आपका सवाल Google की AI सेवा को जाता है, निजी जानकारी न लिखें।':'मैं अपने-आप चलने वाला सहायक हूँ। जवाब इसी ब्लॉग के लेखों से देता हूँ।'));
  head.appendChild(box);
 
  function line(t,c){var p=el('p',c,t);out.appendChild(p);out.scrollTop=out.scrollHeight;return p;}
@@ -74,7 +76,7 @@ function start(){
   var a=article();
   return g+'! khabaradda पर आपका स्वागत है। '+(a?'आप यह लेख पढ़ रहे हैं: '+a.title+'।':'मैं खबर साथी हूँ। पूछिए, आप क्या पढ़ना चाहेंगे?');
  }
- function strip(h){var d=new DOMParser().parseFromString(h.replace(/<\/(p|h\d|li|div)>|<br\s*\/?>/gi,' $&'),'text/html');[].forEach.call(d.querySelectorAll('script,style'),function(x){x.remove()});return d.body.textContent.replace(/\s+/g,' ');}
+ function strip(h){var d=new DOMParser().parseFromString(h.replace(/<\/(p|h\d|li|div)>|<br\s*\/?>/gi,' $&'),'text/html');[].forEach.call(d.querySelectorAll('script,style,figure,table.tr-caption-container,small'),function(x){x.remove()});return d.body.textContent.replace(/\s+/g,' ');}
  function load(){
   if(posts)return Promise.resolve(posts);
   return fetch('/feeds/posts/default?alt=json&max-results=150').then(function(r){if(!r.ok)throw 0;return r.json()}).then(function(j){
@@ -83,17 +85,20 @@ function start(){
    return posts;});
  }
  var MAP={mobile:['मोबाइल','फोन','फ़ोन'],phone:['मोबाइल','फोन','फ़ोन'],naukri:['नौकरी','भर्ती'],job:['नौकरी','भर्ती'],yojana:['योजना'],game:['गेम','gaming'],gaming:['गेम'],message:['मैसेज'],whatsapp:['व्हाट्सऐप'],budget:['बजट'],price:['दाम','कीमत'],daam:['दाम','कीमत'],schedule:['शेड्यूल'],camera:['कैमरा'],battery:['बैटरी']};
- var STOP=' kya hai hain ka ki ke ko me mein par aur batao bataye bataiye mujhe koi kaise kab the is wala wali news khabar the what how about tell show क्या है हैं का की के को में पर और बताओ बताइए मुझे कोई कैसे कब इस वाला वाली खबर ख़बर बारे लेख पोस्ट ';
+ var STOP=' kare karen karein kaisa करें करे कैसे kya hai hain ka ki ke ko me mein par aur batao bataye bataiye mujhe koi kaise kab the is wala wali news khabar the what how about tell show क्या है हैं का की के को में पर और बताओ बताइए मुझे कोई कैसे कब इस वाला वाली खबर ख़बर बारे लेख पोस्ट ';
  function words(q){var w=q.toLowerCase().split(/[\s,.?!।:'"()]+/).filter(function(s){return s.length>1&&STOP.indexOf(' '+s+' ')<0});return w.map(function(s){return [s].concat(MAP[s]||[])});}
  function search(q){
   var w=words(q);
   load().then(function(list){
    var hits=list.map(function(p){var t=p.title.toLowerCase(),b=p.text.toLowerCase(),sc=0,n=0;
     w.forEach(function(alt){var s=0;alt.forEach(function(a){if(t.indexOf(a)>=0)s=Math.max(s,3);else if(p.labels.indexOf(a)>=0)s=Math.max(s,2);else if(b.indexOf(a)>=0)s=Math.max(s,1)});if(s){sc+=s;n++}});
-    return {p:p,sc:sc,n:n}}).filter(function(x){return x.n&&x.n*2>=w.length}).sort(function(a,b){return b.sc-a.sc}).slice(0,3);
+    return {p:p,sc:sc,n:n}}).filter(function(x){return x.n&&x.n*2>=w.length}).sort(function(a,b){return b.sc-a.sc});
+   hits=hits.filter(function(x){return x.sc*2>=hits[0].sc}).slice(0,3);
    if(!hits.length){reply('इस बारे में हमारे ब्लॉग पर अभी मुझे कुछ नहीं मिला। मैं सिर्फ़ इसी ब्लॉग के लेखों से जवाब देता हूँ।');return;}
-   var best=hits[0].p,s=best.text.split(/(?<=[।?!])\s+|(?<=\.)\s+(?=[^\d])/).filter(function(s){var l=s.toLowerCase();return s.length>25&&s.length<300&&w.some(function(alt){return alt.some(function(a){return l.indexOf(a)>=0})})})[0];
-   reply(s?'हमारे लेख में लिखा है: '+s.trim():'इससे जुड़े लेख नीचे हैं।');hits.forEach(function(x){link(x.p)});out.scrollTop=out.scrollHeight;
+   var best=hits[0].p,most=0,pick='';
+   best.text.split(/(?<=[।?!])\s+|(?<=\.)\s+(?=[^\d])/).forEach(function(t){var l=t.toLowerCase();if(t.length<=25||t.length>=300||/सांकेतिक|फ़ोटो:|फोटो:|photo:/i.test(t))return;
+    var n=w.filter(function(alt){return alt.some(function(a){return l.indexOf(a)>=0})}).length;if(n>most){most=n;pick=t.trim()}});
+   reply(pick?'हमारे लेख में लिखा है: '+pick:'इससे जुड़े लेख नीचे हैं।');hits.forEach(function(x){link(x.p)});out.scrollTop=out.scrollHeight;
   }).catch(function(){reply('अभी लेख खोल नहीं पाया। थोड़ी देर बाद फिर पूछिए।')});
  }
  function latest(label){
@@ -104,6 +109,12 @@ function start(){
  function summary(full){
   var a=article();if(!a){reply('कोई लेख खोलिए, फिर मैं उसके बारे में बता दूँगा।');return;}
   reply((full?a.title+'। ':'इस लेख की शुरुआत: ')+(full?a.rows:a.rows.slice(0,2)).join(' '));
+ }
+ function smart(q){
+  var wait=line('सोच रहा हूँ…');
+  var stop=new Promise(function(_,no){setTimeout(no,20000)});
+  Promise.race([fetch(AI_URL+'?q='+encodeURIComponent(q.slice(0,200))+'&p='+encodeURIComponent(location.pathname)).then(function(r){return r.json()}),stop])
+  .then(function(j){if(!j||!j.answer)throw 0;wait.remove();reply(j.answer)}).catch(function(){wait.remove();search(q.toLowerCase())});
  }
  function ask(q){
   line(q,'q');var s=q.toLowerCase().trim();
@@ -116,6 +127,7 @@ function start(){
   if(/(ye lekh|yeh lekh|ye article|summary|saransh|यह लेख|ये लेख|सारांश|किस बारे में)/.test(s))return summary(false);
   if(/(lekh sunao|padh ?kar sunao|read (it|aloud)|लेख सुनाओ|पढ़कर सुनाओ)/.test(s))return summary(true);
   if(/(latest|taaza|taza|nayi khabar|aaj ki khabar|ताज़ा|ताजा|नई खबर|आज की खबर)/.test(s))return latest();
+  if(AI_URL)return smart(q);
   if(!words(s).length)return reply('थोड़ा और साफ़ पूछिए, जैसे: मोबाइल की नई खबर।');
   search(s);
  }
