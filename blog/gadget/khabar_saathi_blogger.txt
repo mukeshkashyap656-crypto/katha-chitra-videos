@@ -28,7 +28,7 @@ if(window.__khs)return;window.__khs=1;
 
 var AI_URL='';
 
-var CLIPS='https://cdn.jsdelivr.net/gh/mukeshkashyap656-crypto/katha-chitra-videos@f8a88672cbf2807fba44f88cf3589191107ea9e6/blog/gadget/awaaz/';
+var CLIPS='https://cdn.jsdelivr.net/gh/mukeshkashyap656-crypto/katha-chitra-videos@5e584b430dbafa2757539b85d27970008eeb0722/blog/gadget/awaaz/';
 function start(){
  var head=document.querySelector('.Header .header-widget')||document.querySelector('.Header');
  if(!head)return;
@@ -90,7 +90,7 @@ function start(){
  function greeting(){
   var h=new Date().getHours();
   var part=h>=5&&h<12?'subah':h>=12&&h<17?'dopahar':h>=17&&h<21?'shaam':'raat';
-  var first={subah:'\u0938\u0941\u092a\u094d\u0930\u092d\u093e\u0924!',dopahar:'\u0928\u092e\u0938\u094d\u0924\u0947, \u0917\u0941\u0921 \u0906\u092b\u093c\u094d\u091f\u0930\u0928\u0942\u0928!',shaam:'\u0928\u092e\u0938\u094d\u0924\u0947, \u0917\u0941\u0921 \u0908\u0935\u0928\u093f\u0902\u0917!',raat:'\u0928\u092e\u0938\u094d\u0924\u0947! \u0930\u093e\u0924 \u0915\u0947 \u0907\u0938 \u0938\u092e\u092f \u092d\u0940'}[part];
+  var first={subah:'\u0917\u0941\u0921 \u092e\u0949\u0930\u094d\u0928\u093f\u0902\u0917 \u0938\u0930!',dopahar:'\u0917\u0941\u0921 \u0906\u092b\u093c\u094d\u091f\u0930\u0928\u0942\u0928 \u0938\u0930!',shaam:'\u0917\u0941\u0921 \u0908\u0935\u0928\u093f\u0902\u0917 \u0938\u0930!',raat:'\u0928\u092e\u0938\u094d\u0924\u0947 \u0938\u0930! \u0930\u093e\u0924 \u0915\u0947 \u0907\u0938 \u0938\u092e\u092f \u092d\u0940'}[part];
   var text=first+' khabaradda \u092a\u0930 \u0906\u092a\u0915\u093e \u0938\u094d\u0935\u093e\u0917\u0924 \u0939\u0948\u0964 \u092e\u0948\u0902 \u0916\u092c\u0930 \u0938\u093e\u0925\u0940 \u0939\u0942\u0901\u0964 \u092c\u0924\u093e\u0907\u090f, '+(part==='subah'?'\u0906\u091c ':'')+'\u0915\u094d\u092f\u093e \u092a\u0922\u093c\u0928\u093e \u0939\u0948?';
   var a=article();
   return {part:part,text:text,show:text+(a?' \u0906\u092a \u092f\u0939 \u0932\u0947\u0916 \u092a\u0922\u093c \u0930\u0939\u0947 \u0939\u0948\u0902: '+a.title+'\u0964':'')};
@@ -158,14 +158,17 @@ function start(){
  var hello=greeting();
  var gp=line(''),k=0,tm=setInterval(function(){k+=2;gp.textContent=hello.show.slice(0,k);if(k>=hello.show.length)clearInterval(tm)},35);
  
- var done=false,busy=false;try{done=sessionStorage.getItem('khsHi')==='1'}catch(e){}
- function mark(){done=true;try{sessionStorage.setItem('khsHi','1')}catch(x){}document.removeEventListener('click',first,true);}
+ var done=false,busy=false,hint=null;
+ function mark(){done=true;if(hint){hint.remove();hint=null}document.removeEventListener('click',first,true);}
  function first(e){
   if(done||busy||muted)return;
   var t=e.target;if(t.closest&&t.closest('a,button,input'))return;
   busy=true;playHello(true).then(function(){busy=false;mark()});
  }
- if(!done&&!muted){document.addEventListener('click',first,true);busy=true;playHello(false).then(function(ok){busy=false;if(ok)mark()});}
+ if(!muted){
+  document.addEventListener('click',first,true);busy=true;
+  playHello(false).then(function(ok){busy=false;if(ok){mark()}else if(!done&&!muted){hint=el('div','note','\ud83d\udd0a \u0906\u0935\u093e\u091c\u093c \u092e\u0947\u0902 \u0938\u094d\u0935\u093e\u0917\u0924 \u0938\u0941\u0928\u0928\u0947 \u0915\u0947 \u0932\u093f\u090f \u0938\u094d\u0915\u094d\u0930\u0940\u0928 \u092a\u0930 \u090f\u0915 \u092c\u093e\u0930 \u091b\u0941\u090f\u0901');box.insertBefore(hint,gp.nextSibling)}});
+ }
  
  box.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('.chips button,form button'))mark()},true);
 }

@@ -28,7 +28,7 @@ if(window.__khs)return;window.__khs=1;
 /* asli AI jodna ho to apni Apps Script ka /exec pata yahan likhein (ai_backend.gs dekhein). Khali = sirf blog se jawab. API key yahan KABHI nahi. */
 var AI_URL='';
 /* greeting ki recording (mic page wali awaaz) */
-var CLIPS='https://cdn.jsdelivr.net/gh/mukeshkashyap656-crypto/katha-chitra-videos@f8a88672cbf2807fba44f88cf3589191107ea9e6/blog/gadget/awaaz/';
+var CLIPS='https://cdn.jsdelivr.net/gh/mukeshkashyap656-crypto/katha-chitra-videos@5e584b430dbafa2757539b85d27970008eeb0722/blog/gadget/awaaz/';
 function start(){
  var head=document.querySelector('.Header .header-widget')||document.querySelector('.Header');
  if(!head)return;
@@ -90,7 +90,7 @@ function start(){
  function greeting(){
   var h=new Date().getHours();
   var part=h>=5&&h<12?'subah':h>=12&&h<17?'dopahar':h>=17&&h<21?'shaam':'raat';
-  var first={subah:'सुप्रभात!',dopahar:'नमस्ते, गुड आफ़्टरनून!',shaam:'नमस्ते, गुड ईवनिंग!',raat:'नमस्ते! रात के इस समय भी'}[part];
+  var first={subah:'गुड मॉर्निंग सर!',dopahar:'गुड आफ़्टरनून सर!',shaam:'गुड ईवनिंग सर!',raat:'नमस्ते सर! रात के इस समय भी'}[part];
   var text=first+' khabaradda पर आपका स्वागत है। मैं खबर साथी हूँ। बताइए, '+(part==='subah'?'आज ':'')+'क्या पढ़ना है?';
   var a=article();
   return {part:part,text:text,show:text+(a?' आप यह लेख पढ़ रहे हैं: '+a.title+'।':'')};
@@ -157,15 +157,18 @@ function start(){
  if(synth){chips.appendChild(btn('⏹ रोकें',hush));chips.appendChild(soundBtn);}
  var hello=greeting();
  var gp=line(''),k=0,tm=setInterval(function(){k+=2;gp.textContent=hello.show.slice(0,k);if(k>=hello.show.length)clearInterval(tm)},35);
- /* ek visit mein ek baar: aate hi bajane ki koshish; browser roke to pehli baar chhune par */
- var done=false,busy=false;try{done=sessionStorage.getItem('khsHi')==='1'}catch(e){}
- function mark(){done=true;try{sessionStorage.setItem('khsHi','1')}catch(x){}document.removeEventListener('click',first,true);}
+ /* har baar page khulte hi bajane ki koshish; browser roke to pehli baar chhune par */
+ var done=false,busy=false,hint=null;
+ function mark(){done=true;if(hint){hint.remove();hint=null}document.removeEventListener('click',first,true);}
  function first(e){
   if(done||busy||muted)return;
   var t=e.target;if(t.closest&&t.closest('a,button,input'))return;
   busy=true;playHello(true).then(function(){busy=false;mark()});
  }
- if(!done&&!muted){document.addEventListener('click',first,true);busy=true;playHello(false).then(function(ok){busy=false;if(ok)mark()});}
+ if(!muted){
+  document.addEventListener('click',first,true);busy=true;
+  playHello(false).then(function(ok){busy=false;if(ok){mark()}else if(!done&&!muted){hint=el('div','note','\ud83d\udd0a आवाज़ में स्वागत सुनने के लिए स्क्रीन पर एक बार छुएँ');box.insertBefore(hint,gp.nextSibling)}});
+ }
  /* sawaal pooch liya to baad mein greeting beech mein na aaye */
  box.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('.chips button,form button'))mark()},true);
 }
