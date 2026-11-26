@@ -132,3 +132,4 @@ Ek doosre creator ki "Direct, don't describe" video ke chune hue frames se sirf 
 5. Harkat: ghaas/kapde hawa ke jhonke se hilein, paas ki cheez badi aur tez dikhe, roshni aas-paas ki cheezon par bhi pade.
 6. Jhatka nahi: roshni, chamak ya badlaav ek frame mein achanak na aaye; kai frame mein bane aur utre.
 Dhyan: 4 aur 5 engine mein na ban sakein to pehle chhote test mein jaancho; na ban paaye to "ho gaya" mat likho.
+## Nayi seekh (26 Nov 2026 ke baad; AI ko yahi hissa jaata hai)
