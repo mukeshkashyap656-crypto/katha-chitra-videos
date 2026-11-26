@@ -15,6 +15,7 @@ Bot har post likhne se pehle sirf "SEEKH SHURU" aur "SEEKH KHATAM" ke beech ki l
 - body_html mein har h3 subheading ke shuru mein usi vishay se juda ek icon (emoji) lagao; icon ki bharmaar nahi.
 - image_query aur photo_queries usi cheez ki asli photo maangein jis par lekh hai; wahi cheez na mile to vishay se judi asli photo, aur use us cheez ki photo mat batao.
 - Post kisi app, brand ya cheez par ho (jaise WhatsApp) to usi ka icon aur usi se judi asli photo lagao; image_query aur photo_queries mein uska naam zaroor ho. Bejod photo se behtar hai post rokna.
+- Har post par uske vishay ka icon ho, sirf app wali post par nahi: shuru mein ek bada vishay-icon (app/brand ho to uska asli official icon, warna sahi emoji) aur har h3 par us hisse se juda icon.
 <!-- SEEKH KHATAM -->
 
 ## Code khud lagata hai
