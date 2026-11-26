@@ -1,0 +1,101 @@
+name: Katha Chitra AWS Code Helper
+
+# Dusra raasta: Claude Code, AWS Bedrock wale Claude se. Issue/comment ki shuruaat "/awscode <kaam>" se karo.
+# Ye files padh aur badal sakta hai, code CHALA nahi sakta (public repo mein key bachane ke liye).
+# Badlav hamesha nayi branch ai/awscode-<issue>-<run> par. "@ai" aur "@aider" wale helper waise hi hain.
+# Band karna ho: repo variable AWS_AI = off
+on:
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created]
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: aws-code-${{ github.event.issue.number }}
+  cancel-in-progress: false
+
+jobs:
+  aws-code:
+    if: >-
+      vars.AWS_AI == 'on' &&
+      ((github.event_name == 'issues' &&
+        startsWith(github.event.issue.body, '/awscode') &&
+        github.event.issue.user.login == github.repository_owner) ||
+       (github.event_name == 'issue_comment' &&
+        !github.event.issue.pull_request &&
+        startsWith(github.event.comment.body, '/awscode') &&
+        github.event.comment.user.login == github.repository_owner))
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: auto-video
+          fetch-depth: 1
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install Claude Code
+        run: npm install -g @anthropic-ai/claude-code
+      - name: Run Claude Code (AWS)
+        id: claude
+        env:
+          CLAUDE_CODE_USE_BEDROCK: '1'
+          AWS_REGION: ap-southeast-2
+          AWS_BEARER_TOKEN_BEDROCK: ${{ secrets.AWS_BEARER_TOKEN_BEDROCK }}
+          ANTHROPIC_MODEL: global.anthropic.claude-opus-4-6-v1
+          ANTHROPIC_DEFAULT_HAIKU_MODEL: global.anthropic.claude-opus-4-6-v1
+          REQUEST: ${{ github.event.comment.body || github.event.issue.body }}
+        run: |
+          # free plan khatam hone se pehle band
+          if [[ "$(date -u +%F)" > "2027-05-20" ]]; then echo "AWS ki tareekh khatam" > "$RUNNER_TEMP/out.txt"; exit 1; fi
+          printf 'Reply in simple Hinglish. Task: %s\n' "${REQUEST#/awscode}" |
+            timeout 20m claude -p --permission-mode acceptEdits --max-turns 40 \
+              --setting-sources user --strict-mcp-config \
+              --allowedTools "Read,Glob,Grep" \
+              --disallowedTools "Bash,WebFetch,WebSearch,Read(//proc/**),Edit(.github/**),Edit(.git/**)" \
+              > "$RUNNER_TEMP/out.txt" 2>&1
+      - name: Jaanch, push aur jawab
+        if: always() && steps.claude.outcome != 'skipped'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SECRET_CHECK: ${{ secrets.AWS_BEARER_TOKEN_BEDROCK }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+          RESULT: ${{ steps.claude.outcome }}
+        run: |
+          say() { gh issue comment "$ISSUE_NUMBER" --repo "$GITHUB_REPOSITORY" --body-file "$1"; }
+          touch "$RUNNER_TEMP/out.txt"
+          git add -A
+          if [ -n "$SECRET_CHECK" ] && { grep -qF -- "$SECRET_CHECK" "$RUNNER_TEMP/out.txt" || git diff --cached | grep -qF -- "$SECRET_CHECK"; }; then
+            echo "Roka gaya: jawab ya badlav mein AWS key dikhi. Kuch push nahi hua." > "$RUNNER_TEMP/c.md"; say "$RUNNER_TEMP/c.md"; exit 1
+          fi
+          NOTE="Koi file nahi badli."
+          if ! git diff --cached --quiet; then
+            if git diff --cached --name-only | grep -q '^\.github/'; then
+              NOTE=".github badalne ki koshish thi, isliye push nahi kiya."
+            elif [ "$RESULT" != "success" ]; then
+              NOTE="Kaam adhoora raha, isliye push nahi kiya."
+            else
+              BAD=""
+              while IFS= read -r f; do
+                python3 -I -c 'import sys; compile(open(sys.argv[1],"rb").read(), sys.argv[1], "exec")' "$f" || BAD="$BAD $f"
+              done < <(git diff --cached --name-only --diff-filter=AM -- '*.py')
+              if [ -n "$BAD" ]; then
+                NOTE="Python code mein galti hai ($BAD), isliye push nahi kiya."
+              else
+                BRANCH="ai/awscode-${ISSUE_NUMBER}-${GITHUB_RUN_ID}"
+                git config user.name "aws-code-helper"
+                git config user.email "aws-code-helper@users.noreply.github.com"
+                git commit -qm "AWS code helper: issue #${ISSUE_NUMBER}"
+                git push -q "https://x-access-token:${GH_TOKEN}@github.com/${GITHUB_REPOSITORY}.git" "HEAD:refs/heads/${BRANCH}"
+                NOTE="Badlav branch \`${BRANCH}\` par hain (abhi chalakar test nahi hue)."
+              fi
+            fi
+          fi
+          { echo "AWS code helper: $RESULT"; echo; echo "$NOTE"; echo; echo '~~~'; tail -c 5000 "$RUNNER_TEMP/out.txt"; echo; echo '~~~'; } > "$RUNNER_TEMP/c.md"
+          say "$RUNNER_TEMP/c.md"
