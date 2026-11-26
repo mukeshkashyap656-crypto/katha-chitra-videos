@@ -385,6 +385,7 @@ for si, sh in enumerate(SHOTS):
     alt = None             # second framing for long shots
     action = any(f["type"] != "light" for f in sh.get("fx", [])) or any(e.get("pose") == "walk" for e in cast)
     if action: target = wide(cast)   # astra / walking: everyone (and the whole path) stays in view
+    if any(e.get("pose") == "walk" for e in cast): target = wide(cast, z_max=1.0)   # chalne wale scene mein camera door: aage wala kinare se na kate
     if main is not None and not action:
         alt = (medium(main, cast) or closeup(main, cast)) if target[2] < 1.6 else wide(cast)
     t0, t1 = starts[si], ends[si]; dur = t1 - t0
