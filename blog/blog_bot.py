@@ -632,12 +632,14 @@ def commons_candidates(data, query=None):
 
 
 def fetch_photos(queries, n=5):
-    """Post ke vishay ki ASLI, copyright-free photos. Raaste (ek ke baad ek): Pexels -> Pixabay -> Openverse (CC0/PDM).
+    """Post ke vishay ki ASLI, copyright-free photos. Raaste (ek ke baad ek): Pexels -> Pixabay. Na mile to post rukti hai.
     Har photo hosted karke (jsDelivr) lagti hai; credit saath. Env: PEXELS_API_KEY, PIXABAY_API_KEY (dono free), BLOG_IMG_TOKEN (hosting)."""
     out, used = [], set()
     for qi, q in enumerate([str(x).strip()[:60] for x in (queries or []) if str(x).strip()][:n]):
         got = None
-        for prov in ("pexels", "pixabay", "commons", "openverse"):
+        # Commons/Openverse band: bot photo dekh nahi sakta aur unse bejod tasveer aayi (test, 26 Nov 2026:
+        # phone ki khabar par gubbara, AI ki khabar par kachhue ka sketch). Sirf stock-photo wale raaste.
+        for prov in ("pexels", "pixabay"):
             try:
                 cand = []
                 if prov == "pexels" and os.environ.get("PEXELS_API_KEY"):
