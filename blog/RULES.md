@@ -2,7 +2,7 @@
 
 Ye blog "sari khabar, Hindi mein" ke liye hai, 6 vishay baari-baari se: Mobile Gaming, Mobile & Tech, AI & Apps, Cricket & Khel, Film & OTT, Desh Duniya. Har post ka label us vishay ka hota hai. Katha Chitra / Ramayan se alag.
 
-1. Roz 1-2 post, zyada nahi. Kam par achhi post > zyada par kachri.
+1. (Owner, 26 Nov 2026: blog ki post GitHub AI se apne aap ho.) Roz 1 post, zyada nahi. Kam par achhi post > zyada par kachri.
 2. Khabar asli sroton se verify hoti hai (Google Search grounding). Koi bhi tathya/aankda bina srot ke nahi.
 3. Post apne shabdon mein, nayi samajh ke saath: "kya hua, iska matlab kya, kisko kya karna chahiye". Kisi ka text copy nahi.
 4. Heading seedhi aur sachchi. Clickbait ya jhooth nahi.

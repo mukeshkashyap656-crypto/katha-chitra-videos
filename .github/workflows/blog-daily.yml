@@ -1,9 +1,13 @@
 name: Blog daily (mobile gaming news, Hindi)
-# Backup: roz shaam 6:30 IST, din mein zyada se zyada 1 post: aaj ki mobile gaming khabar -> verify -> apne shabdon mein post -> Blogger.
+# Mukhya raasta: roz 1 post, din mein 4 koshish: aaj ki mobile gaming khabar -> verify -> apne shabdon mein post -> Blogger.
 # Pehle DRAFT mode (MODE=draft). Aap dekhkar manual run mein mode=live karo ya repo variable BLOG_MODE=live set karo.
 on:
   schedule:
-    - cron: '0 13 * * *'   # shaam 6:30 IST: sirf backup; blog par aaj ki post ho to kuch nahi bhejta
+    # GitHub hi mukhya raasta hai. Din mein ek hi post: aaj ki post ho chuki ho to baaki koshishein turant ruk jaati hain.
+    - cron: '7 2 * * *'    # subah 7:37 IST: pehli koshish
+    - cron: '17 5 * * *'   # subah 10:47 IST: dobara
+    - cron: '37 8 * * *'   # dopahar 2:07 IST: dobara
+    - cron: '0 13 * * *'   # shaam 6:30 IST: aakhri koshish
   workflow_dispatch:
     inputs:
       mode:
