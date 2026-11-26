@@ -22,9 +22,10 @@
 @media (prefers-reduced-motion:reduce){#khs .wave i{animation:none}}
 /* phone par theme ka header 48px khisak kar dibba kaat deta tha */
 @media screen and (max-width:600px){.centered-top .blog-name.container{display:block !important;padding-left:0 !important;padding-right:0 !important}.centered-top .header,.centered-top .header-widget{width:100% !important;max-width:100% !important;min-width:0 !important;box-sizing:border-box}}
-#khs .views{box-sizing:border-box;width:100%;margin-top:4px;padding:9px 10px;border:1px solid rgba(56,225,255,.6);border-radius:12px;background:#020b14;text-align:center;color:#a9ecfa;font-size:12px;line-height:1.5}
-#khs .views b{display:block;color:#5fe6ff;font-size:26px;line-height:1.3}
-@media screen and (min-width:1000px){#khs .views{position:absolute;left:calc(100% + 14px);top:0;width:140px;margin:0}}
+#khsRow{position:relative}
+#khsViews{box-sizing:border-box;width:100%;max-width:620px;margin:6px auto 4px;padding:9px 10px;border:1px solid rgba(56,225,255,.6);border-radius:12px;background:#020b14;text-align:center;color:#a9ecfa;font-size:12px;line-height:1.5}
+#khsViews b{display:block;color:#5fe6ff;font-size:26px;line-height:1.3}
+@media screen and (min-width:1100px){#khsViews{position:absolute;left:calc(50% + 324px);top:16px;width:140px;margin:0}}
 </style>
 <script>
 //<![CDATA[
@@ -219,7 +220,7 @@ function start(){
  
  var tries=0,vt=setInterval(function(){
   var src=document.getElementById('Stats1_totalCount'),n=src?src.textContent.replace(/\s+/g,''):'';
-  if(/^[\d,.]+$/.test(n)){clearInterval(vt);var v=el('div','views');v.appendChild(el('span','','\ud83d\udc41 \u092a\u0942\u0930\u0947 \u092c\u094d\u0932\u0949\u0917 \u0915\u0947 \u0915\u0941\u0932 \u0935\u094d\u092f\u0942'));v.appendChild(el('b','',n));box.appendChild(v)}
+  if(/^[\d,.]+$/.test(n)){clearInterval(vt);var v=el('div');v.id='khsViews';var row=el('div');row.id='khsRow';box.parentNode.insertBefore(row,box);row.appendChild(box);v.appendChild(el('span','','\ud83d\udc41 \u092a\u0942\u0930\u0947 \u092c\u094d\u0932\u0949\u0917 \u0915\u0947 \u0915\u0941\u0932 \u0935\u094d\u092f\u0942'));v.appendChild(el('b','',n));row.appendChild(v)}
   else if(++tries>40)clearInterval(vt);
  },500);
 }
