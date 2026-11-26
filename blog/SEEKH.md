@@ -31,3 +31,26 @@ Padhi gayi: Satish K Videos, "50k Daily Traffic From Google Discover" (youtube.c
 - Insaan ke karne ki (bot nahi): apni nayi post apne WhatsApp/Telegram channel par daalna, site ko phone par tez rakhna, lagataar post karna.
 - Nahi li: "bahar se traffic bhejo to Discover pakka" (ek vyakti ka tajurba, Google ne aisa vaada nahi kiya); "AMP zaroori" (Google ke Discover page mein AMP sirf ek raasta hai); paid notification tool (video mein affiliate link tha); video ka "sona sasta, jaldi dekhein warna pachhtayenge" jaisa udaharan (clickbait).
 - Baaki guide ke link: @ISHANGURU aur @mybigguide ke pate par "404 Not Found" aaya; @SaddamKassim ka page khaali khula. Inse kuch nahi seekha gaya.
+
+## Khabar Saathi (blog ka assistant) ke niyam
+
+**User ke tay niyam (26 Nov 2026)**
+- Assistant ki ek hi awaaz: Piper Hindi `pratham` ki recording. Phone/browser ki awaaz (`speechSynthesis`) ya koi doosri awaaz kabhi nahi.
+- Har page khulte hi samay ke hisab se greeting: "गुड मॉर्निंग सर / गुड आफ़्टरनून सर / गुड ईवनिंग सर", raat ko "नमस्ते सर"।
+- "samay kya hua" wala option nahi.
+- Mic ek baar dabane par baat-cheet chalti rahe; sawaal ka jawab turant.
+
+**Files**
+- Code: `blog/gadget/khabar_saathi.html`. Badlav ke baad `python3 blog/gadget/make_gadget.py` chalao; blog par `khabar_saathi_blogger.txt` jata hai (Layout > pehla HTML/JavaScript gadget). Repo mein badalne se live blog apne aap NAHI badalta.
+- Recording: `blog/awaaz_banao.py` banata hai; mp3 aur `list.json` branch `blog-awaaz` mein. `list.json` ka `base` us commit ka pata hai jisme mp3 hain.
+- Gadget ka koi tay jawab badlo to `awaaz_banao.py` ki `TAY` list bhi badlo. `norm/code/sentences` dono jagah ek jaise rahein.
+- Nayi post ki recording abhi apne aap NAHI banti. Jab tak na bane, assistant likha jawab dikhata hai aur batata hai ki awaaz tayyar nahi.
+
+**Takneeki seekh**
+- Blogger gadget script mein Hindi/emoji seedhe likhne par live blog par `&#...;` dikhta hai; isliye build sirf ASCII (\uXXXX) banata hai.
+- Phone bina chhue awaaz rok sakta hai; tab "ek baar chhuein" ka ishara dikhe.
+
+**Suraksha (hamesha)**
+- Koi key, password, token ya secret link code, log, issue ya chat mein nahi.
+- Apni permission badhana, naya apne-aap chalne wala kaam jodna, ya secret badalna: sirf user ki saaf haan ke baad.
+- Awaaz ki shart CC BY-NC-SA 4.0 (bina kamai wala istemaal): blog par ads/kamai shuru hone se pehle yeh awaaz hatani/badalni hai.
