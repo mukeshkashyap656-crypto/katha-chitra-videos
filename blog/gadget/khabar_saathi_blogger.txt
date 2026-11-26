@@ -28,7 +28,7 @@ if(window.__khs)return;window.__khs=1;
 
 var AI_URL='';
 
-var CLIPS='https://cdn.jsdelivr.net/gh/mukeshkashyap656-crypto/katha-chitra-videos@9d430a69d26889e409c3b491c5673c6830190d0e/blog/gadget/awaaz/';
+var CLIPS='https://cdn.jsdelivr.net/gh/mukeshkashyap656-crypto/katha-chitra-videos@f8a88672cbf2807fba44f88cf3589191107ea9e6/blog/gadget/awaaz/';
 function start(){
  var head=document.querySelector('.Header .header-widget')||document.querySelector('.Header');
  if(!head)return;
