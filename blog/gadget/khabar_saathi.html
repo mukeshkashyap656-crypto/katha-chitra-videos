@@ -25,7 +25,7 @@
 //<![CDATA[
 (function(){
 if(window.__khs)return;window.__khs=1;
-/* asli AI jodna ho to apni Apps Script ka /exec pata yahan likhein (ai_backend.gs dekhein). Khali = sirf blog se jawab. API key yahan KABHI nahi. */
+/* asli AI jodna ho to apni Apps Script ka /exec pata yahan likhein (ai_backend.gs dekhein). Khali = sirf blog से jawab. API key yahan KABHI nahi. */
 var AI_URL='';
 /* greeting ki recording (mic page wali awaaz) */
 var CLIPS='https://cdn.jsdelivr.net/gh/mukeshkashyap656-crypto/katha-chitra-videos@5e584b430dbafa2757539b85d27970008eeb0722/blog/gadget/awaaz/';
@@ -178,7 +178,7 @@ function start(){
   if(/^(hi|hello|hey|namaste|namaskar|नमस्ते|नमस्कार|हेलो|हैलो)[\s!.]*$/.test(s)){hello=greeting();line(hello.show);playHello();return}
   if(/(kaise ho|kaisa hai|how are you|कैसे हो|कैसे हैं आप|क्या हाल)/.test(s))return reply('मैं ठीक हूँ सर, धन्यवाद। बताइए, क्या पढ़ना है?');
   if(/(thank|dhanyavad|dhanyawad|shukriya|धन्यवाद|शुक्रिया|थैंक)/.test(s))return reply('आपका स्वागत है सर। और कुछ पूछना हो तो बताइए।');
-  if(/^(bye|alvida|band karo|chup|stop|बाय|अलविदा|बंद करो|चुप|रुको|बस)[\s!.।]*(करो|हो जाओ)?[\s!.।]*$/.test(s)){stopTalk();return reply('ठीक है सर, फिर मिलते हैं।')}
+  if(/^(bye|alvida|band karo|chup|stop|बाय|अलविदा|बंद करो|चुप|रुको|बस)[\s!.।]*(करो|हो जाओ)?[\s!.।]*$/.test(s)){stopTalk();return reply('ठीक है सर, आपका दिन अच्छा रहे।')}
   if(/(kya kar sakte|what can you|madad|help|क्या कर सकते|मदद)/.test(s))return reply('मैं ताज़ा खबर बता सकता हूँ, खुला लेख सुना सकता हूँ, और इस ब्लॉग के लेखों से सवाल का जवाब दे सकता हूँ।');
   if(/(tum kaun|who are you|tumhara naam|aap kaun|तुम कौन|आप कौन|तुम्हारा नाम|आपका नाम)/.test(s))return reply('मैं खबर साथी हूँ, khabaradda का अपने-आप चलने वाला सहायक।');
   if(/(blog kis|kiska blog|owner|kisne (banaya|likha)|किसका ब्लॉग|ब्लॉग किस|किसने (बनाया|लिखा))/.test(s))return reply('यह khabaradda ब्लॉग है। यहाँ लेख MUKESH News के नाम से छपते हैं।');
