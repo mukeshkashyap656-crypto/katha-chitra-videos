@@ -99,16 +99,102 @@ def save_state(st):
         json.dump(st, f, ensure_ascii=False, indent=1)
 
 
-def context_files():
-    """Sirf niyam, sanche ka guide, plans aur episodes ki list (code nahi) -> chhota, tez prompt."""
+SHORT_RULES = "AI_NIYAM.md"     # chhoti niyam file; ye file hata do to purana tareeka (saari kitaabein) wapas
+NEW_LESSON = "## Nayi seekh (26 Nov 2026 ke baad; AI ko yahi hissa jaata hai)"
+
+
+def _read(p):
+    with open(p, encoding="utf-8") as f:
+        return f.read()
+
+
+def new_lessons():
+    """SEEKH.md ka sirf naya hissa (chhoti file banne ke baad jo jooda)."""
+    t = _read("SEEKH.md") if os.path.exists("SEEKH.md") else ""
+    return t[t.index(NEW_LESSON):] if NEW_LESSON in t else ""
+
+
+def short_rules():
+    if not os.path.exists(SHORT_RULES):
+        return _read("NIYAM.md")
+    return _read(SHORT_RULES) + "\n\n" + new_lessons()
+
+
+def task_bhags(task):
+    nums = [title_bhag()] + re.findall(r"(?:bhag|भाग)[\s_-]*(\d{1,3})", task, re.I)
+    out = []
+    for n in nums:
+        if str(n).isdigit() and int(n) not in out:
+            out.append(int(n))
+    return out[:3]
+
+
+def context_files(task="", code=False):
+    """Sirf zaroori cheezein: chhote niyam, aaj ki yaad, kahani ki list, chalu episode aur ek namoona."""
+    tracked = sorted(p for p in run(["git", "ls-files", "plans", "episodes"]).splitlines() if p.endswith((".json", ".md")))
+    if os.path.exists(SHORT_RULES):
+        paths = [SHORT_RULES, "YAAD.md", "SEEKH_ROZ.md", "tools/engine/README.md",
+                 "plans/STORY_QUEUE.json", "plans/SERIAL_REF.md", "plans/SERIAL_CHARACTERS.md"]
+        if re.search(r"tyohar|festival|jayanti|त्योहार|जयंती", task, re.I):
+            paths.append("FESTIVAL.md")
+        if code:
+            paths += ["BODY.md", "ANIMATION.md"]
+        have = sorted({int(m.group(1)) for p in tracked for m in [re.match(r"episodes/bhag(\d+)/", p)] if m})
+        want = task_bhags(task) or have[-1:]
+        want = set(want) | {n - 1 for n in want} | ({8} if 8 in have else set(have[-1:]))   # pichhla bhaag + ek achha namoona
+        for p in tracked:
+            m = re.search(r"bhag(\d+)", p)
+            folder = p.split("/")[1] if p.startswith("episodes/") else ""
+            if (m and int(m.group(1)) in want) or (folder and not folder.startswith("bhag") and folder in task):
+                paths.append(p)
+    else:
+        paths = CONTEXT + tracked
     files = {}
-    paths = CONTEXT + sorted(p for p in run(["git", "ls-files", "plans", "episodes"]).splitlines()
-                             if p.endswith((".json", ".md")))
-    for p in paths:
+    for p in dict.fromkeys(paths):
         if os.path.exists(p):
-            with open(p, encoding="utf-8") as f:
-                files[p] = f.read()
+            files[p] = _read(p)
+    if os.path.exists(SHORT_RULES) and new_lessons():
+        files["SEEKH.md (sirf naya hissa; poori file yahan nahi hai)"] = new_lessons()
     return files
+
+
+# ---------------- posting ka haal: AI se nahi, seedha record se ----------------
+def posting_record():
+    raw = run(["gh", "api", f"repos/{REPO}/contents/episodes.json?ref=main", "-H", "Accept: application/vnd.github.raw+json"], check=False)
+    try:
+        eps = json.loads(raw)
+        keys = sorted((k for k in eps if k.isdigit() and eps[k].get("date")), key=int)[-5:]
+    except (ValueError, AttributeError, TypeError):
+        return "POSTING RECORD abhi padh nahi paaye, isliye posting ka haal pata nahi."
+    lines = []
+    for k in keys:
+        e = eps[k]
+        if not e.get("youtube_id"):
+            yt = "upload ka record nahi"
+        elif e.get("youtube_pending"):
+            yt = ("upload hua, " + (f"schedule record mein hai ({e['youtube_publish_at']} UTC)" if e.get("youtube_publish_at")
+                  else "schedule ka record nahi") + ", public hona record mein nahi")
+        else:
+            yt = "video ID record mein hai"
+        ig = "post ID record mein hai" if e.get("instagram_id") else "post ka record nahi"
+        auto = "chalu" if e.get("auto") else "ruka hua"
+        lines.append(f"Bhag {k} (tarikh {e['date']}, auto post {auto}, status {e.get('status', '?')}): YouTube - {yt}; Instagram - {ig}.")
+    return "\n".join(lines) + "\n(Ye sirf posting file ka record hai; YouTube/Instagram kholkar milaan nahi kiya.)"
+
+
+_POSTWORD = re.compile(r"post|upload|publish|schedule|youtube|insta|पोस्ट|अपलोड|यूट्यूब|इंस्टा", re.I)
+_STATUSASK = re.compile(r"\?|\b(kya|kab|status|haal|batao|hua|hui|gaya|gayi)\b|क्या|कब|हाल|हुआ|गया", re.I)
+_CHANGEASK = re.compile(r"bana|theek|thik|sudh|badl|badal|render|likh|jod|hata|mita|delete|karo|kar do|kardo|chalao|bhejo|karna|karni|jaye|jaaye|"
+                        r"daal|dalo|rok|fix|change|add|remove|बना|ठीक|सुधार|बदल|लिख|जोड़|हटा|करो|कर दो|चलाओ|भेजो|डाल|रोक", re.I)
+
+
+def owner_words(request):
+    return re.sub(r"@ai\b", " ", request.split("---- Pichli baat-cheet")[0], flags=re.I).strip()
+
+
+def status_question(request):
+    t = owner_words(request)
+    return bool(t) and len(t) <= 200 and bool(_POSTWORD.search(t)) and bool(_STATUSASK.search(t)) and not _CHANGEASK.search(t)
 
 
 # ---------------- AI: pehle Gemini, busy ho to OpenRouter ke free model ----------------
@@ -146,6 +232,8 @@ def gemini_model_list(c, hard=False):
         out = [m for m in _LIVE.get("pro", []) if m not in out[:0]] + out
     if FAST:
         out = sorted(out, key=lambda m: "lite" not in m)
+    if hard:     # likhna/sudhaarna/jaanchna: "lite" model kabhi nahi
+        return [m for m in out if m not in _DEAD and "lite" not in m]
     return [m for m in out if m not in _DEAD] or out
 
 
@@ -156,7 +244,11 @@ def gemini(contents, want_json, hard=False):
                                       response_mime_type="application/json" if want_json else None)
     last = None
     patient = os.environ.get("PATIENT") == "1"      # shaant samay (queue) mein sabr; warna jaldi hatke doosre AI par
-    for attempt in range(max(6, len(mlist) + 2) if patient else 3):
+    if not mlist:
+        raise Busy("Gemini: koi achha model nahi mila")
+    for attempt in range(max(6, len(mlist) + 2) if patient else max(3, len(mlist) if hard else 0)):
+        if not mlist:
+            break
         m = mlist[attempt % len(mlist)]
         try:
             txt = (c.models.generate_content(model=m, contents=contents, config=cfg).text or "").strip()
@@ -168,7 +260,7 @@ def gemini(contents, want_json, hard=False):
             last = e
             if "404" in str(e) or "NOT_FOUND" in str(e):
                 _DEAD.add(m)
-                mlist = [x for x in mlist if x not in _DEAD] or mlist
+                mlist = [x for x in mlist if x not in _DEAD] or ([] if hard else mlist)
                 print(f"Gemini {m} ab nahi milta: hata diya.")
                 continue
             busy = any(x in str(e) for x in ("503", "UNAVAILABLE", "429", "RESOURCE_EXHAUSTED", "overloaded"))
@@ -402,7 +494,7 @@ def ask(prompt_text, image=None, want_json=True, hard=False):
     imgs = image if isinstance(image, (list, tuple)) else ([image] if image else [])
     contents = [types.Part.from_bytes(data=i, mime_type="image/jpeg") for i in imgs] + [prompt_text] if imgs else prompt_text
     chain = [("Gemini", lambda p: gemini(contents if p == prompt_text else p, want_json, hard))]
-    if not imgs:   # tasveer sirf Gemini dekh sakta hai
+    if not imgs and not hard:   # tasveer sirf Gemini dekh sakta hai; mushkil kaam bhi sirf achha Gemini (warna Busy -> baad mein)
         chain += [("OpenRouter", lambda p: openrouter(p, want_json)),
                   ("Cloudflare", lambda p: cloudflare(p, want_json)),
                   ("Groq", lambda p: groq(p, want_json)),
@@ -463,7 +555,7 @@ def ask(prompt_text, image=None, want_json=True, hard=False):
                 print("Daud ka jeetne wala AI:", nm)
                 return res
             errs.append(f"{nm}: {err}")
-    if not imgs:
+    if not imgs and not hard:
         for name, fn in (("OVH", ovh), ("Kilo", kilo)):     # bina chaabi wale reserve: sirf jab upar wale sab fail
             try:
                 t = fn(prompt_text, want_json)
@@ -472,7 +564,7 @@ def ask(prompt_text, image=None, want_json=True, hard=False):
                 return res
             except Exception as e:
                 errs.append(f"{name}: {str(e)[:60]}")
-    if not imgs:                                  # sab free AI fail: aakhri sahara, apne computer par chhota AI
+    if not imgs and not hard:                     # sab free AI fail: aakhri sahara, apne computer par chhota AI
         try:
             t = local_ai(prompt_text, want_json, hard)
             return parse(t) if want_json else t
@@ -482,13 +574,13 @@ def ask(prompt_text, image=None, want_json=True, hard=False):
 
 
 RULES = """You are the film director of the "Katha Chitra" YouTube channel (Ramayan Shorts in Hindi,
-2D Indian folk-art storybook style). NIYAM.md holds EVERY rule of the owner: follow all of them strictly.
+2D Indian folk-art storybook style). AI_NIYAM.md in FILES holds the owner's rules: follow all of them strictly.
 Each episode has ONE story source, set in plans/STORY_QUEUE.json (NIYAM.md section 2): "source": "serial1987" means only the
 listed facts (1987 TV Ramayan, new dialogue, original character designs, never actors' faces or the serial's dialogue or songs);
 no "source" means Valmiki Ramayan. Nothing added, nothing changed in the story. Hindi lines in today's simple spoken Hindi.
 
 An episode is ONLY data: episodes/<bhagN>/episode.json in the scene-list format of tools/engine/README.md
-(example: episodes/bhag6/episode.json). A fixed engine turns it into the video. You never write code.
+(follow the example episode.json given in FILES). A fixed engine turns it into the video. You never write code.
 
 Reply with ONLY valid JSON:
 {"action": "change" | "none",
@@ -507,7 +599,7 @@ How to work:
   and state your assumptions in the summary. In ONE answer write plans/<bhagN>_PLAN.md (shot list, every shot 2-3 s, who stands where,
   new character looks from the episode source and tradition) + plans/<bhagN>_episode.json AND episodes/<bhagN>/episode.json (render true). Plan first in your
   head like a film director (every scene decided from the story), then build.
-- When something is unclear, decide the most sensible way yourself (look at the rules in NIYAM.md/SEEKH.md/VIRAL.md) and go on.
+- When something is unclear, decide the most sensible way yourself (look at the rules in AI_NIYAM.md and YAAD.md) and go on.
 - BUILD: write episodes/<bhagN>/episode.json (copy the plan's scene list). "render": true.
 - FIX a look/render problem: change as little as possible in that episode.json, bump VERSION, "render": true.
 - Owner only wants the video made again without changes: "action": "none", "render": true.
@@ -516,7 +608,7 @@ How to work:
 - If the story or a review problem needs something the engine cannot do yet (new background, pose, effect, camera move, or an engine bug),
   do NOT work around it badly: reply {"action": "need_code", "render": false, "summary": "what is missing and what you will add", "files": []}.
   You will then get the engine source and may change it (see CODE RULES).
-- You may also learn: when a real problem and its fix are now clear, add one short Hinglish line to SEEKH.md (an edit, see CODE RULES).
+- You may also learn: when a real problem and its fix are now clear, add one short Hinglish line to SEEKH.md as an edit: {"path": "SEEKH.md", "old": "## Nayi seekh (26 Nov 2026 ke baad; AI ko yahi hissa jaata hai)", "new": "<same heading>\\n- your line"}. Never send SEEKH.md as a whole file.
 - Use only backgrounds, poses, faces, moods and characters listed in tools/engine/README.md; a new character goes in
   NEW_CHARS with an original look suited to the episode source. Keep people at least 260 apart (330 with a big devta/rakshas).
 """
@@ -592,6 +684,9 @@ def check_changes(changes):
     problems += pr
     for p, c in contents.items():
         if p in DOC_PATHS:
+            old = _read(p) if os.path.exists(p) else ""
+            if not c.startswith(old.rstrip()) and not any(i.get("path") == p and "old" in i for i in changes):
+                problems.append(f"{p}: poori file mat likho; sirf chhota edit (old/new) karo")
             continue
         ok_path = p.startswith("plans/") or re.match(r"^episodes/[a-z0-9_]+/episode\.json$", p) or is_code_path(p)
         if not ok_path:
@@ -637,7 +732,7 @@ def engine_sources():
 
 
 def solve(task, code=False):
-    files = context_files()
+    files = context_files(task, code)
     block = "\n\n".join(f"===== FILE: {p} =====\n{c}" for p, c in files.items())
     prompt = f"{RULES}\n\n# FILES\n{block}\n\n# TASK\n{task}"
     if code:
@@ -761,7 +856,7 @@ def autopost_brief():
       try:      # radar kabhi video nahi rokta: kuch bhi atke toh bina radar ke chalega
           import datetime
           today = (datetime.datetime.utcnow() + datetime.timedelta(hours=5, minutes=30)).date()
-          radar = VR.advise(ask, b, it.get("topic", "?"), it.get("sargas", "?"), today, open("VIRAL.md", encoding="utf-8").read(), valmiki_text=text)
+          radar = VR.advise(lambda *a, **k: ask(*a, **{**k, "hard": True}), b, it.get("topic", "?"), it.get("sargas", "?"), today, open("VIRAL.md", encoding="utf-8").read(), valmiki_text=text)
           if radar:
               os.makedirs("plans/radar", exist_ok=True)
               with open(f"plans/radar/bhag{b}.json", "w", encoding="utf-8") as fh:
@@ -780,14 +875,14 @@ def autopost_brief():
                 "Ramayan. The FACTS below are the ONLY events allowed; add no other event, person, boon, curse detail or twist, even "
                 "if you think you know it. Write new narration and dialogue; never copy the serial's dialogue, songs or actors. "
                 "Do not write Valmiki anywhere; set \"TAG\": \"रामायण कथा\" in episode.json. Style: pause on emotional moments, "
-                "feeling in faces and eyes, respectful simple Hindi. 30-60 seconds; shorter is better than padding. Follow VIRAL.md "
-                "(hook, QUESTION banner, ending question + comment call) and SEEKH.md.\nFACTS:\n- {f}\n"
+                "feeling in faces and eyes, respectful simple Hindi. 30-60 seconds; shorter is better than padding. Follow AI_NIYAM.md "
+                "(hook, QUESTION banner, ending question + comment call).\nFACTS:\n- {f}\n"
                 ).format(b=b, t=it.get("topic", "?"), f="\n- ".join(it.get("facts") or []))
     return ("\n\nAUTOPOST: the owner already approved everything; the strict director review and the Valmiki check will "
             "judge the result, so do NOT ask for an OK. In ONE answer write plans/bhag{b}_PLAN.md, plans/bhag{b}_episode.json AND "
             "episodes/bhag{b}/episode.json (action change, render true). Episode: Bhag {b}; topic: {t}; Valmiki Bala Kanda "
-            "sargas (approx.): {s}. Follow VIRAL.md (hook in the first line, QUESTION banner, scene-wise pace, ending with the "
-            "next part's question + comment call) and SEEKH.md. About 40-60 seconds (75 max, no dead second). Story exactly as in Valmiki, nothing added; every scene must follow the Valmiki text in the order it happens.\n"
+            "sargas (approx.): {s}. Follow AI_NIYAM.md (hook in the first line, QUESTION banner, scene-wise pace, ending with the "
+            "next part's question + comment call). About 40-60 seconds (75 max, no dead second). Story exactly as in Valmiki, nothing added; every scene must follow the Valmiki text in the order it happens.\n"
             ).format(b=b, t=it.get("topic", "?"), s=it.get("sargas", "?")) + VR.brief_text(radar) + st_txt
 
 
@@ -820,7 +915,7 @@ def story_check(ep_json, bhag):
                   "If nothing is wrong: {{\"problems\":[]}}\n\nTopic: {t}\nFACTS:\n- {f}\n\nLINES:\n{l}"
                   ).format(t=it.get("topic", "?"), f="\n- ".join(it.get("facts") or []), l=txt)
     for _ in range(3):
-        raw = ask(prompt, want_json=False)
+        raw = ask(prompt, want_json=False, hard=True)
         mt = re.search(r"\{.*\}", raw, re.DOTALL)
         try:
             items = list(json.loads(mt.group(0) if mt else raw).get("problems") or [])
@@ -976,7 +1071,7 @@ def quick_question(request):
 def quick_answer(task):
     """Chhote sawal ka tez jawab. Agar AI ko lage ki kuch badalna ya banana hai to None: tab poora raasta."""
     global FAST
-    files = context_files()
+    files = context_files(task)
     block = "\n\n".join(f"===== FILE: {p} =====\n{c}" for p, c in files.items())
     FAST = True
     try:
@@ -998,12 +1093,19 @@ def mode_task():
         ok, info = YD.save(REPO, note)
         comment(issue, f"✅ याद रख लिया: {info}" if ok else f"❌ याद नहीं रख पाया: {info}")
         return
+    request = os.environ.get("REQUEST", "")
+    if status_question(request):      # posting ka haal: AI ke bina, seedha record se
+        USED.clear()
+        comment(issue, "📋 Posting file ka haal:\n\n" + posting_record())
+        return
     branch = f"ai/issue-{issue}"
     checkout_branch(branch)
     st = load_state()
+    record = posting_record()
     task = (f"Issue title: {os.environ.get('ISSUE_TITLE', '')}\n"
             f"Owner's message (Hinglish): {os.environ.get('REQUEST', '')}\n"
-            f"Earlier work on this issue's branch: {json.dumps(st, ensure_ascii=False)}" + task_extra(st))
+            f"Earlier work on this issue's branch: {json.dumps(st, ensure_ascii=False)}" + task_extra(st)
+            + "\n\n# POSTING RECORD (posting ka haal sirf isi se batao)\n" + record)
     data = None
     if quick_question(os.environ.get("REQUEST", "")):
         data = quick_answer(task)
@@ -1014,6 +1116,8 @@ def mode_task():
     saved = [i for ok, i in (YD.save(REPO, x) for x in (extra if isinstance(extra, list) else [])[:2]) if ok]
     if saved:
         msg += "\n\n🧠 Yaad rakha: " + " | ".join(saved)
+    if _POSTWORD.search(owner_words(request)):
+        msg += "\n\n📋 Posting file ka haal (upar ki baat isse alag ho to ise maanein):\n" + record
     st["issue"] = int(issue)
     if data["action"] == "change":
         eps = write_files(data)
@@ -1042,9 +1146,9 @@ def director_check(img_bytes, ep_json):
               "overlapping, changing looks, halo on humans, empty/black frames, subtitle covering faces, missing logo, "
               "missing subscribe widget at the end, wrong mood colour). For each problem also write the exact '@ai ...' "
               "line the owner can paste to fix it. Answer in Hinglish, short numbered list; if all is fine say so in one line."
-              "\n\n# RULES\n" + open("NIYAM.md", encoding="utf-8").read() + "\n\n# EPISODE\n" + ep_json)
+              "\n\n# RULES\n" + short_rules() + "\n\n# EPISODE\n" + ep_json)
     try:
-        return ask(prompt, image=img_bytes, want_json=False)
+        return ask(prompt, image=img_bytes, want_json=False, hard=True)
     except Exception as e:
         return f"(AI director check abhi nahi ho paya: {str(e)[:120]}. Check sheet khud dekh lijiye.)"
 
@@ -1098,11 +1202,16 @@ def fetch_sheet(ep):
 
 def review_once(sheets, ep_json):
     viral = open("VIRAL.md", encoding="utf-8").read()
+    if os.path.exists(SHORT_RULES) and "## 6." in viral and "## 7." in viral:
+        viral = viral[viral.index("## 6."):viral.index("## 7.")]
+        rules = "# " + SHORT_RULES + "\n" + short_rules()
+    else:
+        rules = "\n\n".join(f"# {n}\n" + _read(n) for n in ("NIYAM.md", "SEEKH.md", "BODY.md", "ANIMATION.md"))
     prompt = (
         "You are the STRICT film director and reviewer of the Katha Chitra channel. Image 1 is a contact sheet of the finished "
         "Ramayan Short spread over the WHOLE video (about 100 frames, left-to-right, top-to-bottom). Image 2 (if given) is the LAST "
         "5 seconds at 4 frames per second. Judge ONLY what you can really see. "
-        "Use section 6 of VIRAL.md below and the rules of NIYAM.md and SEEKH.md. "
+        "Use section 6 of VIRAL.md below and the owner rules that follow it. "
         "IMPORTANT facts about our machine: it ALWAYS adds the small Katha Chitra logo at the top-right corner of every frame, the "
         "title box at the top and the subtitle box at the bottom; the cover as first frame and the sound level are checked by "
         "separate machine tests, so do NOT judge hard-fail rules 8, 10 and 12 (12 = video length, a machine test) and do not judge the logo. Judge the subscribe widget "
@@ -1113,8 +1222,7 @@ def review_once(sheets, ep_json):
         '{"hard_fails":[{"rule":<1-12>,"what":"Hinglish: kya dikh raha hai aur kis frame/jagah","fix":"exact change in episode.json"}],'
         '"scores":{"hook":0-10,"structure":0-10,"pace":0-10,"emotion":0-10,"mood":0-10,"ending":0-10,"camera":0-10},'
         '"weak":[{"what":"...","fix":"..."}],"cannot_check":["..."],"summary":"Hinglish, 2 short lines"}\n\n'
-        "# VIRAL.md\n" + viral + "\n\n# NIYAM.md\n" + open("NIYAM.md", encoding="utf-8").read() + "\n\n# SEEKH.md\n"
-        + open("SEEKH.md", encoding="utf-8").read() + "\n\n# BODY.md\n" + open("BODY.md", encoding="utf-8").read() + "\n\n# ANIMATION.md\n" + open("ANIMATION.md", encoding="utf-8").read() + "\n\n# EPISODE\n" + ep_json)
+        "# VIRAL.md\n" + viral + "\n\n" + rules + "\n\n# EPISODE\n" + ep_json)
     for _ in range(3):
         try:
             txt = ask(prompt, image=sheets, want_json=False, hard=True)
@@ -1421,7 +1529,7 @@ def finish(issue, branch, st, ep, run_url, retry=False):
         run(["gh", "workflow", "run", "publish.yml", "--repo", REPO, "--ref", "main",
              "-f", f"episode={ep}", "-f", f"bhag={n}", "-f", f"issue={issue}"])
         clear_review_pending(issue)
-        comment(issue, "🚀 Jaanch PASS. Shaam 7 baje YouTube + Instagram par apne aap jaayega.")
+        comment(issue, "🚀 Jaanch PASS. Posting system ko bhej diya hai: YouTube tay tareekh ko shaam 7 baje, Instagram uske agle din.")
     else:
         clear_review_pending(issue)
         run(["gh", "label", "create", "dekhna-hai", "--repo", REPO, "--color", "d93f0b", "--force",
@@ -1517,10 +1625,12 @@ def deliver(issue, ep, run_url, verdict=None):
 QUEUE = "baad-mein"   # issues waiting for a quiet time (free AI busy); done by the morning schedule
 
 
-def queue_issue(issue, why):
+def queue_issue(issue, why, quiet=False):
     run(["gh", "label", "create", QUEUE, "--repo", REPO, "--color", "f2c230", "--force",
          "--description", "Free AI busy tha; subah apne aap dobara"], check=False)
     run(["gh", "issue", "edit", str(issue), "--repo", REPO, "--add-label", QUEUE], check=False)
+    if quiet:
+        print("Abhi bhi busy, list mein rakha:", why[:200]); return
     comment(issue, "⏳ Free AI abhi busy hai (raat ko Google ke server par bheed hoti hai). Ye kaam **baad-mein** list mein "
                    "daal diya hai: **subah 5:37 baje** (aur dopahar 3:07 baje) main apne aap dobara karunga. "
                    "Aapko kuch likhne ki zaroorat nahi.\n\n" f"<sub>{why[:200]}</sub>")
@@ -1582,7 +1692,7 @@ def mode_queue():
         try:
             mode_task()
         except (Busy, ValueError) as e:
-            queue_issue(n, str(e)); return          # still busy: keep the rest for the next slot
+            queue_issue(n, str(e), quiet=True); return          # still busy: keep the rest for the next slot
         except Exception as e:
             comment(n, f"⚠️ Subah wali koshish mein galti hui. Yahin dobara `@ai ...` likhiye.\n\n<sub>{str(e)[:300]}</sub>")
 
