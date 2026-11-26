@@ -376,6 +376,8 @@ def write_post(item):
     """Returns (post dict, sources list). AWS (on ho to) -> Gemini grounded -> baaki free raaste."""
     global GEM_SKIP_UNTIL, OVH_WAITS
     prompt = PROMPT.format(**item)
+    prompt += (f"\nAAJ KI TAREEKH (India): {aaj_ist().strftime('%d-%m-%Y')}. Srot purana ho sakta hai: jo tareekh aaj se pehle ki hai use 'hoga/hogi' mat likho. "
+               "'aaj' ya 'kal' tabhi likho jab is tareekh ke hisab se sach ho; shak ho to sirf poori tareekh likho.")
     seekh = lessons()
     if seekh:
         prompt += "\nIn baaton ka bhi dhyan rakho (upar ke niyam pehle):\n" + seekh
@@ -511,6 +513,32 @@ def plain(h):
     return re.sub(r"<[^>]+>", " ", html.unescape(h))
 
 
+def aaj_ist():
+    return datetime.datetime.now(IST).date()
+
+
+def tareekh_galti(text, today=None):
+    """Aaj/kal ke saath galat tareekh, ya beeti tareekh ko 'hoga' likhna. Galti ka vivran, warna ''. (Mashini jaanch: har galti nahi pakadti.)"""
+    today = today or aaj_ist()
+    months = {n: i + 1 for i, pair in enumerate(MONTHS) for n in pair}
+    pat = re.compile(r"(?<!\d)(\d{1,2})\s*(" + "|".join(sorted(months, key=len, reverse=True)) + r")(?![a-z])(?:\s*,?\s*(20\d\d))?", re.I)
+    for line in re.split(r"[।!?\n]|\.(?!\d)", text):
+        for m in pat.finditer(line):
+            try:
+                d = datetime.date(int(m.group(3) or today.year), months[m.group(2).lower()], int(m.group(1)))
+            except ValueError:
+                continue
+            if not m.group(3) and (d - today).days < -300:   # saal nahi likha aur mahine purani lagti hai: agle saal ki hai
+                d = d.replace(year=d.year + 1)
+            before = line[max(0, m.start() - 18):m.start()]
+            near = re.search(r"(?<![\u0900-\u097F])(आज|कल)(?![\u0900-\u097F])\s*(?:यानी|,|\(|-|—|:)?\s*$", before)
+            if near and (d - today).days not in ((0,) if near.group(1) == "आज" else (1, -1)):
+                return f"'{near.group(1)}' ke saath galat tareekh: {m.group(0)}"
+            if d < today and re.search(r"होगा|होगी|होंगे|होने वाल|आने वाल|की जाएगी|किया जाएगा|आएगा|आएगी|आएंगे|हो रहा है|हो रही है|हो रहे हैं", line):
+                return f"beeti tareekh ko aane wali likha: {m.group(0)}"
+    return ""
+
+
 def quality_ok(post, srcs, item):
     why = []
     if not post or not post.get("title") or not post.get("body_html"):
@@ -521,6 +549,8 @@ def quality_ok(post, srcs, item):
     if re.search(r"(?i)\b(shocking|you won't believe|chaunk|चौंक)", post["title"]): why.append("clickbait heading")
     if "<h1" in post["body_html"].lower(): why.append("h1 mana")
     if purana_mahina(post["title"]): why.append("heading mein mahino purani tareekh")
+    bad_date = tareekh_galti("\n".join([post["title"], post.get("description", ""), plain(re.sub(r"(?i)</(p|li|h2|h3|tr)>", "\n", post["body_html"]))]))
+    if bad_date: why.append(bad_date)
     _txt = plain(post["body_html"])
     _dev = len(re.findall(r"[\u0900-\u097F]", _txt)); _lat = len(re.findall(r"[A-Za-z]", _txt))
     if _dev < 0.5 * (_dev + _lat) or not re.search(r"[\u0900-\u097F]", post["title"]): why.append("Devanagari lipi nahi (Roman/Hinglish mein likhi)")
