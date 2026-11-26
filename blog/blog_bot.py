@@ -595,13 +595,33 @@ def _dl(url, path, hdr=None):
     return path
 
 
+COMMONS_UA = "khabaradda-bot/1.0 (https://mukeshnewsdaily.blogspot.com/)"
+
+
+def commons_candidates(data):
+    """Commons ke jawab se sirf CC0 / public domain, JPEG, 1200px+ photos; khoj ke kram mein."""
+    out = []
+    pages = (data.get("query") or {}).get("pages") or {}
+    for pg in sorted(pages.values(), key=lambda x: x.get("index", 999)):
+        i = (pg.get("imageinfo") or [{}])[0]
+        meta = i.get("extmetadata") or {}
+        lic = str((meta.get("LicenseShortName") or {}).get("value", "")).strip().lower()
+        if lic not in ("cc0", "public domain") or i.get("mime") != "image/jpeg" or (i.get("width") or 0) < 1200:
+            continue
+        url = i.get("thumburl") if i["width"] > 1600 else i.get("url")
+        who = plain(str((meta.get("Artist") or {}).get("value", ""))).strip()[:60]
+        credit = "Photo: %sWikimedia Commons (%s)" % (who + " / " if who else "", "CC0" if lic == "cc0" else "Public Domain")
+        out.append((pg.get("pageid"), url, credit, i.get("descriptionurl")))
+    return out
+
+
 def fetch_photos(queries, n=5):
     """Post ke vishay ki ASLI, copyright-free photos. Raaste (ek ke baad ek): Pexels -> Pixabay -> Openverse (CC0/PDM).
     Har photo hosted karke (jsDelivr) lagti hai; credit saath. Env: PEXELS_API_KEY, PIXABAY_API_KEY (dono free), BLOG_IMG_TOKEN (hosting)."""
     out, used = [], set()
     for qi, q in enumerate([str(x).strip()[:60] for x in (queries or []) if str(x).strip()][:n]):
         got = None
-        for prov in ("pexels", "pixabay", "openverse"):
+        for prov in ("pexels", "pixabay", "commons", "openverse"):
             try:
                 cand = []
                 if prov == "pexels" and os.environ.get("PEXELS_API_KEY"):
@@ -614,6 +634,12 @@ def fetch_photos(queries, n=5):
                                      "image_type": "photo", "orientation": "horizontal", "safesearch": "true", "per_page": 8})
                     for h in r.json().get("hits", []):
                         cand.append((h["id"], h.get("largeImageURL"), "Photo: %s / Pixabay" % h.get("user", ""), h.get("pageURL")))
+                elif prov == "commons":   # Wikimedia Commons: bina key; sirf CC0 / public domain JPEG
+                    r = requests.get("https://commons.wikimedia.org/w/api.php", timeout=30, headers={"User-Agent": COMMONS_UA},
+                                     params={"action": "query", "format": "json", "generator": "search", "gsrnamespace": 6, "gsrlimit": 20,
+                                             "gsrsearch": q + " filetype:bitmap", "prop": "imageinfo", "iiprop": "url|size|mime|extmetadata",
+                                             "iiurlwidth": 1600, "iiextmetadatafilter": "LicenseShortName|Artist"})
+                    cand = commons_candidates(r.json())
                 elif prov == "openverse":
                     r = requests.get("https://api.openverse.org/v1/images/", timeout=30, params={"q": q, "license": "cc0,pdm", "category": "photograph", "page_size": 10, "aspect_ratio": "wide"})
                     for im in r.json().get("results", []):
@@ -624,7 +650,7 @@ def fetch_photos(queries, n=5):
                     if key in used or not url: continue
                     path = os.path.join(OUT, f"ph-{time.strftime('%Y%m%d')}-{abs(hash((prov, pid))) % 10**7}.jpg")
                     try:
-                        _dl(url, path)
+                        _dl(url, path, {"User-Agent": COMMONS_UA} if prov == "commons" else None)
                     except Exception as e:
                         log("photo utarne mein dikkat:", str(e)[:80]); continue
                     hosted = host_image(path)
