@@ -25,6 +25,16 @@ jobs:
           for n in BLOG_POST_URL BLOG_POST_TOKEN GEMINI_API_KEY OPENROUTER_API_KEY CLOUDFLARE_ACCOUNT_ID CLOUDFLARE_API_TOKEN HF_TOKEN BLOG_IMG_TOKEN PIXABAY_API_KEY PEXELS_API_KEY; do
             if [ -n "${!n}" ]; then echo "HAI    $n"; else echo "NAHI   $n"; fi
           done
+      - name: Post bhejne wale link ka roop sahi hai? (value kabhi nahi chhapti)
+        env:
+          U: ${{ secrets.BLOG_POST_URL }}
+        run: |
+          python3 - <<'PY'
+          import os
+          v = os.environ.get("U", "").strip().rstrip(";").strip().strip("'\"`").strip()
+          ok = v.startswith("https://script.google.com/") and v.endswith("/exec")
+          print("LINK:", "khaali" if not v else "roop sahi" if ok else "GALAT roop")
+          PY
       - name: BLOG_IMG_TOKEN ki taakat (photo chadhane layak hai?)
         env:
           T: ${{ secrets.BLOG_IMG_TOKEN }}
