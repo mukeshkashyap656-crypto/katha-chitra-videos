@@ -44,7 +44,7 @@ Bhandar mein nayi photo tabhi jodo jab use aankh se dekh liya ho aur licence pag
 - Blog par AI se bani tasveer NAHI lagti. Khud banaya saada cover sirf tab jab mel wali asli photo na mile (rule 6).
 
 ## Har vishay par roz post (Owner, 26 Nov 2026 shaam: "har topic par roz post honi chahiye, phir dekhte konsa topic chalega")
-Claude ka subah wala kaam Mobile, Tech, Gaming, Sarkari Naukri, Yojana mein se har ek par roz ek post ki koshish karta hai (jaanch fail ho to woh vishay chhootta hai). GitHub bot backup hai: din mein ek hi post (rule 1), aur vishay aur cheez badal-badal kar.
+Claude ka subah 8:17 aur shaam 6:17 wala kaam Mobile, Tech, Gaming, Sarkari Naukri, Yojana mein se har ek par roz ek post ki koshish karta hai (jaanch fail ho to woh vishay chhootta hai). GitHub bot backup hai: din mein ek hi post (rule 1), aur vishay aur cheez badal-badal kar.
 
 ## Free tasveer khud dhoondhna (Owner, 26 Nov 2026: har blog post aur article mein)
 - Sirf aisi licence jisme credit dekar kamai wale blog par lagana allowed ho; "NC" ya "ND" wali nahi. Credit aur source link zaroor.
@@ -61,6 +61,9 @@ Claude ka subah wala kaam Mobile, Tech, Gaming, Sarkari Naukri, Yojana mein se h
 6. Live post par computer aur phone, dono screen par dekho.
 7. Kai phone wali post: pehle us model ki free tasveer, na mile to official video, wo bhi na mile to official page ka link aur saaf likho ki video nahi mila.
 GitHub bot: video sirf code ki OFFICIAL list wale jaanche hue handle se aur title milne par lagta hai; wo poora video dekh nahi sakta aur har product ke neeche alag video nahi lagata. Naya handle sirf upar ke kadam 3 se jaanch kar jodo.
+
+## Aam aadmi ki bhasha (Owner, 26 Nov 2026)
+Chhote vaakya, bolchaal ke shabd, mushkil/tech shabd ka aasan matlab, shuru mein seedha saar, kuch karna ho to kadam ginkar; daam aur tareekh alag list mein.
 
 ## Post se pehle apni jaanch (owner ka kehna, 26 Nov 2026: "GitHub khud check kare, phir post ho")
 - Pehle shabd, srot, lipi aur mana vishay ki jaanch; phir srot ka page padh kar post ka har ank (daam, tareekh, spec) milaaya jaata hai.

@@ -19,6 +19,7 @@ Bot har post likhne se pehle sirf "SEEKH SHURU" aur "SEEKH KHATAM" ke beech ki l
 - Roz alag vishay: pichhli 3 post wala vishay aur pichhli 5 post wali cheez ya brand dobara mat lo.
 - Kai phone/product wali post mein har ek ka usi exact model ka real visual ho (free licence photo, warna company ke official YouTube channel ki video, warna official page ka link). Amazon, Flipkart ya Google se photo utha kar nahi.
 - Video: sirf usi cheez ka, company ya vibhag ke apne official YouTube channel wala. official_video_url ka link pakka pata na ho to khaali chhodo; andaaza ya doosre channel ka link nahi.
+- Aam aadmi ek baar padh kar samajh jaye: chhote vaakya, bolchaal ke shabd, mushkil ya tech shabd ka usi jagah aasan matlab; shuru mein seedha saar, kuch karna ho to 1-2-3 kadam.
 <!-- SEEKH KHATAM -->
 
 ## Code khud lagata hai
