@@ -43,8 +43,8 @@ Bhandar mein nayi photo tabhi jodo jab use aankh se dekh liya ho aur licence pag
 ## AI se tasveer
 - Blog par AI se bani tasveer NAHI lagti. Khud banaya saada cover sirf tab jab mel wali asli photo na mile (rule 6).
 
-## Roz alag vishay (Owner, 26 Nov 2026)
-Pichhli 3 post wala vishay aur pichhli 5 post wali app, brand ya cheez dobara nahi.
+## Har vishay par roz post (Owner, 26 Nov 2026 shaam: "har topic par roz post honi chahiye, phir dekhte konsa topic chalega")
+Claude ka subah wala kaam Mobile, Tech, Gaming, Sarkari Naukri, Yojana mein se har ek par roz ek post ki koshish karta hai (jaanch fail ho to woh vishay chhootta hai). GitHub bot backup hai: din mein ek hi post (rule 1), aur vishay aur cheez badal-badal kar.
 
 ## Free tasveer khud dhoondhna (Owner, 26 Nov 2026: har blog post aur article mein)
 - Sirf aisi licence jisme credit dekar kamai wale blog par lagana allowed ho; "NC" ya "ND" wali nahi. Credit aur source link zaroor.
