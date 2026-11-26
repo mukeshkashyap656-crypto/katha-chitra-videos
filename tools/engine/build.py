@@ -63,6 +63,8 @@ for i, sh in enumerate(SHOTS):
         st = T[k] - 0.15 + (D[k] + 0.15) * n / max(1, len(free))
     starts.append(max(st, (starts[-1] + 0.6) if starts else 0))
 ends = starts[1:] + [END]
+# bada '?' agle bhaag wale scene ke saath aaye: aakhri line ke kai scene hon to aakhri scene par
+T_Q = starts[-1] if sum(1 for x in SHOTS if x['line'] == LAST) > 1 else T[LAST]
 
 
 # ---------- arms as separate pieces: shoulder + elbow rotate smoothly (real cut-out animation) ----------
@@ -550,8 +552,8 @@ const tl = gsap.timeline({{paused:true}});
 {''.join(moves)}
 {''.join(fx_js)}
 // question over the last scene
-tl.fromTo("#qbox",{{opacity:0,scale:0.3}},{{opacity:1,scale:1,duration:0.5,ease:"back.out(1.8)",immediateRender:false}},{T[LAST]:.3f});
-tl.to("#qbox",{{scale:1.07,duration:0.5,yoyo:true,repeat:{max(1, int((END - T[LAST] - 0.5) / 0.5))},ease:"sine.inOut"}},{T[LAST] + 0.5:.3f});
+tl.fromTo("#qbox",{{opacity:0,scale:0.3}},{{opacity:1,scale:1,duration:0.5,ease:"back.out(1.8)",immediateRender:false}},{T_Q:.3f});
+tl.to("#qbox",{{scale:1.07,duration:0.5,yoyo:true,repeat:{max(1, int((END - T_Q - 0.5) / 0.5))},ease:"sine.inOut"}},{T_Q + 0.5:.3f});
 tl.fromTo("#t2 b",{{scale:1}},{{scale:1.15,duration:0.5,yoyo:true,repeat:{int(END / 0.5) - 1},ease:"sine.inOut"}},0);
 {''.join(sub_js)}
 // subscribe widget slides in during the last line

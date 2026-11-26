@@ -3,7 +3,7 @@
  "COVER_NAME": "Ramayan_Bhag10_Cover",
  "TAG": "रामायण कथा",
  "BHAG": 10,
- "VERSION": 5,
+ "VERSION": 6,
  "QUESTION": "अहिल्या को श्राप से किसने मुक्त किया?",
  "LINES": {
   "n1": [
@@ -243,12 +243,11 @@
    "line": "n5",
    "bg": "ashram_soona",
    "mood": "wonder",
-   "chip": "अगला भाग",
    "cast": [
     {
      "who": "lakshman",
      "x": 160,
-     "pose": "stand",
+     "pose": "namaste",
      "face": "smile",
      "look": "right"
     },
@@ -256,26 +255,62 @@
      "who": "vishwamitra",
      "x": 480,
      "pose": "stand",
-     "face": "neutral",
+     "face": "smile",
      "look": "right"
     },
     {
      "who": "ram",
      "x": 820,
-     "pose": "stand",
+     "pose": "namaste",
      "face": "smile",
      "look": "right"
     },
     {
      "who": "ahalya",
      "x": 1150,
-     "pose": "namaste",
+     "pose": "bow",
      "face": "joy",
-     "look": "left"
+     "look": "left",
+     "tilt": -7
     }
    ],
-   "show": "अहिल्या हाथ जोड़े; सामने राम, विश्वामित्र और लक्ष्मण",
+   "show": "विदाई: अहिल्या झुककर प्रणाम करती; राम और लक्ष्मण हाथ जोड़े",
    "cam": "wide"
+  },
+  {
+   "line": "n5",
+   "at_word": "आगे",
+   "bg": "cloudvan",
+   "mood": "wonder",
+   "cam": "wide",
+   "chip": "अगला भाग",
+   "cast": [
+    {
+     "who": "vishwamitra",
+     "x": 700,
+     "pose": "walk",
+     "face": "neutral",
+     "look": "right",
+     "to_x": 1160
+    },
+    {
+     "who": "ram",
+     "x": 430,
+     "pose": "walk",
+     "face": "smile",
+     "look": "right",
+     "to_x": 890
+    },
+    {
+     "who": "lakshman",
+     "x": 160,
+     "pose": "walk",
+     "face": "neutral",
+     "look": "right",
+     "to_x": 620
+    }
+   ],
+   "show": "विश्वामित्र आगे, पीछे राम और लक्ष्मण, तीनों मिथिला के रास्ते पर चलते हुए"
   }
  ],
  "COVER": {
