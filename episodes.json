@@ -64,7 +64,9 @@
   ],
   "date": "2026-11-27",
   "auto": true,
-  "status": "ready"
+  "status": "ready",
+  "youtube_id": "WZYwE1k12aM",
+  "youtube_pending": true
  },
  "10": {
   "file": "videos/Ramayan_Bhag10_Ahalya_ka_Uddhar.mp4",
