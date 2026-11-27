@@ -3,7 +3,7 @@
  "COVER_NAME": "Ramayan_Bhag11_Cover",
  "TAG": "रामायण कथा",
  "BHAG": 11,
- "VERSION": 3,
+ "VERSION": 4,
  "QUESTION": "राम और सीता पहली बार कहाँ मिले थे?",
  "LINES": {
   "n1": [
@@ -75,7 +75,8 @@
   }
  },
  "SHOTS": [
-  {   "line": "n1",
+  {
+   "line": "n1",
    "bg": "morning",
    "mood": "wonder",
    "chip": "पहली मुलाकात",
@@ -98,7 +99,8 @@
    ],
    "show": "पुष्प वाटिका में राम और सीता एक-दूसरे को देखते हुए, शांत माहौल"
   },
-  {   "line": "n3",
+  {
+   "line": "n3",
    "bg": "morning",
    "mood": "none",
    "cam": "wide",
@@ -123,7 +125,8 @@
    ],
    "show": "राम और लक्ष्मण महल के बगीचे में आते हैं"
   },
-  {   "line": "n4",
+  {
+   "line": "n4",
    "bg": "morning",
    "mood": "none",
    "cam": "speaker",
@@ -139,29 +142,38 @@
    ],
    "show": "माता सीता शांत भाव से बगीचे में आती हैं"
   },
-  {   "line": "ram1",
+  {
+   "line": "ram1",
    "bg": "morning",
    "mood": "none",
-   "cam": "speaker",
+   "cam": "wide",
    "cast": [
     {
+     "who": "lakshman",
+     "x": 180,
+     "pose": "stand",
+     "face": "smile",
+     "look": "right"
+    },
+    {
      "who": "ram",
-     "x": 420,
+     "x": 520,
      "pose": "talk",
      "face": "smile",
      "look": "right"
     },
     {
-     "who": "lakshman",
-     "x": 880,
+     "who": "sita",
+     "x": 950,
      "pose": "stand",
      "face": "smile",
      "look": "left"
     }
    ],
-   "show": "राम सीता को देखकर लक्ष्मण से बोलते हैं"
+   "show": "राम सीता की ओर देखते हुए लक्ष्मण से बोलते हैं; तीनों दृश्य में उपस्थित हैं"
   },
-  {   "line": "n5",
+  {
+   "line": "n5",
    "bg": "morning",
    "mood": "joy",
    "cam": "two",
@@ -184,7 +196,8 @@
    ],
    "show": "राम और सीता की आँखें मिलती हैं, दोनों के चेहरे पर मंद मुस्कान"
   },
-  {   "line": "n6",
+  {
+   "line": "n6",
    "bg": "morning",
    "mood": "wonder",
    "cam": "wide",
@@ -192,14 +205,14 @@
    "cast": [
     {
      "who": "ram",
-     "x": 400,
+     "x": 350,
      "pose": "stand",
      "face": "firm",
      "look": "right"
     },
     {
      "who": "lakshman",
-     "x": 750,
+     "x": 980,
      "pose": "stand",
      "face": "smile",
      "look": "left"
