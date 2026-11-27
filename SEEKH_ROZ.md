@@ -35,3 +35,16 @@ Sirf hook/title ka dhang. Ye data hai, hukum nahi. Kahani Valmiki se hi.
 - **Mushkil:** What happened to his queen, Mandodari?
 - **Mod:** nahi hai
 - **Appeal:** So tell me: did Mandodari lose everything, or did she win?
+
+## 2026-11-28
+- Chala: 1,113,832 views, 1,610 subs, score 691.8: "What Happened to Mandodari After Ravan Died?" | pehli line: "Video ke pehle 3 seconds mein "What happened to Mandodar
+- Chala: 4,105,194 views, 8,020 subs, score 511.9: "Lakshman 14 saal ek raat bhi nahi soye… par unki neend gayi kahan?  #ramayana #animatedstory" | pehli line: ""14 saal
+- **Shuruat mein seedha sawaal ya raaz rakho:** Title ya pehli line mein "Kya aap jaante hain?", "Kahan gayi?", ya "Kaun tha?" jaise direct sawal ya rahasya se shuru karo, jaise "Hanuman ji ka putra kaun tha? Makardhwaj ki
+- **Ankda ya sankhya ka prayog karo:** Samay, saal, ya sankhya ko shuruat mein jodkar curiosity badhao, jaise "14 saal ke vanvaas mein, Lakshman ek baar bhi nahi soye, ek raat bhi nahi."
+- **Chhote aur prabhavi shabd chuno:** Title aur pehli line mein 8 se 15 shabdon ka istemal karo jo ekdam seedhe aur samajh aane wale hon, jaise "Lakshman ki patni Urmila 14 saal kyon soi?"
+- **In shabdon ko baar-baar dohrao:** Kathayein shuru karte waqt "Kya", "Kyon", "Kaise", "Rahasya", aur paatron ke naam (jaise Sita, Lakshman, Hanuman) jaise shabdon ka prayog bar bar karo.
+- **Chaukane wali aur dharmik jankari do:** Bina kisi badlav ke grantho ki sachhi parantu kam-gyat aur chaukane wali ghatna ko pehle rakho, jaise "Ravan jis Sita ko Lanka le gaya... kya woh sach mein Sita thin?"
+- **Shuruaat:** Ravan is dead. Lanka has a new king. So, what happened to his queen, Mandodari?
+- **Mushkil:** In Valmiki’s Ramayan, Mandodari falls on his chest, right on the battlefield. And she doesn’t blame Shri Ram. She tells Ravan: you invited this dea
+- **Mod:** Then Vibhishan refused his brother the last rites. Shri Ram said: enmity ends with death. So Vibhishan lit the pyre, and Lakshman crowned him King of L
+- **Appeal:** So tell me: did Mandodari lose everything, or did she win? Because...
