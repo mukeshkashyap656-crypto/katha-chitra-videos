@@ -3,7 +3,7 @@
  "COVER_NAME": "Ramayan_Bhag11_Cover",
  "TAG": "रामायण कथा",
  "BHAG": 11,
- "VERSION": 4,
+ "VERSION": 5,
  "QUESTION": "राम और सीता पहली बार कहाँ मिले थे?",
  "LINES": {
   "n1": [
@@ -150,21 +150,21 @@
    "cast": [
     {
      "who": "lakshman",
-     "x": 180,
+     "x": 280,
      "pose": "stand",
      "face": "smile",
      "look": "right"
     },
     {
      "who": "ram",
-     "x": 520,
+     "x": 580,
      "pose": "talk",
      "face": "smile",
      "look": "right"
     },
     {
      "who": "sita",
-     "x": 950,
+     "x": 920,
      "pose": "stand",
      "face": "smile",
      "look": "left"
@@ -205,14 +205,14 @@
    "cast": [
     {
      "who": "ram",
-     "x": 350,
+     "x": 450,
      "pose": "stand",
      "face": "firm",
      "look": "right"
     },
     {
      "who": "lakshman",
-     "x": 980,
+     "x": 800,
      "pose": "stand",
      "face": "smile",
      "look": "left"
