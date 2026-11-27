@@ -1,0 +1,231 @@
+{
+ "NAME": "Ramayan_Bhag11_Pushp_Vatika_Ram_Sita",
+ "COVER_NAME": "Ramayan_Bhag11_Cover",
+ "TAG": "रामायण कथा",
+ "BHAG": 11,
+ "VERSION": 3,
+ "QUESTION": "राम और सीता पहली बार कहाँ मिले थे?",
+ "LINES": {
+  "n1": [
+   "राम और सीता पहली बार कहाँ मिले थे?",
+   "+0%",
+   "+0Hz"
+  ],
+  "n3": [
+   "राम महल के बगीचे में पहुँचे।",
+   "+0%",
+   "+0Hz"
+  ],
+  "n4": [
+   "उसी समय जनकपुत्री सीता भी वहाँ आईं।",
+   "+0%",
+   "+0Hz"
+  ],
+  "ram1": [
+   "देखो! यह कौन हैं जिनकी छवि इतनी पवित्र है?",
+   "+2%",
+   "+10Hz"
+  ],
+  "n5": [
+   "पहली नज़र में ही दोनों के मन में प्रेम जाग उठा।",
+   "+0%",
+   "+0Hz"
+  ],
+  "n6": [
+   "क्या राम शिव धनुष तोड़ पाएंगे? अगले भाग में! कमेंट में लिखिए: जय श्री राम। सब्सक्राइब कीजिए।",
+   "+0%",
+   "+0Hz"
+  ]
+ },
+ "SPEAKER": {
+  "ram1": "ram"
+ },
+ "KEYWORDS": {
+  "n1": [
+   "पहली",
+   "मुलाकात"
+  ],
+  "n3": [
+   "बगीचे"
+  ],
+  "n4": [
+   "सीता"
+  ],
+  "ram1": [
+   "छवि"
+  ],
+  "n5": [
+   "प्रेम"
+  ],
+  "n6": [
+   "धनुष"
+  ]
+ },
+ "NEW_CHARS": {
+  "sita": {
+   "name": "सीता",
+   "kind": "f",
+   "skin": "#e8b887",
+   "hair": "#140c08",
+   "saree": "#e85d04",
+   "blouse": "#f2c230",
+   "border": "#f2c230",
+   "jewel": true,
+   "tilak": true
+  }
+ },
+ "SHOTS": [
+  {   "line": "n1",
+   "bg": "morning",
+   "mood": "wonder",
+   "chip": "पहली मुलाकात",
+   "cam": "wide",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 400,
+     "pose": "stand",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "sita",
+     "x": 900,
+     "pose": "namaste",
+     "face": "smile",
+     "look": "left"
+    }
+   ],
+   "show": "पुष्प वाटिका में राम और सीता एक-दूसरे को देखते हुए, शांत माहौल"
+  },
+  {   "line": "n3",
+   "bg": "morning",
+   "mood": "none",
+   "cam": "wide",
+   "chip": "पुष्प वाटिका",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 450,
+     "pose": "walk",
+     "face": "neutral",
+     "look": "right",
+     "to_x": 760
+    },
+    {
+     "who": "lakshman",
+     "x": 150,
+     "pose": "walk",
+     "face": "neutral",
+     "look": "right",
+     "to_x": 460
+    }
+   ],
+   "show": "राम और लक्ष्मण महल के बगीचे में आते हैं"
+  },
+  {   "line": "n4",
+   "bg": "morning",
+   "mood": "none",
+   "cam": "speaker",
+   "chip": "सीता का आगमन",
+   "cast": [
+    {
+     "who": "sita",
+     "x": 680,
+     "pose": "stand",
+     "face": "joy",
+     "look": "front"
+    }
+   ],
+   "show": "माता सीता शांत भाव से बगीचे में आती हैं"
+  },
+  {   "line": "ram1",
+   "bg": "morning",
+   "mood": "none",
+   "cam": "speaker",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 420,
+     "pose": "talk",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "lakshman",
+     "x": 880,
+     "pose": "stand",
+     "face": "smile",
+     "look": "left"
+    }
+   ],
+   "show": "राम सीता को देखकर लक्ष्मण से बोलते हैं"
+  },
+  {   "line": "n5",
+   "bg": "morning",
+   "mood": "joy",
+   "cam": "two",
+   "chip": "पहला प्रेम",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 380,
+     "pose": "stand",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "sita",
+     "x": 880,
+     "pose": "stand",
+     "face": "joy",
+     "look": "left"
+    }
+   ],
+   "show": "राम और सीता की आँखें मिलती हैं, दोनों के चेहरे पर मंद मुस्कान"
+  },
+  {   "line": "n6",
+   "bg": "morning",
+   "mood": "wonder",
+   "cam": "wide",
+   "chip": "अगला भाग",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 400,
+     "pose": "stand",
+     "face": "firm",
+     "look": "right"
+    },
+    {
+     "who": "lakshman",
+     "x": 750,
+     "pose": "stand",
+     "face": "smile",
+     "look": "left"
+    }
+   ],
+   "show": "राम और लक्ष्मण तैयार खड़े हैं, अगले भाग में शिव धनुष का प्रसंग"
+  }
+ ],
+ "COVER": {
+  "bg": "morning",
+  "tag": "पुष्प वाटिका का रहस्य!",
+  "cast": [
+   {
+    "who": "ram",
+    "x": 380,
+    "pose": "stand",
+    "face": "smile",
+    "look": "right"
+   },
+   {
+    "who": "sita",
+    "x": 880,
+    "pose": "namaste",
+    "face": "joy",
+    "look": "left"
+   }
+  ]
+ }
+}
