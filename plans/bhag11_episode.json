@@ -1,0 +1,276 @@
+{
+ "NAME": "Ramayan_Bhag11_Pushp_Vatika_Ram_Sita",
+ "COVER_NAME": "Ramayan_Bhag11_Cover",
+ "TAG": "रामायण कथा",
+ "BHAG": 11,
+ "VERSION": 1,
+ "QUESTION": "राम-सीता पहली बार कहाँ मिले?",
+ "LINES": {
+  "n1": [
+   "मिथिला के बगीचे में राम और सीता की पहली नज़र मिली!",
+   "+0%",
+   "+0Hz"
+  ],
+  "n2": [
+   "गुरु विश्वामित्र के साथ राम और लक्ष्मण मिथिला पहुँचे थे।",
+   "+0%",
+   "+0Hz"
+  ],
+  "n3": [
+   "राजमहल की पुष्प वाटिका में माता सीता पूजा के लिए आई थीं।",
+   "+0%",
+   "+0Hz"
+  ],
+  "ram1": [
+   "लक्ष्मण, देखो! ऐसी रूप और सौम्यता पहले कभी नहीं देखी।",
+   "+2%",
+   "+10Hz"
+  ],
+  "n4": [
+   "दोनों ने एक-दूसरे को देखा और पहली नज़र में ही प्रेम जाग उठा।",
+   "+0%",
+   "+0Hz"
+  ],
+  "si1": [
+   "हे गौरी माँ! इन्हें ही मेरे जीवनसाथी के रूप में दीजिए।",
+   "+0%",
+   "+8Hz"
+  ],
+  "n5": [
+   "क्या राम शिव धनुष तोड़कर सीता से विवाह कर पाएंगे? अगले भाग में! कमेंट में लिखिए: जय श्री राम। सब्सक्राइब कीजिए।",
+   "+0%",
+   "+0Hz"
+  ]
+ },
+ "SPEAKER": {
+  "ram1": "ram",
+  "si1": "sita"
+ },
+ "KEYWORDS": {
+  "n1": [
+   "पहली नज़र"
+  ],
+  "n2": [
+   "मिथिला"
+  ],
+  "n3": [
+   "पुष्प वाटिका"
+  ],
+  "ram1": [
+   "सौम्यता"
+  ],
+  "n4": [
+   "प्रेम"
+  ],
+  "si1": [
+   "जीवनसाथी"
+  ],
+  "n5": [
+   "शिव धनुष"
+  ]
+ },
+ "NEW_CHARS": {
+  "sita": {
+   "name": "सीता",
+   "kind": "f",
+   "skin": "#e8b887",
+   "hair": "#140c08",
+   "saree": "#d9342b",
+   "blouse": "#f2c230",
+   "border": "#f2c230",
+   "jewel": true,
+   "tilak": true
+  }
+ },
+ "SHOTS": [
+  {
+   "line": "n1",
+   "bg": "morning",
+   "mood": "joy",
+   "chip": "पहला मिलन",
+   "cam": "wide",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 380,
+     "pose": "stand",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "sita",
+     "x": 980,
+     "pose": "stand",
+     "face": "smile",
+     "look": "left"
+    }
+   ],
+   "show": "पुष्प वाटिका में राम और सीता एक-दूसरे को देखते हुए"
+  },
+  {
+   "line": "n2",
+   "bg": "morning",
+   "mood": "none",
+   "chip": "मिथिला आगमन",
+   "cam": "wide",
+   "cast": [
+    {
+     "who": "vishwamitra",
+     "x": 760,
+     "pose": "walk",
+     "face": "neutral",
+     "look": "right",
+     "to_x": 1080
+    },
+    {
+     "who": "ram",
+     "x": 450,
+     "pose": "walk",
+     "face": "neutral",
+     "look": "right",
+     "to_x": 770
+    },
+    {
+     "who": "lakshman",
+     "x": 150,
+     "pose": "walk",
+     "face": "neutral",
+     "look": "right",
+     "to_x": 470
+    }
+   ],
+   "show": "विश्वामित्र आगे, पीछे राम और लक्ष्मण चलते हुए"
+  },
+  {
+   "line": "n3",
+   "bg": "morning",
+   "mood": "joy",
+   "chip": "पुष्प वाटिका",
+   "cam": "speaker",
+   "cast": [
+    {
+     "who": "sita",
+     "x": 680,
+     "pose": "namaste",
+     "face": "smile",
+     "look": "front"
+    }
+   ],
+   "show": "माता सीता पुष्प वाटिका में पूजा भाव से खड़ी हैं"
+  },
+  {
+   "line": "ram1",
+   "bg": "morning",
+   "mood": "none",
+   "cam": "two",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 400,
+     "pose": "talk",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "lakshman",
+     "x": 800,
+     "pose": "stand",
+     "face": "smile",
+     "look": "left"
+    }
+   ],
+   "show": "राम लक्ष्मण से बात करते हुए सीता की ओर इशारा करते हैं"
+  },
+  {
+   "line": "n4",
+   "bg": "morning",
+   "mood": "wonder",
+   "chip": "पहला प्रेम",
+   "cam": "wide",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 420,
+     "pose": "stand",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "sita",
+     "x": 940,
+     "pose": "stand",
+     "face": "joy",
+     "look": "left"
+    }
+   ],
+   "show": "राम और सीता आमने-सामने खड़े होकर एक-दूसरे को देख रहे हैं"
+  },
+  {
+   "line": "si1",
+   "bg": "morning",
+   "mood": "joy",
+   "cam": "speaker",
+   "cast": [
+    {
+     "who": "sita",
+     "x": 680,
+     "pose": "namaste",
+     "face": "joy",
+     "look": "front"
+    }
+   ],
+   "show": "सीता हाथ जोड़कर प्रार्थना कर रही हैं"
+  },
+  {
+   "line": "n5",
+   "bg": "morning",
+   "mood": "wonder",
+   "chip": "अगला भाग",
+   "cam": "wide",
+   "cast": [
+    {
+     "who": "lakshman",
+     "x": 160,
+     "pose": "stand",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "ram",
+     "x": 480,
+     "pose": "namaste",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "sita",
+     "x": 1050,
+     "pose": "namaste",
+     "face": "smile",
+     "look": "left"
+    }
+   ],
+   "show": "राम और लक्ष्मण हाथ जोड़कर खड़े; सीता विदा होती हुई"
+  }
+ ],
+ "COVER": {
+  "bg": "morning",
+  "tag": "राम-सीता की पहली मुलाकात!",
+  "cast": [
+   {
+    "who": "ram",
+    "x": 400,
+    "pose": "stand",
+    "face": "smile",
+    "look": "right"
+   },
+   {
+    "who": "sita",
+    "x": 900,
+    "pose": "namaste",
+    "face": "joy",
+    "look": "left"
+   }
+  ]
+ }
+}
