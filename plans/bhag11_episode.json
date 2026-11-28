@@ -1,0 +1,267 @@
+{
+ "NAME": "Ramayan_Bhag11_Pushp_Vatika_Mein_Ram_aur_Sita",
+ "COVER_NAME": "Ramayan_Bhag11_Cover",
+ "TAG": "रामायण कथा",
+ "BHAG": 11,
+ "VERSION": 1,
+ "QUESTION": "पुष्प वाटिका में कौन मिला?",
+ "LINES": {
+  "n1": [
+   "मिथिला के उपवन में जब पहली बार राम और सीता मिले!",
+   "+0%",
+   "+0Hz"
+  ],
+  "n2": [
+   "गुरु विश्वामित्र की पूजा के लिए राम और लक्ष्मण फूल चुनने वाटिका में आए थे।",
+   "+0%",
+   "+0Hz"
+  ],
+  "n3": [
+   "उसी पल राजकुमारी सीता भी पूजन के लिए वहाँ पहुँचीं।",
+   "+0%",
+   "+0Hz"
+  ],
+  "ram1": [
+   "लक्ष्मण, देखो... यह कौन दिव्य रूप है?",
+   "+2%",
+   "+10Hz"
+  ],
+  "sita1": [
+   "हे मां गौरी, मुझे यही वर रूप में मिलें।",
+   "+0%",
+   "+6Hz"
+  ],
+  "n4": [
+   "पहली ही नज़र में दोनों के मन में पवित्र प्रेम जाग उठा।",
+   "+0%",
+   "+0Hz"
+  ],
+  "n5": [
+   "क्या राम शिव धनुष तोड़ पाएँगे? अगले भाग में! कमेंट में लिखिए: जय श्री राम। चैनल को सब्सक्राइब करें।",
+   "+0%",
+   "+0Hz"
+  ]
+ },
+ "SPEAKER": {
+  "ram1": "ram",
+  "sita1": "sita"
+ },
+ "KEYWORDS": {
+  "n1": [
+   "उपवन",
+   "सीता"
+  ],
+  "n2": [
+   "फूल",
+   "वाटिका"
+  ],
+  "n3": [
+   "सीता",
+   "पहुँचीं"
+  ],
+  "ram1": [
+   "दिव्य"
+  ],
+  "sita1": [
+   "वर"
+  ],
+  "n4": [
+   "प्रेम"
+  ],
+  "n5": [
+   "शिव धनुष"
+  ]
+ },
+ "NEW_CHARS": {
+  "sita": {
+   "name": "सीता",
+   "kind": "f",
+   "skin": "#e8b887",
+   "hair": "#140c08",
+   "saree": "#e05a47",
+   "blouse": "#f2c230",
+   "border": "#f2c230",
+   "jewel": true,
+   "tilak": true
+  }
+ },
+ "SHOTS": [
+  {
+   "line": "n1",
+   "bg": "morning",
+   "mood": "wonder",
+   "chip": "पहली मुलाकात",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 420,
+     "pose": "stand",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "sita",
+     "x": 940,
+     "pose": "stand",
+     "face": "smile",
+     "look": "left"
+    }
+   ],
+   "show": "पुष्प वाटिका में राम और सीता एक-दूसरे को देखते हुए"
+  },
+  {
+   "line": "n2",
+   "bg": "morning",
+   "cam": "wide",
+   "chip": "फूल चुनने",
+   "cast": [
+    {
+     "who": "lakshman",
+     "x": 320,
+     "pose": "stand",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "ram",
+     "x": 680,
+     "pose": "talk",
+     "face": "smile",
+     "look": "right"
+    }
+   ],
+   "show": "राम और लक्ष्मण वाटिका में फूल चुनते हुए आपस में बात कर रहे हैं"
+  },
+  {
+   "line": "n3",
+   "bg": "morning",
+   "cam": "wide",
+   "chip": "वाटिका में आगमन",
+   "cast": [
+    {
+     "who": "sita",
+     "x": 680,
+     "pose": "walk",
+     "face": "smile",
+     "look": "left",
+     "to_x": 500
+    }
+   ],
+   "show": "राजकुमारी सीता मंद गति से वाटिका में प्रवेश करती हैं"
+  },
+  {
+   "line": "ram1",
+   "bg": "morning",
+   "cam": "two",
+   "mood": "wonder",
+   "cast": [
+    {
+     "who": "lakshman",
+     "x": 280,
+     "pose": "stand",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "ram",
+     "x": 720,
+     "pose": "talk",
+     "face": "joy",
+     "look": "right"
+    }
+   ],
+   "show": "राम लक्ष्मण की तरफ देखकर सीता के दिव्य रूप की बात करते हैं"
+  },
+  {
+   "line": "sita1",
+   "bg": "morning",
+   "cam": "speaker",
+   "mood": "joy",
+   "cast": [
+    {
+     "who": "sita",
+     "x": 680,
+     "pose": "namaste",
+     "face": "joy",
+     "look": "front"
+    }
+   ],
+   "show": "सीता हाथ जोड़कर प्रार्थना करती हैं, चेहरे पर आनंद और भक्ति"
+  },
+  {
+   "line": "n4",
+   "bg": "morning",
+   "cam": "wide",
+   "mood": "joy",
+   "chip": "पवित्र प्रेम",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 400,
+     "pose": "stand",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "sita",
+     "x": 920,
+     "pose": "stand",
+     "face": "smile",
+     "look": "left"
+    }
+   ],
+   "show": "राम और सीता एक-दूसरे को देखते हैं, वातावरण में शांत प्रेम"
+  },
+  {
+   "line": "n5",
+   "bg": "morning",
+   "cam": "wide",
+   "mood": "wonder",
+   "chip": "अगला भाग",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 350,
+     "pose": "namaste",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "sita",
+     "x": 680,
+     "pose": "namaste",
+     "face": "smile",
+     "look": "left"
+    },
+    {
+     "who": "lakshman",
+     "x": 1010,
+     "pose": "stand",
+     "face": "smile",
+     "look": "left"
+    }
+   ],
+   "show": "राम, सीता और लक्ष्मण विदाई के भाव में, अगले भाग का प्रश्न"
+  }
+ ],
+ "COVER": {
+  "bg": "morning",
+  "tag": "पुष्प वाटिका में राम-सीता!",
+  "cast": [
+   {
+    "who": "ram",
+    "x": 380,
+    "pose": "stand",
+    "face": "smile",
+    "look": "right"
+   },
+   {
+    "who": "sita",
+    "x": 900,
+    "pose": "namaste",
+    "face": "smile",
+    "look": "left"
+   }
+  ]
+ }
+}

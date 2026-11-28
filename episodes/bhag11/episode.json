@@ -1,0 +1,196 @@
+{
+ "NAME": "Ramayan_Bhag11_Pushp_Vatika_Mein_Ram_aur_Sita",
+ "COVER_NAME": "Ramayan_Bhag11_Cover",
+ "TAG": "रामायण कथा",
+ "BHAG": 11,
+ "VERSION": 3,
+ "QUESTION": "पुष्प वाटिका में कौन मिला?",
+ "LINES": {
+  "n1": [
+   "मिथिला के उपवन में जब पहली बार राम और सीता मिले!",
+   "+0%",
+   "+0Hz"
+  ],
+  "n3": [
+   "उसी पल राजकुमारी सीता भी वहाँ पहुँचती हैं।",
+   "+0%",
+   "+0Hz"
+  ],
+  "ram1": [
+   "देखो... यह कौन दिव्य रूप है?",
+   "+2%",
+   "+10Hz"
+  ],
+  "n4": [
+   "पहली ही नज़र में दोनों के मन में पवित्र प्रेम जाग उठा।",
+   "+0%",
+   "+0Hz"
+  ],
+  "n5": [
+   "क्या राम शिव धनुष तोड़ पाएँगे? अगले भाग में! कमेंट में लिखिए: जय श्री राम। चैनल को सब्सक्राइब करें।",
+   "+0%",
+   "+0Hz"
+  ]
+ },
+ "SPEAKER": {
+  "ram1": "ram"
+ },
+ "KEYWORDS": {
+  "n1": [
+   "उपवन",
+   "सीता"
+  ],
+  "n3": [
+   "सीता",
+   "पहुँचती"
+  ],
+  "ram1": [
+   "दिव्य"
+  ],
+  "n4": [
+   "प्रेम"
+  ],
+  "n5": [
+   "शिव धनुष"
+  ]
+ },
+ "NEW_CHARS": {
+  "sita": {
+   "name": "सीता",
+   "kind": "f",
+   "skin": "#e8b887",
+   "hair": "#140c08",
+   "saree": "#e05a47",
+   "blouse": "#f2c230",
+   "border": "#f2c230",
+   "jewel": true,
+   "tilak": true
+  }
+ },
+ "SHOTS": [
+  {
+   "line": "n1",
+   "bg": "morning",
+   "mood": "wonder",
+   "chip": "पहली मुलाकात",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 420,
+     "pose": "stand",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "sita",
+     "x": 940,
+     "pose": "stand",
+     "face": "smile",
+     "look": "left"
+    }
+   ],
+   "show": "पुष्प वाटिका में राम और सीता पहली बार मिलते हैं"
+  },
+  {
+   "line": "n3",
+   "bg": "morning",
+   "cam": "wide",
+   "chip": "वाटिका में आगमन",
+   "cast": [
+    {
+     "who": "sita",
+     "x": 680,
+     "pose": "walk",
+     "face": "smile",
+     "look": "left",
+     "to_x": 500
+    }
+   ],
+   "show": "राजकुमारी सीता पुष्प वाटिका में पहुँचती हैं"
+  },
+  {
+   "line": "ram1",
+   "bg": "morning",
+   "cam": "speaker",
+   "mood": "wonder",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 420,
+     "pose": "talk",
+     "face": "joy",
+     "look": "right"
+    }
+   ],
+   "show": "राम सीता को देखकर उनके दिव्य रूप की बात करते हैं"
+  },
+  {
+   "line": "n4",
+   "bg": "morning",
+   "cam": "wide",
+   "mood": "joy",
+   "chip": "पवित्र प्रेम",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 400,
+     "pose": "stand",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "sita",
+     "x": 920,
+     "pose": "stand",
+     "face": "smile",
+     "look": "left"
+    }
+   ],
+   "show": "पहली नज़र में ही राम और सीता के मन में प्रेम जागता है"
+  },
+  {
+   "line": "n5",
+   "bg": "morning",
+   "cam": "wide",
+   "mood": "wonder",
+   "chip": "अगला भाग",
+   "cast": [
+    {
+     "who": "ram",
+     "x": 400,
+     "pose": "namaste",
+     "face": "smile",
+     "look": "right"
+    },
+    {
+     "who": "sita",
+     "x": 920,
+     "pose": "namaste",
+     "face": "smile",
+     "look": "left"
+    }
+   ],
+   "show": "राम और सीता; अगले भाग का प्रश्न"
+  }
+ ],
+ "COVER": {
+  "bg": "morning",
+  "tag": "पुष्प वाटिका में राम-सीता!",
+  "cast": [
+   {
+    "who": "ram",
+    "x": 380,
+    "pose": "stand",
+    "face": "smile",
+    "look": "right"
+   },
+   {
+    "who": "sita",
+    "x": 900,
+    "pose": "namaste",
+    "face": "smile",
+    "look": "left"
+   }
+  ]
+ }
+}
