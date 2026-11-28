@@ -1,0 +1,23 @@
+{
+ "ok": true,
+ "fails": [],
+ "warns": [],
+ "facts": {
+  "w": 1080,
+  "h": 1920,
+  "fps": 30.0,
+  "dur": 28.132,
+  "has_audio": true,
+  "black": [],
+  "frozen": [],
+  "silence": [],
+  "lufs": -14.6,
+  "lufs_parts": [
+   -14.0,
+   -14.8,
+   -15.3,
+   -14.4
+  ]
+ },
+ "text": "Machine jaanch: ✅ theek\n- ℹ️ 1080x1920, 30.0 fps, 28.1 sec, zor -14.6 LUFS"
+}
